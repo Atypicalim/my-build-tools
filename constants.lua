@@ -10,9 +10,10 @@ KEYS = {
     NAME = "NAME",
     TYPE = "TYPE",
     URL = "URL",
+    EXT = "EXT",
     BRANCH = "BRANCH",
 }
 TYPES = {
     GIT = "GIT",
-    HTTP = "HTTP",
+    ZIP = "ZIP",
 }

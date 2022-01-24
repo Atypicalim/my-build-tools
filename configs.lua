@@ -2,35 +2,23 @@
     configs
 ]]
 
-LIBRARIES = {
-    MINILUA = "minilua",
-    MINICORO = "minicoro",
-    TIGR = "tigr",
-    RAYLIB = "raylib",
-}
-
 CONFIGS = {
-    [LIBRARIES.MINILUA] = {
-        [KEYS.NAME] = LIBRARIES.MINILUA,
-        [KEYS.TYPE] = TYPES.GIT,
+    ["minilua"] = {
         [KEYS.URL] = "https://github.com/edubart/minilua.git",
         [KEYS.BRANCH] = "main",
     },
-    [LIBRARIES.MINICORO] = {
-        [KEYS.NAME] = LIBRARIES.MINICORO,
-        [KEYS.TYPE] = TYPES.GIT,
+    ["minicoro"] = {
         [KEYS.URL] = "https://github.com/edubart/minicoro.git",
         [KEYS.BRANCH] = "main",
     },
-    [LIBRARIES.TIGR] = {
-        [KEYS.NAME] = LIBRARIES.TIGR,
-        [KEYS.TYPE] = TYPES.GIT,
+    ["tigr"] = {
         [KEYS.URL] = "https://github.com/erkkah/tigr.git",
         [KEYS.BRANCH] = "master",
     },
-    [LIBRARIES.RAYLIB] = {
-        [KEYS.NAME] = LIBRARIES.RAYLIB,
-        [KEYS.TYPE] = TYPES.HTTP,
+    ["raylib"] = {
         [KEYS.URL] = "https://github.com/raysan5/raylib/releases/download/4.0.0/raylib-4.0.0_win64_mingw-w64.zip",
+    },
+    ["webview"] = {
+        [KEYS.URL] = "git@github.com:javalikescript/webview-c.git",
     },
 }
