@@ -12,6 +12,9 @@ KEYS = {
     URL = "URL",
     EXT = "EXT",
     BRANCH = "BRANCH",
+    DIR_I = "DIR_I", -- -I
+    DIR_L = "DIR_L", -- -L
+    LIB_L = "LIB_L", -- -l
 }
 TYPES = {
     GIT = "GIT",
