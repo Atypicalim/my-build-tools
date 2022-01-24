@@ -2,9 +2,10 @@
     constants
 ]]
 
-MY_PRINT_TAG = "[MY_BUILDER_EXT]:"
+MY_PRINT_TAG = "[LUA_C_BUILDER]:"
 MY_LIBRARY_PATH = "./.builder/"
 GIT_NEED_PULL = false
+PURE_LUA_TOOLS = "git@github.com:kompasim/pure-lua-tools.git"
 
 KEYS = {
     NAME = "NAME",
