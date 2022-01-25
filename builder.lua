@@ -2,15 +2,16 @@
     builder
 ]]
 
-xpcall(require, function() end, "pure-lua-tools.initialize")
 require("constants")
 require("configs")
 
+xpcall(require, function() end, "pure-lua-tools.initialize")
 if not class then
-    print(MY_PRINT_TAG, 'downloading pure lua tools ...')
-    os.execute('git clone ' .. PURE_LUA_TOOLS)
+    print('[PURE_LUA_TOOLS] downloading ...')
+    os.execute('git clone git@github.com:kompasim/pure-lua-tools.git')
     xpcall(require, function() end, "pure-lua-tools.initialize")
-    assert(class ~= nil, string.format("%s%s", MY_PRINT_TAG, 'pure lua tools download failed!'))
+    assert(class ~= nil, '[PURE_LUA_TOOLS] download failed!')
+    print('[PURE_LUA_TOOLS] download succeed!')
 end
 
 local Builder = class("Builder")
