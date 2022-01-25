@@ -2,9 +2,6 @@
     builder
 ]]
 
-require("constants")
-require("configs")
-
 xpcall(require, function() end, "pure-lua-tools.initialize")
 if not class then
     print('[PURE_LUA_TOOLS] downloading ...')
@@ -14,11 +11,30 @@ if not class then
     print('[PURE_LUA_TOOLS] download succeed!')
 end
 
+MY_PRINT_TAG = "[LUA_C_BUILDER]:"
+MY_LIBRARY_PATH = tools.get_current_script_relative_folder() .. ".builder/"
+KEYS = {
+    NAME = "NAME",
+    TYPE = "TYPE",
+    URL = "URL",
+    EXT = "EXT",
+    BRANCH = "BRANCH",
+    DIR_I = "DIR_I", -- -I
+    DIR_L = "DIR_L", -- -L
+    LIB_L = "LIB_L", -- -l
+}
+TYPES = {
+    GIT = "GIT",
+    ZIP = "ZIP",
+}
+require("configs")
+
 local Builder = class("Builder")
 
-function Builder:__init__(isDebug)
+function Builder:__init__(isDebug, needPullGit)
     print('\n-----------------[Lua C Builder]---------------------\n')
-    self._isDebug = isDebug
+    self._isDebug = isDebug == true
+    self._needPullGit = needPullGit == true
     self._includeDirs = {}
     self._linkingDirs = {}
     self._linkingTags = {}
@@ -47,7 +63,7 @@ function Builder:_downloadByGit(config)
         local cmd = string.format("git clone %s %s --branch %s --single-branch", url, directory, branch)
         local isOk = tools.execute(cmd)
         self:assert(isOk, "git clone failed!")
-    elseif GIT_NEED_PULL then
+    elseif self._needPullGit then
         self:print('pulling...')
         local cmd = string.format("cd %s && git pull", directory)
         local isOk = tools.execute(cmd)
@@ -213,9 +229,6 @@ function Builder:processGcc(codePath, isRelease)
     local name = string.lower(parts[#parts - 1])
     local target = string.format( "%s.exe", name)
     local cmd = string.format("gcc %s -o %s %s %s %s", codePath, target, includeDirCmd, linkingDirCmd, linkingTagCmd)
-    if files.is_file(target) then
-        self._executableFile = './' .. target
-    end
     --
     if isRelease then
         cmd = cmd .. " -O2 -mwindows"
@@ -229,6 +242,9 @@ function Builder:processGcc(codePath, isRelease)
         self:print("gcc process failed, cmd:" .. cmd)
         self:error("err:" .. output)
     end
+    if files.is_file(target) then
+        self._executableFile = './' .. target
+    end
     self:print("gcc process succeeded!")
     --
     self:print('PROCESS GCC END!\n')
@@ -240,10 +256,4 @@ function Builder:programRun(argumentString)
     tools.execute(self._executableFile .. argumentString)
 end
 
------------------------------------------
-
-local builder = Builder(false)
-builder:installLibs("minilua", "minicoro", "tigr", "raylib", "webview")
-builder:containLibs("raylib")
-builder:processGcc("test.c", false)
-builder:programRun()
+return Builder

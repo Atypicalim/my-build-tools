@@ -14,6 +14,8 @@ CONFIGS = {
     ["tigr"] = {
         [KEYS.URL] = "https://github.com/erkkah/tigr.git",
         [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./",
+        [KEYS.LIB_L] = {"opengl32", "gdi32"},
     },
     ["raylib"] = {
         [KEYS.URL] = "https://github.com/raysan5/raylib/releases/download/4.0.0/raylib-4.0.0_win64_mingw-w64.zip",
