@@ -253,7 +253,7 @@ function Builder:processGcc(codePath, isRelease)
         self:error("err:" .. output)
     end
     if files.is_file(target) then
-        self._executableFile = './' .. target
+        self._executableFile = (tools.is_windows() and '.\\' or "./") .. target
     end
     self:print("gcc process succeeded!")
     --
