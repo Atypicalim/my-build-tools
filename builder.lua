@@ -69,22 +69,27 @@ function Builder:_downloadByZip(config)
     end
     local isOk, err
     if not isOk then
+        files.delete(cacheFile)
         self:print('downloading with pws1 ...')
         isOk, err = http.download(url, cacheFile, 'pws1')
     end
-    if not isOk then
-        self:print('download failed with pws1, err:' .. err)
+    if not isOk or files.size(cacheFile) == 0 then
+        files.delete(cacheFile)
+        self:print('download failed with pws1.')
         self:print('downloading with curl ...')
         isOk, err = http.download(url, cacheFile, 'curl')
     end
-    if not isOk then
-        self:print('download failed with curl, err:' .. err)
+    if not isOk or files.size(cacheFile) == 0 then
+        files.delete(cacheFile)
+        self:print('download failed with curl.')
         self:print('downloading with wget ...')
         isOk, err = http.download(url, cacheFile, 'wget')
     end
-    if not isOk then
-        self:error('download failed with wget, err:' .. err)
+    if not isOk or files.size(cacheFile) == 0 then
+        files.delete(cacheFile)
+        self:error('download failed with wget.')
     end
+    self:print('download succeeded.')
     self:print('unzipping...')
     local cmd = string.format("unzip %s -d %s", cacheFile, directory)
     local isOk = tools.execute(cmd)
@@ -208,7 +213,7 @@ function Builder:processGcc(codePath, isRelease)
     local target = string.format( "%s.exe", name)
     local cmd = string.format("gcc %s -o %s %s %s %s", codePath, target, includeDirCmd, linkingDirCmd, linkingTagCmd)
     if files.is_file(target) then
-        self._executableFile = target
+        self._executableFile = './' .. target
     end
     --
     if isRelease then
@@ -221,7 +226,7 @@ function Builder:processGcc(codePath, isRelease)
     local isOk, output = tools.execute(cmd)
     if not isOk then
         self:print("gcc process failed, cmd:" .. cmd)
-        self:error("err:" + output)
+        self:error("err:" .. output)
     end
     self:print("gcc process succeeded!")
     --
