@@ -1,6 +1,4 @@
 
-
-
 package.path = package.path .. ";../?.lua"
 local Builder = require('../builder')
 
