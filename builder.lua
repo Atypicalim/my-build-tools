@@ -15,7 +15,7 @@ local function download_and_import_by_git(gitUrl, entryName, workingDir)
         print('[LUA_GIT_IMPORT] downloading ...')
         os.execute("git clone " .. gitUrl .. " " .. workingDir .. "/" .. folderName)
         isOk, err = pcall(require, entryName)
-        assert(isOk, "[LUA_GIT_IMPORT] import failed:" .. err)
+        assert(isOk, "[LUA_GIT_IMPORT] import failed:" .. tostring(err))
         print('[LUA_GIT_IMPORT] import succeeded!')
     end
 end
