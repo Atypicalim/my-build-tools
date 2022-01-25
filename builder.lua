@@ -237,7 +237,7 @@ function Builder:processGcc(codePath, isRelease)
     --
     local parts = string.explode(codePath, "%.")
     local name = string.lower(parts[#parts - 1])
-    local target = string.format( "%s.exe", name)
+    local target = tools.is_windows() and string.format( "%s.exe", name) or name
     local cmd = string.format("gcc %s -o %s %s %s %s", codePath, target, includeDirCmd, linkingDirCmd, linkingTagCmd)
     --
     if isRelease then
@@ -263,7 +263,7 @@ end
 function Builder:programRun(argumentString)
     self:assert(self._executableFile ~= nil, 'executable file not found!')
     argumentString = argumentString or ""
-    tools.execute(self._executableFile .. argumentString)
+    os.execute(self._executableFile .. argumentString)
 end
 
 return Builder
