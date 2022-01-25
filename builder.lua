@@ -27,7 +27,7 @@ TYPES = {
     GIT = "GIT",
     ZIP = "ZIP",
 }
-require("configs")
+require(tools.get_current_script_relative_folder() .. "configs")
 
 local Builder = class("Builder")
 
