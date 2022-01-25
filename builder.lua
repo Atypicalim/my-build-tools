@@ -10,19 +10,19 @@ local function download_and_import_by_git(gitUrl, entryName, workingDir)
     workingDir = workingDir or os.getenv("HOME")
     assert(workingDir ~= nil, "[LUA_GIT_IMPORT] working dir not found !")
     package.path = package.path .. ";" .. workingDir .. "/" .. folderName .. "?.lua"
-    xpcall(require, function() end, entryName)
-    if not class then
+    local isOk, err = pcall(require, entryName)
+    if not isOk then
         print('[LUA_GIT_IMPORT] downloading ...')
         os.execute("git clone " .. gitUrl .. " " .. workingDir .. "/" .. folderName)
-        xpcall(require, function() end, entryName)
-        assert(class ~= nil, "[LUA_GIT_IMPORT] download failed!")
-        print('[LUA_GIT_IMPORT] download succeed!')
+        isOk, err = pcall(require, entryName)
+        assert(isOk, "[LUA_GIT_IMPORT] import failed:" .. err)
+        print('[LUA_GIT_IMPORT] import succeeded!')
     end
 end
 download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "initialize", "./")
 
 MY_PRINT_TAG = "[LUA_C_BUILDER]:"
-MY_LIBRARY_PATH = tools.get_current_script_relative_folder() .. ".builder/"
+MY_LIBRARY_PATH = files.csd() .. ".builder/"
 KEYS = {
     NAME = "NAME",
     TYPE = "TYPE",
@@ -37,7 +37,7 @@ TYPES = {
     GIT = "GIT",
     ZIP = "ZIP",
 }
-require(tools.get_current_script_relative_folder() .. "configs")
+require("configs")
 
 local Builder = class("Builder")
 
