@@ -21,6 +21,12 @@ CONFIGS = {
         [KEYS.BRANCH] = "main",
         [KEYS.DIR_I] = "./",
     },
+    -- Single file audio playback and capture library written in C.
+    ["miniaudio"] = {
+        [KEYS.URL] = "https://github.com/mackron/miniaudio.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./",
+    },
     -- the TIny GRaphics library for Windows, macOS, Linux, iOS and Android.
     ["tigr"] = {
         [KEYS.URL] = "https://github.com/erkkah/tigr.git",
