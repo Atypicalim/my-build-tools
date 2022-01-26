@@ -41,6 +41,11 @@ CONFIGS = {
         [KEYS.DIR_L] = "raylib-4.0.0_win64_mingw-w64/lib/",
         [KEYS.LIB_L] = {"raylib", "opengl32", "gdi32", "winmm"},
     },
+    -- A simple and easy-to-use immediate-mode gui library
+    ["raygui"] = {
+        [KEYS.URL] = "https://github.com/raysan5/raygui/archive/refs/tags/3.1.zip",
+        [KEYS.DIR_I] = "./raygui-3.1/",
+    },
     -- A tiny cross-platform webview C library to build modern cross-platform GUIs
     ["webview"] = {
         [KEYS.URL] = "https://github.com/javalikescript/webview-c.git",
@@ -87,4 +92,11 @@ CONFIGS = {
         [KEYS.LIB_L] = {"comdlg32", "ole32"},
         [KEYS.DIR_I] = "./",
     },
+    -- (Keep It) Simple Stupid Database
+    ["kissdb"] = {
+        [KEYS.URL] = "https://github.com/adamierymenko/kissdb.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./",
+    },
+    -- rayui
 }
