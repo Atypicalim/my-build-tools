@@ -32,6 +32,7 @@ KEYS = {
     DIR_I = "DIR_I", -- -I
     DIR_L = "DIR_L", -- -L
     LIB_L = "LIB_L", -- -l
+    FLAGS = "FLAGS", -- flags
 }
 TYPES = {
     GIT = "GIT",
@@ -48,6 +49,7 @@ function Builder:__init__(isDebug, needPullGit)
     self._includeDirs = {}
     self._linkingDirs = {}
     self._linkingTags = {}
+    self._extraFlags = {}
     self._executableFile = nil
 end
 
@@ -204,6 +206,10 @@ function Builder:_containLib(name)
             insertTags(v)
         end
     end
+    --
+    if is_string(config[KEYS.FLAGS]) then
+        table.insert(self._extraFlags, config[KEYS.FLAGS])
+    end
 end
 
 function Builder:containLibs(...)
@@ -235,25 +241,31 @@ function Builder:processGcc(codePath, isRelease)
         linkingTagCmd = linkingTagCmd .. " -l " .. v
     end
     --
+    local extraFlagsCmd = ""
+    for _,v in ipairs(self._extraFlags) do
+        extraFlagsCmd = extraFlagsCmd .. " " .. v
+    end
+
+    --
     local parts = string.explode(codePath, "%.")
     local name = string.lower(parts[#parts - 1])
     local target = tools.is_windows() and string.format( "%s.exe", name) or name
-    local cmd = string.format("gcc %s -o %s %s %s %s", codePath, target, includeDirCmd, linkingDirCmd, linkingTagCmd)
+    local cmd = string.format("gcc %s -o %s %s %s %s %s", codePath, target, includeDirCmd, linkingDirCmd, linkingTagCmd, extraFlagsCmd)
     --
     if isRelease then
         cmd = cmd .. " -O2 -mwindows"
     end
     --
     if self._isDebug then
-        self:print(string.format("cmd:", cmd))
+        self:print(string.format("cmd:%s", cmd))
     end
     local isOk, output = tools.execute(cmd)
     if not isOk then
-        self:print("gcc process failed, cmd:" .. cmd)
+        self:print("gcc process failed!")
         self:error("err:" .. output)
     end
     if files.is_file(target) then
-        self._executableFile = (tools.is_windows() and '.\\' or "./") .. target
+        self._executableFile = "." .. files.delimiter() .. target
     end
     self:print("gcc process succeeded!")
     --
