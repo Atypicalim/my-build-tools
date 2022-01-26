@@ -98,5 +98,16 @@ CONFIGS = {
         [KEYS.BRANCH] = "master",
         [KEYS.DIR_I] = "./",
     },
-    -- rayui
+    -- Lightweight JSON library written in C.
+    ["parson"] = {
+        [KEYS.URL] = "https://github.com/kgabis/parson.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./",
+    },
+    -- single header utf8 string functions for C and C++
+    ["utf8"] = {
+        [KEYS.URL] = "https://github.com/sheredom/utf8.h.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./",
+    },
 }
