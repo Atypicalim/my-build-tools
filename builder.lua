@@ -21,8 +21,8 @@ local function download_and_import_by_git(gitUrl, entryName, workingDir)
 end
 download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "initialize", "./")
 
--- include a text file with `containFiles("test.txt")` to c, and read with `LCB_FILE("test.txt")` in c code
-local MY_CONTAIN_FILE_HEAD_PATH = "./lcb_contain_code.c"
+-- include a text file with `containFile("test.txt")` to c, and read with `LCB_FILE("test.txt")` in c code
+local MY_CONTAIN_FILE_HEAD_PATH = "./.lcb_contain_code.c"
 local MY_CONTAIN_FILE_CODE_TEMPLATE = [[
 struct KeyValue
 {
@@ -48,6 +48,13 @@ char *lcbRead(char *name)
 local MY_CONTAIN_FILE_ITEM_TEMPLATE = [[{"%s", "%s"},]]
 local MY_CONTAIN_FILE_ITEMS_HOLDER = [[MY_CONTAIN_FILE_ITEMS_HOLDER]]
 local MY_CONTAIN_FILE_COUNT_HOLDER = [[MY_CONTAIN_FILE_COUNT_HOLDER]]
+
+-- add resources such as icon and version info
+local MY_RES_FILE_PATH = "./.lcb_resource.res"
+local MY_RC_FILE_PATH = "./.lcb_resource.rc"
+local MY_RC_FILE_TEMPLATE = [[
+id ICON "%s"
+]]
 
 MY_PRINT_TAG = "[LUA_C_BUILDER]:"
 MY_LIBRARY_PATH = files.csd() .. ".builder/"
@@ -81,6 +88,17 @@ function Builder:__init__(isDebug, needPullGit)
     self._containCode = {}
     self._executableFile = nil
     self:prepareEnv()
+end
+
+function Builder:prepareEnv()
+    if not files or not files.mk_folder then
+        self:error('pure lua tools not found!')
+    end
+    if not files.is_folder(MY_LIBRARY_PATH) then
+        files.mk_folder(MY_LIBRARY_PATH)
+    end
+    files.write(MY_CONTAIN_FILE_HEAD_PATH, "")
+    files.write(MY_RES_FILE_PATH, "")
 end
 
 function Builder:print(...)
@@ -154,16 +172,6 @@ function Builder:_downloadByZip(config)
     local isOk = tools.execute(cmd)
     self:assert(isOk, "unzip failed!")
     self:print('complete!')
-end
-
-function Builder:prepareEnv()
-    if not files or not files.mk_folder then
-        self:error('pure lua tools not found!')
-    end
-    if not files.is_folder(MY_LIBRARY_PATH) then
-        files.mk_folder(MY_LIBRARY_PATH)
-    end
-    files.write(MY_CONTAIN_FILE_HEAD_PATH, "")
 end
 
 function Builder:_installLib(name)
@@ -253,7 +261,7 @@ function Builder:containLibs(...)
     self:print('CONTAIN LIB END!\n')
 end
 
-function Builder:containFiles(...)
+function Builder:containFile(...)
     self:print('CONTIAN FILE START!')
     local names = {}
     local contents = {}
@@ -277,7 +285,17 @@ function Builder:containFiles(...)
     self:print('CONTIAN FILE END!\n')
 end
 
-function Builder:processGcc(codePath, isRelease)
+function Builder:containIcon(iconPath)
+    self:print('CONTIAN INFO START!')
+    self:print('icon:', iconPath)
+    local myRcInfo = string.format(MY_RC_FILE_TEMPLATE, iconPath)
+    files.write(MY_RC_FILE_PATH, myRcInfo)
+    local isOk, err = tools.execute(string.format("windres %s -O coff -o %s", MY_RC_FILE_PATH, MY_RES_FILE_PATH))
+    self:assert(isOk, "resource compile failed, err:" .. tostring(err))
+    self:print('CONTIAN INFO END!\n')
+end
+
+function Builder:compile(codePath, isRelease)
     self:print('PROCESS GCC START!')
     --
     local includeDirCmd = ""
@@ -304,9 +322,10 @@ function Builder:processGcc(codePath, isRelease)
     local name = string.lower(parts[#parts - 1])
     local target = tools.is_windows() and string.format( "%s.exe", name) or name
     --
+    local compileCmds = string.format("%s %s", MY_RES_FILE_PATH, codePath)
     local icludeCmds = string.format("-include %s %s", MY_CONTAIN_FILE_HEAD_PATH, includeDirCmd)
     local linkCmds = string.format("%s %s", linkingDirCmd, linkingTagCmd)
-    local cmd = string.format("gcc %s -o %s %s %s %s", codePath, target, icludeCmds, linkCmds, extraFlagsCmd)
+    local cmd = string.format("gcc %s -o %s %s %s %s", compileCmds, target, icludeCmds, linkCmds, extraFlagsCmd)
     --
     if isRelease then
         cmd = cmd .. " -O2 -mwindows"
@@ -326,10 +345,12 @@ function Builder:processGcc(codePath, isRelease)
     self:print("gcc process succeeded!")
     --
     files.delete(MY_CONTAIN_FILE_HEAD_PATH)
+    files.delete(MY_RES_FILE_PATH)
+    files.delete(MY_RC_FILE_PATH)
     self:print('PROCESS GCC END!\n')
 end
 
-function Builder:programRun(argumentString)
+function Builder:execute(argumentString)
     self:assert(self._executableFile ~= nil, 'executable file not found!')
     argumentString = argumentString or ""
     os.execute(self._executableFile .. argumentString)

@@ -8,8 +8,8 @@ local Builder = require('builder')
 local builder = Builder(false)
 builder:installLibs("tigr")
 builder:containLibs("tigr")
-builder:processGcc("test.c", true)
-builder:programRun()
+builder:compile("test.c", false)
+builder:execute()
 
 ```
 
