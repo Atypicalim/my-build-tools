@@ -4,11 +4,13 @@
 
 ```lua
 
-local Builder = require('builder')
+local Builder = require("builder")
 local builder = Builder(false)
 builder:installLibs("tigr")
 builder:containLibs("tigr")
-builder:compile("test.c", false)
+builder:containFile("./test.txt")
+builder:containIcon('./icon.ico')
+builder:compile("test.c", "test", false)
 builder:execute()
 
 ```

@@ -22,8 +22,8 @@ end
 download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "initialize", "./")
 
 -- include a text file with `containFile("test.txt")` to c, and read with `LCB_FILE("test.txt")` in c code
-local MY_CONTAIN_FILE_HEAD_PATH = "./.lcb_contain_code.c"
-local MY_CONTAIN_FILE_CODE_TEMPLATE = [[
+local MY_CONTAIN_FILE_PATH = "./.lcb_contain_code.c"
+local MY_CONTAIN_FILE_TEMPLATE = [[
 struct KeyValue
 {
     char* key;
@@ -85,7 +85,6 @@ function Builder:__init__(isDebug, needPullGit)
     self._linkingDirs = {}
     self._linkingTags = {}
     self._extraFlags = {}
-    self._containCode = {}
     self._executableFile = nil
     self:prepareEnv()
 end
@@ -97,7 +96,7 @@ function Builder:prepareEnv()
     if not files.is_folder(MY_LIBRARY_PATH) then
         files.mk_folder(MY_LIBRARY_PATH)
     end
-    files.write(MY_CONTAIN_FILE_HEAD_PATH, "")
+    files.write(MY_CONTAIN_FILE_PATH, "")
     files.write(MY_RES_FILE_PATH, "")
 end
 
@@ -129,7 +128,6 @@ function Builder:_downloadByGit(config)
         local isOk = tools.execute(cmd)
         self:assert(isOk, "git pull failed!")
     end
-    self:print('complete!')
 end
 
 function Builder:_downloadByZip(config)
@@ -171,7 +169,6 @@ function Builder:_downloadByZip(config)
     local cmd = string.format("unzip %s -d %s", cacheFile, directory)
     local isOk = tools.execute(cmd)
     self:assert(isOk, "unzip failed!")
-    self:print('complete!')
 end
 
 function Builder:_installLib(name)
@@ -195,9 +192,9 @@ function Builder:installLibs(...)
     local libs = {...}
     for i=1,#libs,1 do
         local lib = libs[i]
-        self:print(string.format('install:%s -> start:', lib))
+        self:print('start:', lib)
         self:_installLib(lib)
-        self:print(string.format('install:%s -> end.', lib))
+        self:print('finish:', lib)
     end
     self:print('INSTALL LIB END!\n')
 end
@@ -266,21 +263,21 @@ function Builder:containFile(...)
     local names = {}
     local contents = {}
     for _,name in ipairs({...}) do
-        self:assert(files.size(name) > 0, string.format("file [%s] not found!",name))
+        self:assert(files.size(name) > 0, string.format("file [%s] not found!", name))
         table.insert(names, name)
         table.insert(contents, files.read(name))
     end
     local items = nil
     for index,name in ipairs(names) do
-        self:print(string.format("contain:[%s]", name))
+        self:print("file:", name)
         local content = contents[index]
         local item = string.format(MY_CONTAIN_FILE_ITEM_TEMPLATE, name, content)
         items = items == nil and item or items .. "\n" .. item
     end
-    local code = string.format("// %s contained files:\n\n%s", MY_PRINT_TAG, MY_CONTAIN_FILE_CODE_TEMPLATE)
+    local code = string.format("// %s contained files:\n\n%s", MY_PRINT_TAG, MY_CONTAIN_FILE_TEMPLATE)
     code = string.gsub(code, string.format( "@@%s@@", MY_CONTAIN_FILE_ITEMS_HOLDER), items)
     code = string.gsub(code, string.format( "@@%s@@", MY_CONTAIN_FILE_COUNT_HOLDER), tostring(#names))
-    files.write(MY_CONTAIN_FILE_HEAD_PATH, code)
+    files.write(MY_CONTAIN_FILE_PATH, code)
 
     self:print('CONTIAN FILE END!\n')
 end
@@ -295,7 +292,7 @@ function Builder:containIcon(iconPath)
     self:print('CONTIAN INFO END!\n')
 end
 
-function Builder:compile(codePath, isRelease)
+function Builder:compile(mainFile, targetName, isRelease)
     self:print('PROCESS GCC START!')
     --
     local includeDirCmd = ""
@@ -318,14 +315,12 @@ function Builder:compile(codePath, isRelease)
         extraFlagsCmd = extraFlagsCmd .. " " .. v
     end
     --
-    local parts = string.explode(codePath, "%.")
-    local name = string.lower(parts[#parts - 1])
-    local target = tools.is_windows() and string.format( "%s.exe", name) or name
+    local target = tools.is_windows() and string.format( "%s.exe", tostring(targetName)) or tostring(targetName)
+    local compileCmds = string.format("%s", MY_RES_FILE_PATH)
     --
-    local compileCmds = string.format("%s %s", MY_RES_FILE_PATH, codePath)
-    local icludeCmds = string.format("-include %s %s", MY_CONTAIN_FILE_HEAD_PATH, includeDirCmd)
+    local icludeCmds = string.format("-include %s %s", MY_CONTAIN_FILE_PATH, includeDirCmd)
     local linkCmds = string.format("%s %s", linkingDirCmd, linkingTagCmd)
-    local cmd = string.format("gcc %s -o %s %s %s %s", compileCmds, target, icludeCmds, linkCmds, extraFlagsCmd)
+    local cmd = string.format("gcc %s -o %s %s %s %s %s", mainFile, target, compileCmds, icludeCmds, linkCmds, extraFlagsCmd)
     --
     if isRelease then
         cmd = cmd .. " -O2 -mwindows"
@@ -344,7 +339,7 @@ function Builder:compile(codePath, isRelease)
     end
     self:print("gcc process succeeded!")
     --
-    files.delete(MY_CONTAIN_FILE_HEAD_PATH)
+    files.delete(MY_CONTAIN_FILE_PATH)
     files.delete(MY_RES_FILE_PATH)
     files.delete(MY_RC_FILE_PATH)
     self:print('PROCESS GCC END!\n')

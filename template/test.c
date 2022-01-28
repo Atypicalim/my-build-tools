@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
     while (!tigrClosed(screen))
     {
         tigrClear(screen, tigrRGB(0x80, 0x90, 0xa0));
-        tigrPrint(screen, tfont, 120, 110, tigrRGB(0xff, 0xff, 0xff), "Hello, world.");
+        tigrPrint(screen, tfont, 120, 110, tigrRGB(0xff, 0xff, 0xff), LCB_FILE("./test.txt"));
         tigrUpdate(screen);
     }
     tigrFree(screen);
