@@ -2,24 +2,7 @@
     builder
 ]]
 
-local function download_and_import_by_git(gitUrl, entryName, workingDir)
-    local slashPos = string.find(string.reverse(gitUrl), "/", 1, true)
-    local pointPos = string.find(string.reverse(gitUrl), ".", 1, true)
-    assert(slashPos ~= nil and pointPos ~= nil and slashPos > pointPos, "[LUA_GIT_IMPORT] invalid url:" .. gitUrl)
-    local folderName = "." .. string.sub(gitUrl, #gitUrl - slashPos + 2, #gitUrl - pointPos) .. "/"
-    workingDir = workingDir or os.getenv("HOME")
-    assert(workingDir ~= nil, "[LUA_GIT_IMPORT] working dir not found !")
-    package.path = package.path .. ";" .. workingDir .. "/" .. folderName .. "?.lua"
-    local isOk, err = pcall(require, entryName)
-    if not isOk then
-        print('[LUA_GIT_IMPORT] downloading ...')
-        os.execute("git clone " .. gitUrl .. " " .. workingDir .. "/" .. folderName)
-        isOk, err = pcall(require, entryName)
-        assert(isOk, "[LUA_GIT_IMPORT] import failed:" .. tostring(err))
-        print('[LUA_GIT_IMPORT] import succeeded!')
-    end
-end
-download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "initialize", "./")
+local Base = require("builder_base")
 
 -- include a text file with `containFile("test.txt")` to c, and read with `LCB_FILE("test.txt")` in c code
 local MY_CONTAIN_FILE_PATH = "./.lcb_contain_code.c"
@@ -56,8 +39,6 @@ local MY_RC_FILE_TEMPLATE = [[
 id ICON "%s"
 ]]
 
-MY_PRINT_TAG = "[LUA_C_BUILDER]:"
-MY_LIBRARY_PATH = files.csd() .. ".builder/"
 KEYS = {
     NAME = "NAME",
     TYPE = "TYPE",
@@ -73,102 +54,43 @@ TYPES = {
     GIT = "GIT",
     ZIP = "ZIP",
 }
-require("configs")
+require("c_configs")
 
-local Builder = class("Builder")
+local Builder, Super = class("Builder", Base)
 
-function Builder:__init__(isDebug, needPullGit)
-    print('\n-----------------[Lua C Builder]---------------------\n')
+function Builder:__init__(isDebug)
+    Super.__init__(self, "C")
     self._isDebug = isDebug == true
-    self._needPullGit = needPullGit == true
     self._includeDirs = {}
     self._linkingDirs = {}
     self._linkingTags = {}
     self._extraFlags = {}
     self._executableFile = nil
-    self:prepareEnv()
+    self._libPath = self._buildDir .. "libs/"
+    self:_prepareEnv()
 end
 
-function Builder:prepareEnv()
-    if not files or not files.mk_folder then
-        self:error('pure lua tools not found!')
-    end
-    if not files.is_folder(MY_LIBRARY_PATH) then
-        files.mk_folder(MY_LIBRARY_PATH)
+function Builder:_prepareEnv()
+    Super._prepareEnv(self)
+    if not files.is_folder(self._libPath) then
+        files.mk_folder(self._libPath)
     end
     files.write(MY_CONTAIN_FILE_PATH, "")
     files.write(MY_RES_FILE_PATH, "")
 end
 
-function Builder:print(...)
-    print(MY_PRINT_TAG, ...)
-end
-
-function Builder:assert(v, msg)
-    assert(v, string.format("%s%s", MY_PRINT_TAG, msg))
-end
-
-function Builder:error(msg)
-    error(string.format("%s%s", MY_PRINT_TAG, msg))
-end
-
 function Builder:_downloadByGit(config)
-    local name = config[KEYS.NAME]
     local url = config[KEYS.URL]
     local branch = config[KEYS.BRANCH] or 'master'
-    local directory = MY_LIBRARY_PATH .. name .. "/"
-    if not files.is_folder(directory) then
-        self:print('cloning...')
-        local cmd = string.format("git clone %s %s --branch %s --single-branch", url, directory, branch)
-        local isOk = tools.execute(cmd)
-        self:assert(isOk, "git clone failed!")
-    elseif self._needPullGit then
-        self:print('pulling...')
-        local cmd = string.format("cd %s && git pull", directory)
-        local isOk = tools.execute(cmd)
-        self:assert(isOk, "git pull failed!")
-    end
+    local directory = self._libPath .. config[KEYS.NAME] .. "/"
+    Super._downloadByGit(self, url, branch, directory)
 end
 
 function Builder:_downloadByZip(config)
     local name = config[KEYS.NAME]
     local url = config[KEYS.URL]
-    local parts = string.explode(url, "%.")
-    local ext = parts[#parts]
-    local directory = MY_LIBRARY_PATH .. name .. "/"
-    local cacheDir = MY_LIBRARY_PATH .. ".temp/"
-    local cacheFile = cacheDir .. name .. "." .. ext
-    if files.is_folder(directory) then
-        self:print('downloaded!')
-        return
-    end
-    local isOk, err
-    if not isOk then
-        files.delete(cacheFile)
-        self:print('downloading with pws1 ...')
-        isOk, err = http.download(url, cacheFile, 'pws1')
-    end
-    if not isOk or files.size(cacheFile) == 0 then
-        files.delete(cacheFile)
-        self:print('download failed with pws1.')
-        self:print('downloading with curl ...')
-        isOk, err = http.download(url, cacheFile, 'curl')
-    end
-    if not isOk or files.size(cacheFile) == 0 then
-        files.delete(cacheFile)
-        self:print('download failed with curl.')
-        self:print('downloading with wget ...')
-        isOk, err = http.download(url, cacheFile, 'wget')
-    end
-    if not isOk or files.size(cacheFile) == 0 then
-        files.delete(cacheFile)
-        self:error('download failed with wget.')
-    end
-    self:print('download succeeded.')
-    self:print('unzipping...')
-    local cmd = string.format("unzip %s -d %s", cacheFile, directory)
-    local isOk = tools.execute(cmd)
-    self:assert(isOk, "unzip failed!")
+    local directory = self._libPath .. name .. "/"
+    Super._downloadByZip(self, url, directory)
 end
 
 function Builder:_installLib(name)
@@ -201,7 +123,7 @@ end
 
 function Builder:_containLib(name)
     local config = CONFIGS[name]
-    local directory = MY_LIBRARY_PATH .. name .. "/"
+    local directory = self._libPath .. name .. "/"
     self:assert(config ~= nil, string.format("lib [%s] not found", name))
     self:assert(files.is_folder(directory), string.format("lib [%s] not installed", name))
     --
