@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./test.js"></script>
+    <link href="./test.css" rel="stylesheet"></style>
+</head>
+<body>
+    <img src="./test.png" alt="">
+    <div>TODO:</div>
+    <ul id="myContainer"></ul>
+    <input type="text" value="empty..." id="myInput">
+    <button onclick="addTodo();">ADD</button>
+</body>
+
+<script id="myTemplate" type="text/html">
+    <% for (i in this) { %>
+    <li> <% (Number(i) + 1) %>. <% this[i] %> </li>
+    <% } %>
+</script>
+
+<script>
+
+var todoList = ["test1", "test2", "test3"];
+function showTodo() {
+    var template = document.querySelector("#myTemplate").innerHTML;
+    var renderer = template2renderer(template);
+    var html = renderer(todoList);
+    document.querySelector("#myContainer").innerHTML = html;
+}
+function addTodo(event) {
+    var content = document.querySelector("#myInput").value;
+    todoList.push(content);
+    showTodo();
+}
+showTodo();
+
+var elem = $('div')
+elem.css('background-color', '#369')
+
+</script>
+</html>

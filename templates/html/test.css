@@ -1,0 +1,12 @@
+
+li {
+    color: rgb(83, 43, 5);
+    background-color: rgb(231, 231, 231);
+    border-radius: 5px;
+    margin: 5px;
+}
+
+body {
+    background-color: beige;
+    padding: 0% auto;
+}

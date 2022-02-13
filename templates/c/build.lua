@@ -1,6 +1,6 @@
 
-pcall(os.execute, "git clone git@github.com:kompasim/lua-c-builder.git ./.lua-c-builder")
-package.path = package.path .. ";./.lua-c-builder/?.lua"
+pcall(os.execute, "git clone git@github.com:kompasim/my-build-tools.git ./.my-build-tools")
+package.path = package.path .. ";./.my-build-tools/?.lua"
 local Builder = require("c_builder")
 
 local builder = Builder(false)

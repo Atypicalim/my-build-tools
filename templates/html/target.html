@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+<script type="text/javascript" origin_file="./test.js">
+
+/**
+ * https://krasimirtsonev.com/blog/article/Javascript-template-engine-in-just-20-line
+ * simple template renderer
+ * @param {*} html 
+ * @returns renderer func
+ */
+
+var template2renderer = function(html) {
+    var re = /<%([^%>]+)?%>/g;
+    var reExp = /(^( )?(if|for|else|switch|case|break|{|}))(.*)?/g;
+    var code = 'var r=[];\\n';
+    var cursor = 0
+    var match;
+    var add = function(line, js) {
+        if (js) {
+            code += line.match(reExp) ? line + '\\n' : 'r.push(' + line + ');\\n';
+        } else {
+            code += line != '' ? 'r.push(`' + line.replace(/"/g, '\\"') + '`);\\n' : '';
+        }
+        return add;
+    }
+    while(match = re.exec(html)) {
+        add(html.slice(cursor, match.index))(match[1], true);
+        cursor = match.index + match[0].length;
+    }
+    add(html.substr(cursor, html.length - cursor), false);
+    code += 'return r.join("");';
+    code = code.replace(/\\t+|\\r\\n+|\\n+/g, '');
+    var fun = new Function(code);
+    var renderer = function(args) {
+        return fun.apply(args);
+    }
+    return renderer;
+}
+</script>
+
+<style type="text/css" file="./test.css">
+
+li {
+    color: rgb(83, 43, 5);
+    background-color: rgb(231, 231, 231);
+    border-radius: 5px;
+    margin: 5px;
+}
+
+body {
+    background-color: beige;
+    padding: 0% auto;
+}
+</style>
+
+</head>
+<body>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAIAAAAv2XlzAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAEXRFWHRTb2Z0d2FyZQBTbmlwYXN0ZV0Xzt0AAAIOSURBVCiRBcFJb9NAFADgefPeeLwkjrsmXYB0oQdU6AmJG/8ZiXu5IoEEh7K2DU26pEkaO7YTe2zP4/vAnH+YpsXdr9Hwfp5C+e33IJ1PO6G/txkpYUfjx6qibr//6e5yuSqNbWiRZ8vJYjgaPqSp0UF7Y9OCyLP8+99RkidQyVevX05Ug4hSkQagZPZ09XMUxwt25Cw1TtTutlpZNoc8OfSf2Y7/EM+S7EkHHitlzJJuBuPB/WTF5bioVbjFwIiq014Ptp9fxNfNMq2ldJGVciRVQjT4/uBksirGq6daeGBWTWLy6dwki1Uld3eiaZFKQhfRUQggWQBNuLmNZ3+uBk1ZKomBDkLfDQPdruexu0EIEkCiEIwuCfakrCVcDG/D/kkZtI/evstc193dbR8cyuPjOWvBjIhERIhKOT45ZInOTs/G42Stu+/3nr/p7u0cHEaO++PfF5S1kNJayw0CsJDWcRVZ7Xkev9iiRZyMP3/V4ZZNS+/0yLIpFWDDdV3bugYWSKgUSFVK3/M5wLDX2e5FavGY30wYtueZZFNUVVUaUxZFYxvBglBJwEZrFfodV3lh1Ir660JML88/HrVcY21V2aZmAq2VVkQeOYSKW4Ff100muCwrJtXb76y3/Ot4isBGYAMiQPLIIUeSAhJWGlMAgPYdxg6KJXlrHLXy+0Rpp2ZGktZlUKDRkVL8B+q1Elvh1X8bAAAAAElFTkSuQmCC" alt="">
+    <div>TODO:</div>
+    <ul id="myContainer"></ul>
+    <input type="text" value="empty..." id="myInput">
+    <button onclick="addTodo();">ADD</button>
+</body>
+
+<script id="myTemplate" type="text/html">
+    <% for (i in this) { %>
+    <li> <% (Number(i) + 1) %>. <% this[i] %> </li>
+    <% } %>
+</script>
+
+<script>
+
+var todoList = ["test1", "test2", "test3"];
+function showTodo() {
+    var template = document.querySelector("#myTemplate").innerHTML;
+    var renderer = template2renderer(template);
+    var html = renderer(todoList);
+    document.querySelector("#myContainer").innerHTML = html;
+}
+function addTodo(event) {
+    var content = document.querySelector("#myInput").value;
+    todoList.push(content);
+    showTodo();
+}
+showTodo();
+
+var elem = $('div')
+elem.css('background-color', '#369')
+
+</script>
+</html>
