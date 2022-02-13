@@ -1,18 +1,17 @@
-### Lua C Builder
+### My Build Tools
 
-> this is a personal c library management and build tool, just clone this repo and use like the example below. u can find some available libs in `./configs.lua`, and there is a template project in `./template/` directory.
+> this is a personal library for package management and building, just clone this repo and use like the example below. there is some template project in `./template/` directory, just copy them and have a look at `build.lua` files.
 
-```lua
+1. c
 
-local Builder = require("builder")
-local builder = Builder(false)
-builder:installLibs("tigr")
-builder:containLibs("tigr")
-builder:containFile("./test.txt")
-builder:containIcon('./icon.ico')
-builder:compile("test.c", "test", false)
-builder:execute()
+> package management and building single executable program
 
-```
+2. html
+
+> merge all external script, style, image dependencies into single html file
+
+3. code
+
+> TODO
 
 ---

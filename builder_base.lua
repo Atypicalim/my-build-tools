@@ -32,10 +32,10 @@ function Builder:__init__(buildType)
     self._buildDir = self._mainDir .. buildType .. "_dir/"
     self._cacheDir = self._mainDir .. "cache/"
     self._needUpdate = false
+    print('\n-----------------[Lua ' .. buildType .. ' Builder]---------------------\n')
 end
 
 function Builder:_prepareEnv()
-    print('\n-----------------[Lua C Builder]---------------------\n')
     if not class then
         self:error('pure lua tools not found!')
     end
@@ -71,27 +71,31 @@ function Builder:_downloadByGit(url, branch, directory)
 end
 
 function Builder:_downloadByZip(url, directory)
-    local parts = string.explode(url, "%.")
-    local ext = parts[#parts]
-    local cacheFile = self._cacheDir .. "temp." .. ext
     if files.is_folder(directory) then
         self:print('downloaded!')
         return
     end
-    local isOk, err
+    local cacheFile = self:_downloadByUrl(url)
+    self:print('unzipping...')
+    local cmd = string.format("unzip %s -d %s", cacheFile, directory)
+    local isOk, err = tools.execute(cmd)
+    files.delete(cacheFile)
+    self:assert(isOk, "unzip failed, err:" .. tostring(err))
+end
+
+function Builder:_downloadByUrl(url, path)
+    local parts = string.explode(url, "%.")
+    local ext = parts[#parts]
+    local cacheFile = path or self._cacheDir .. "temp." .. ext
     files.delete(cacheFile)
     self:print('downloading ...')
-    isOk, err = http.download(url, cacheFile, 'curl')
+    local isOk, err = http.download(url, cacheFile, 'curl')
     if not isOk or files.size(cacheFile) == 0 then
         files.delete(cacheFile)
         self:error('download failed, err:' .. tostring(err))
     end
     self:print('download succeeded.')
-    self:print('unzipping...')
-    local cmd = string.format("unzip %s -d %s", cacheFile, directory)
-    files.delete(cacheFile)
-    isOk, err = tools.execute(cmd)
-    self:assert(isOk, "unzip failed, err:" .. tostring(err))
+    return cacheFile
 end
 
 return Builder
