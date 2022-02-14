@@ -49,11 +49,11 @@ function Builder:print(...)
 end
 
 function Builder:assert(v, msg)
-    assert(v, string.format("%s%s", self._printTag, msg))
+    assert(v, string.format("%s %s", self._printTag, msg))
 end
 
 function Builder:error(msg)
-    error(string.format("%s%s", self._printTag, msg))
+    error(string.format("%s %s", self._printTag, msg))
 end
 
 function Builder:_downloadByGit(url, branch, directory)
@@ -96,6 +96,29 @@ function Builder:_downloadByUrl(url, path)
     end
     self:print('download succeeded.')
     return cacheFile
+end
+
+function Builder:_readFile(path, isOnlyLocal, isBuffer)
+    self:print("read file:" .. path)
+    local isRemote = string.find(path, "http") == 1
+    self:print("is remote:" .. tostring(isRemote))
+    if isRemote then
+        if isOnlyLocal then
+            self:print("skip remote.")
+            return
+        end
+        self:print("downloading remote ...")
+        path = Super._downloadByUrl(self, path)
+    end
+    self:assert(files.is_file(path), "file not found:" .. path)
+    self:print("reading file ...")
+    local content = files.read(path, isBuffer and "rb" or "r")
+    if isRemote then
+        files.delete(path)
+    end
+    self:assert(#content > 0, "read file failed!, path:" .. path)
+    self:print("read file succeeded!")
+    return content
 end
 
 return Builder

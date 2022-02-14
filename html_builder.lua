@@ -41,27 +41,6 @@ function Builder:outputFile(path)
     self._outputFile = path
 end
 
-function Builder:_readFile(path, isOnlyLocal, isBuffer)
-    local isRemote = string.find(path, "http") == 1
-    if isRemote then
-        if isOnlyLocal then
-            self:print("skip remote.")
-            return
-        end
-        self:print("downloading remote ...")
-        path = Super._downloadByUrl(self, path)
-    end
-    self:assert(files.is_file(path), "file not found:" .. path)
-    self:print("reading file ...")
-    local content = files.read(path, isBuffer and "rb" or "r")
-    if isRemote then
-        files.delete(path)
-    end
-    self:assert(#content > 0, "read file failed!, path:" .. path)
-    self:print("reading file succeeded!")
-    return content
-end
-
 local SCRIPT_TEMPLATE = [[
 <script type="text/javascript" origin_file="%s">
 %s
