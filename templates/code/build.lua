@@ -13,7 +13,7 @@ local Builder = require("./code_builder")
 
 local builder = Builder(false)
 builder:inputFiles("./test.c", "./test.html", "./test.js", "./test.py")
-builder:printHeader("--", 3)
+builder:printHeader("--", 1)
 builder:handleMacro("//", "<!--", "#")
 builder:outputFile("./target.any")
 builder:start()
