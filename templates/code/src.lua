@@ -1,1 +1,4 @@
-print("lua ...")
+local function test()
+    print("lua ...")
+end
+test()

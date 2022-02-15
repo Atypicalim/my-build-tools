@@ -9,6 +9,8 @@ function Builder:__init__()
     Super.__init__(self, "html")
     self._fileArr = {}
     self._lineArr = {}
+    self._macroStartTag = "[M["
+    self._macroEndTag = "]M]"
     self:_prepareEnv()
 end
 
@@ -53,8 +55,60 @@ function Builder:outputFile(path)
     self._outputFile = path
 end
 
+function Builder:_COMMAND_FILE_BASE64(code, arguments)
+    local filePath = arguments[1]
+    self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
+    local content = files.read(filePath)
+    local data = encryption.base64_encode(content)
+    return string.format(code, data)
+end
+
+function Builder:_COMMAND_FILE_PLAIN(code, arguments)
+    local filePath = arguments[1]
+    self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
+    local content = files.read(filePath)
+    return string.format(code, content)
+end
+
+function Builder:_COMMAND_FILE_C_STRING(code, arguments)
+    local filePath = arguments[1]
+    self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
+    local s = files.read(filePath)
+    s = s:gsub("\"", "\\\"")
+    return string.format(code, s)
+end
+
+
 function Builder:_parseLine(line)
-    return nil
+    if not self._isHandleMacro then
+        return
+    end
+    local commentPosition = nil
+    for i,v in ipairs(self._commentTags or {}) do
+        if not commentPosition then
+            commentPosition = string.find(line, v)
+        end
+    end
+    if not commentPosition then
+        return
+    end
+    local macroStartIndex = string.find(line, self._macroStartTag, 1, true)
+    local macroEndIndex = string.find(line, self._macroEndTag, 1, true)
+    if not macroStartIndex or not macroEndIndex or macroStartIndex >= macroEndIndex then
+        return
+    end
+    local code = string.sub(line, 1, commentPosition - 1)
+    local macro = string.sub(line, macroStartIndex + #self._macroEndTag, macroEndIndex - 1)
+    local body = string.explode(macro, "|")
+    self:assert(#body > 1, "invalid macro, line, " .. line)
+    local command = string.trim(body[1])
+    local arguments = {}
+    for i=2,#body do
+        local argument = string.trim(body[i])
+        table.insert(arguments, argument)
+    end
+    self:assert(self['_COMMAND_' .. command] ~= nil, "command not found : " .. command)
+    return self['_COMMAND_' .. command](self, code, arguments)
 end
 
 function Builder:start()

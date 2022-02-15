@@ -1,43 +1,35 @@
 
 
 --------------------------------------------------------------------------------------------------
----------- date:2022-02-15 01:48:33 file:./test.c ----------
+---------- date:2022-02-15 19:14:24 file:./test.c ----------
 --------------------------------------------------------------------------------------------------
 
 
 
-// lua code by linux xxd command
-char[] luaCode = ""; // [M[ FILE_XXD | ./src.lua | char[] luaCode = "%s"; ]M]
+// lua code as a string after escape
+char[] luaCode = "local function test()
+    print(\"lua ...\")
+end
+test()"; 
 
 
 
 --------------------------------------------------------------------------------------------------------
----------- date:2022-02-15 01:48:33 file:./test.html ----------
+---------- date:2022-02-15 19:14:24 file:./test.html ----------
 --------------------------------------------------------------------------------------------------------
 
 
 
 <!-- html image tag by base64 data -->
-<img src="data:image/png;base64,"> <!-- [M[ FILE_BASE64 | ./test.png | <img src="data:image/png;base64,%s"> ]M] -->
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAIAAAAv2XlzAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAEXRFWHRTb2Z0d2FyZQBTbmlwYXN0ZV0Xzt0AAAIOSURBVCiRBcFJb9NAFADgefPeeLwkjrsmXYB0oQdU6AmJG/8ZiXu5IoEEh7K2DU26pEkaO7YTe2zP4/vAnH+YpsXdr9Hwfp5C+e33IJ1PO6G/txkpYUfjx6qibr//6e5yuSqNbWiRZ8vJYjgaPqSp0UF7Y9OCyLP8+99RkidQyVevX05Ug4hSkQagZPZ09XMUxwt25Cw1TtTutlpZNoc8OfSf2Y7/EM+S7EkHHitlzJJuBuPB/WTF5bioVbjFwIiq014Ptp9fxNfNMq2ldJGVciRVQjT4/uBksirGq6daeGBWTWLy6dwki1Uld3eiaZFKQhfRUQggWQBNuLmNZ3+uBk1ZKomBDkLfDQPdruexu0EIEkCiEIwuCfakrCVcDG/D/kkZtI/evstc193dbR8cyuPjOWvBjIhERIhKOT45ZInOTs/G42Stu+/3nr/p7u0cHEaO++PfF5S1kNJayw0CsJDWcRVZ7Xkev9iiRZyMP3/V4ZZNS+/0yLIpFWDDdV3bugYWSKgUSFVK3/M5wLDX2e5FavGY30wYtueZZFNUVVUaUxZFYxvBglBJwEZrFfodV3lh1Ir660JML88/HrVcY21V2aZmAq2VVkQeOYSKW4Ff100muCwrJtXb76y3/Ot4isBGYAMiQPLIIUeSAhJWGlMAgPYdxg6KJXlrHLXy+0Rpp2ZGktZlUKDRkVL8B+q1Elvh1X8bAAAAAElFTkSuQmCC"> 
 
 
 
 ----------------------------------------------------------------------------------------------------
----------- date:2022-02-15 01:48:33 file:./test.js ----------
+---------- date:2022-02-15 19:14:24 file:./test.js ----------
 ----------------------------------------------------------------------------------------------------
 
 
 
-// js string with a text file content
-var strText = ""; // [M[ FILE_TEXT | ./src.txt | char[] var strText = "%s"; ]M]
-
-
-
-----------------------------------------------------------------------------------------------------
----------- date:2022-02-15 01:48:33 file:./test.py ----------
-----------------------------------------------------------------------------------------------------
-
-
-
-# python string with a ignored macro
-strIgnored = "" # # [M[ SOME | ./some.txt | strIgnored = "%s" ]M]
+// js string with a plain text file content
+var strText = "text ..."; 

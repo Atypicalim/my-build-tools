@@ -6,14 +6,14 @@ local Builder = require("./code_builder")
 
 -- macro
 
--- replace all line with template and data
--- double comment is ignored by builder
+-- fill line with data
 -- when found a [M] after comment tag is regarded as a macro
--- template: [M[ command | input_file | output_template ]M]
+-- template: [M[ command | argument ]M]
 
 local builder = Builder(false)
-builder:inputFiles("./test.c", "./test.html", "./test.js", "./test.py")
+builder:inputFiles("./test.c", "./test.html", "./test.js")
 builder:printHeader("--", 1)
 builder:handleMacro("//", "<!--", "#")
 builder:outputFile("./target.any")
 builder:start()
+
