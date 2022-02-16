@@ -40,6 +40,8 @@ function Builder:__init__(isDebug)
     files.mk_folder(self._libPath)
     self.MY_RES_FILE_PATH = self._buildDir .. ".lcb_resource.res"
     self.MY_RC_FILE_PATH = self._buildDir .. ".lcb_resource.rc"
+    files.write(self.MY_RES_FILE_PATH, "")
+    files.write(self.MY_RC_FILE_PATH, "")
 end
 
 function Builder:_downloadByGit(config)
