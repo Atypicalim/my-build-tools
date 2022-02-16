@@ -5,7 +5,8 @@
 #include "webview.h"
 
 char HTML_CODE[] = "document.documentElement.innerHTML = '%s';"; // [M[ FILE_STRING | ./test.html |   ]M]
-
+char JS_CODE[] = "var codes = document.getElementsByTagName(\"script\"); for(var i=0;i<codes.length;i++) { eval(codes[i].text); }";
+// char JS_CODE[] = "alert(\"OK\")";
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
         return r;
     }
     webview_eval(&webview, HTML_CODE);
+    webview_eval(&webview, JS_CODE);
     while (webview_loop(&webview, 1) == 0) {
     }
     webview_exit(&webview);

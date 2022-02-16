@@ -15,6 +15,6 @@ local cBuilder = CBuilder(false)
 cBuilder:setInput('./target.c')
 cBuilder:setLibs("webview")
 cBuilder:setOutput('test')
-cBuilder:start(false)
+cBuilder:start(true)
 
 os.execute("start ./test.exe")
