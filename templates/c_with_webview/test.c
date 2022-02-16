@@ -4,7 +4,7 @@
 #define WEBVIEW_WINAPI
 #include "webview.h"
 
-char HTML_CODE[] = "document.documentElement.innerHTML = '%s';"; // [M[ FILE_STRING | ./test.html ]M]
+char HTML_CODE[] = "document.documentElement.innerHTML = '%s';"; // [M[ FILE_STRING | ./test.html |   ]M]
 
 
 int main(int argc, char *argv[])
