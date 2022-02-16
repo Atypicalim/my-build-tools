@@ -6,7 +6,7 @@ local Base = require("builder_base")
 local Builder, Super = class("Builder", Base)
 
 function Builder:__init__()
-    Super.__init__(self, "html")
+    Super.__init__(self, "c")
     self._fileArr = {}
     self._lineArr = {}
     self._macroStartTag = "[M["

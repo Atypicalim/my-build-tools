@@ -4,30 +4,6 @@
 
 local Base = require("builder_base")
 
--- include a text file with `containFile("test.txt")` to c, and read with `LCB_FILE("test.txt")` in c code
-local MY_CONTAIN_FILE_PATH = "./.lcb_contain_code.c"
-local MY_CONTAIN_FILE_TEMPLATE = [[
-struct KeyValue
-{
-    char* key;
-    char* value;
-};
-int size = @@MY_CONTAIN_FILE_COUNT_HOLDER@@;
-struct KeyValue keyValues[@@MY_CONTAIN_FILE_COUNT_HOLDER@@] = {
-@@MY_CONTAIN_FILE_ITEMS_HOLDER@@
-{"xx", "xx"}
-};
-
-char *lcbRead(char *name)
-{
-    for (int i = 0; i < size; i ++) {
-        struct KeyValue keyValue = keyValues[i];
-        if (strcmp(keyValue.key, name) == 0) return keyValue.value;
-    }
-    return name;
-}
-#define LCB_FILE(NAME) lcbRead(NAME)
-]]
 local MY_CONTAIN_FILE_ITEM_TEMPLATE = [[{"%s", "%s"},]]
 local MY_CONTAIN_FILE_ITEMS_HOLDER = [[MY_CONTAIN_FILE_ITEMS_HOLDER]]
 local MY_CONTAIN_FILE_COUNT_HOLDER = [[MY_CONTAIN_FILE_COUNT_HOLDER]]
@@ -75,7 +51,6 @@ function Builder:_prepareEnv()
     if not files.is_folder(self._libPath) then
         files.mk_folder(self._libPath)
     end
-    files.write(MY_CONTAIN_FILE_PATH, "")
     files.write(MY_RES_FILE_PATH, "")
 end
 
@@ -180,30 +155,6 @@ function Builder:containLibs(...)
     self:print('CONTAIN LIB END!\n')
 end
 
-function Builder:containFile(...)
-    self:print('CONTIAN FILE START!')
-    local names = {}
-    local contents = {}
-    for _,name in ipairs({...}) do
-        self:assert(files.size(name) > 0, string.format("file [%s] not found!", name))
-        table.insert(names, name)
-        table.insert(contents, files.read(name))
-    end
-    local items = nil
-    for index,name in ipairs(names) do
-        self:print("file:", name)
-        local content = contents[index]
-        local item = string.format(MY_CONTAIN_FILE_ITEM_TEMPLATE, name, content)
-        items = items == nil and item or items .. "\n" .. item
-    end
-    local code = string.format("// %s contained files:\n\n%s", MY_PRINT_TAG, MY_CONTAIN_FILE_TEMPLATE)
-    code = string.gsub(code, string.format( "@@%s@@", MY_CONTAIN_FILE_ITEMS_HOLDER), items)
-    code = string.gsub(code, string.format( "@@%s@@", MY_CONTAIN_FILE_COUNT_HOLDER), tostring(#names))
-    files.write(MY_CONTAIN_FILE_PATH, code)
-
-    self:print('CONTIAN FILE END!\n')
-end
-
 function Builder:containIcon(iconPath)
     self:print('CONTIAN INFO START!')
     self:print('icon:', iconPath)
@@ -240,7 +191,7 @@ function Builder:compile(mainFile, targetName, isRelease)
     local target = tools.is_windows() and string.format( "%s.exe", tostring(targetName)) or tostring(targetName)
     local compileCmds = string.format("%s", MY_RES_FILE_PATH)
     --
-    local icludeCmds = string.format("-include %s %s", MY_CONTAIN_FILE_PATH, includeDirCmd)
+    local icludeCmds = string.format("%s", includeDirCmd)
     local linkCmds = string.format("%s %s", linkingDirCmd, linkingTagCmd)
     local cmd = string.format("gcc %s -o %s %s %s %s %s", mainFile, target, compileCmds, icludeCmds, linkCmds, extraFlagsCmd)
     --
@@ -261,7 +212,6 @@ function Builder:compile(mainFile, targetName, isRelease)
     end
     self:print("gcc process succeeded!")
     --
-    files.delete(MY_CONTAIN_FILE_PATH)
     files.delete(MY_RES_FILE_PATH)
     files.delete(MY_RC_FILE_PATH)
     self:print('PROCESS GCC END!\n')
