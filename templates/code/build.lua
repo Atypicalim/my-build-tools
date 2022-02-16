@@ -1,7 +1,6 @@
 
--- pcall(os.execute, "git clone git@github.com:kompasim/my-build-tools.git ./.my-build-tools")
--- package.path = package.path .. ";./.my-build-tools/?.lua"
-package.path = package.path .. ";../../?.lua"
+pcall(os.execute, "git clone git@github.com:kompasim/my-build-tools.git ./.my-build-tools")
+package.path = package.path .. ";./.my-build-tools/?.lua"
 local Builder = require("./code_builder")
 
 -- macro
@@ -13,7 +12,7 @@ local Builder = require("./code_builder")
 local builder = Builder(false)
 builder:inputFiles("./test.c", "./test.html", "./test.js")
 builder:printHeader("--", 1)
-builder:handleMacro("//", "<!--", "#")
+builder:handleMacro("//", "<!--")
 builder:outputFile("./target.any")
 builder:start()
 

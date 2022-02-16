@@ -70,12 +70,20 @@ function Builder:_COMMAND_FILE_PLAIN(code, arguments)
     return string.format(code, content)
 end
 
-function Builder:_COMMAND_FILE_C_STRING(code, arguments)
+function Builder:_COMMAND_FILE_STRING(code, arguments)
     local filePath = arguments[1]
+    local minimize = arguments[2] ~= nil and string.lower(arguments[2]) == "true"
     self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
-    local s = files.read(filePath)
-    s = s:gsub("\"", "\\\"")
-    return string.format(code, s)
+    local fileContent = files.read(filePath)
+    local lineArr = string.explode(fileContent, "\n")
+    for i,v in ipairs(lineArr) do
+        lineArr[i] = v:gsub("[\n\r]+$", " "):gsub("\"", "\\\""):gsub("\'", "\\\'")
+    end
+    local result = table.implode(lineArr, " \\n ")
+    if minimize then
+        result = result:gsub("%s+", " ")
+    end
+    return string.format(code, result)
 end
 
 
