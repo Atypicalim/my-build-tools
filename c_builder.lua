@@ -4,13 +4,7 @@
 
 local Base = require("builder_base")
 
-local MY_CONTAIN_FILE_ITEM_TEMPLATE = [[{"%s", "%s"},]]
-local MY_CONTAIN_FILE_ITEMS_HOLDER = [[MY_CONTAIN_FILE_ITEMS_HOLDER]]
-local MY_CONTAIN_FILE_COUNT_HOLDER = [[MY_CONTAIN_FILE_COUNT_HOLDER]]
-
 -- add resources such as icon and version info
-local MY_RES_FILE_PATH = "./.lcb_resource.res"
-local MY_RC_FILE_PATH = "./.lcb_resource.rc"
 local MY_RC_FILE_TEMPLATE = [[
 id ICON "%s"
 ]]
@@ -43,15 +37,9 @@ function Builder:__init__(isDebug)
     self._extraFlags = {}
     self._executableFile = nil
     self._libPath = self._buildDir .. "libs/"
-    self:_prepareEnv()
-end
-
-function Builder:_prepareEnv()
-    Super._prepareEnv(self)
-    if not files.is_folder(self._libPath) then
-        files.mk_folder(self._libPath)
-    end
-    files.write(MY_RES_FILE_PATH, "")
+    files.mk_folder(self._libPath)
+    self.MY_RES_FILE_PATH = self._buildDir .. ".lcb_resource.res"
+    self.MY_RC_FILE_PATH = self._buildDir .. ".lcb_resource.rc"
 end
 
 function Builder:_downloadByGit(config)
@@ -82,18 +70,6 @@ function Builder:_installLib(name)
     else
         self:error(string.format('invalid lib type [%s]', config[KEYS.TYPE]))
     end
-end
-
-function Builder:installLibs(...)
-    self:print('INSTALL LIB START!')
-    local libs = {...}
-    for i=1,#libs,1 do
-        local lib = libs[i]
-        self:print('start:', lib)
-        self:_installLib(lib)
-        self:print('finish:', lib)
-    end
-    self:print('INSTALL LIB END!\n')
 end
 
 function Builder:_containLib(name)
@@ -144,29 +120,32 @@ function Builder:_containLib(name)
     end
 end
 
-function Builder:containLibs(...)
+function Builder:setLibs(...)
     self:print('CONTAIN LIB START!')
     local libs = {...}
     for i=1,#libs,1 do
         local lib = libs[i]
         self:print(string.format("contain:[%s]", lib))
+        self:_installLib(lib)
         self:_containLib(lib)
     end
     self:print('CONTAIN LIB END!\n')
 end
 
-function Builder:containIcon(iconPath)
+function Builder:setIcon(iconPath)
     self:print('CONTIAN INFO START!')
     self:print('icon:', iconPath)
     local myRcInfo = string.format(MY_RC_FILE_TEMPLATE, iconPath)
-    files.write(MY_RC_FILE_PATH, myRcInfo)
-    local isOk, err = tools.execute(string.format("windres %s -O coff -o %s", MY_RC_FILE_PATH, MY_RES_FILE_PATH))
+    files.write(self.MY_RC_FILE_PATH, myRcInfo)
+    local isOk, err = tools.execute(string.format("windres %s -O coff -o %s", self.MY_RC_FILE_PATH, self.MY_RES_FILE_PATH))
     self:assert(isOk, "resource compile failed, err:" .. tostring(err))
     self:print('CONTIAN INFO END!\n')
 end
 
-function Builder:compile(mainFile, targetName, isRelease)
+function Builder:start(isRelease)
     self:print('PROCESS GCC START!')
+    self:assert(self._inputFiles[1] ~= nil, "input files are not defined!")
+    self:assert(self._outputFile ~= nil, "output file is not defined!")
     --
     local includeDirCmd = ""
     for _,v in ipairs(self._includeDirs) do
@@ -188,12 +167,12 @@ function Builder:compile(mainFile, targetName, isRelease)
         extraFlagsCmd = extraFlagsCmd .. " " .. v
     end
     --
-    local target = tools.is_windows() and string.format( "%s.exe", tostring(targetName)) or tostring(targetName)
-    local compileCmds = string.format("%s", MY_RES_FILE_PATH)
+    local target = tools.is_windows() and string.format( "%s.exe", tostring(self._outputFile)) or tostring(self._outputFile)
+    local compileCmds = string.format("%s", self.MY_RES_FILE_PATH)
     --
     local icludeCmds = string.format("%s", includeDirCmd)
     local linkCmds = string.format("%s %s", linkingDirCmd, linkingTagCmd)
-    local cmd = string.format("gcc %s -o %s %s %s %s %s", mainFile, target, compileCmds, icludeCmds, linkCmds, extraFlagsCmd)
+    local cmd = string.format("gcc %s -o %s %s %s %s %s", self._inputFiles[1], target, compileCmds, icludeCmds, linkCmds, extraFlagsCmd)
     --
     if isRelease then
         cmd = cmd .. " -O2 -mwindows"
@@ -212,15 +191,9 @@ function Builder:compile(mainFile, targetName, isRelease)
     end
     self:print("gcc process succeeded!")
     --
-    files.delete(MY_RES_FILE_PATH)
-    files.delete(MY_RC_FILE_PATH)
+    files.delete(self.MY_RES_FILE_PATH)
+    files.delete(self.MY_RC_FILE_PATH)
     self:print('PROCESS GCC END!\n')
-end
-
-function Builder:execute(argumentString)
-    self:assert(self._executableFile ~= nil, 'executable file not found!')
-    argumentString = argumentString or ""
-    os.execute(self._executableFile .. argumentString)
 end
 
 return Builder

@@ -1,11 +1,14 @@
 
-pcall(os.execute, "git clone git@github.com:kompasim/my-build-tools.git ./.my-build-tools")
-package.path = package.path .. ";./.my-build-tools/?.lua"
+-- pcall(os.execute, "git clone git@github.com:kompasim/my-build-tools.git ./.my-build-tools")
+-- package.path = package.path .. ";./.my-build-tools/?.lua"
+package.path = package.path .. ";../../?.lua"
 local Builder = require("c_builder")
 
 local builder = Builder(false)
-builder:installLibs("tigr")
-builder:containLibs("tigr")
-builder:containIcon('./icon.ico')
-builder:compile("test.c", "test", false)
-builder:execute()
+builder:setInput('./test.c')
+builder:setLibs("tigr")
+builder:setIcon('./icon.ico')
+builder:setOutput('test')
+builder:start(false)
+
+os.execute("start ./test.exe")

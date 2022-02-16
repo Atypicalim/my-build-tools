@@ -7,26 +7,9 @@ local Builder, Super = class("Builder", Base)
 
 function Builder:__init__()
     Super.__init__(self, "c")
-    self._fileArr = {}
     self._lineArr = {}
     self._macroStartTag = "[M["
     self._macroEndTag = "]M]"
-    self:_prepareEnv()
-end
-
-function Builder:_prepareEnv()
-    Super._prepareEnv(self)
-end
-
-function Builder:inputFiles(...)
-    self:print("input files ...")
-    self:assert(table.is_empty(self._fileArr), "input files are already defined")
-    local fileArr = {...}
-    for i,v in ipairs(fileArr) do
-        self:assert(files.is_file(v), "input file not found:" .. v)
-        self:print("input file:" .. v)
-        table.insert(self._fileArr, v)
-    end
 end
 
 function Builder:printHeader(headerTag, height)
@@ -47,12 +30,6 @@ function Builder:handleMacro(...)
     self._commentTags = {...}
     self:assert(not table.is_empty(self._commentTags), "comment tag should be string")
     self:print("comment tags:" .. table.implode(self._commentTags, ","))
-end
-
-function Builder:outputFile(path)
-    self:assert(self._outputFile == nil, "output can only be one file")
-    self:assert(is_string(path), "output path should be string")
-    self._outputFile = path
 end
 
 function Builder:_COMMAND_FILE_BASE64(code, arguments)
@@ -122,12 +99,12 @@ end
 function Builder:start()
     --
     self:print("start:")
-    self:assert(not table.is_empty(self._fileArr), "input files are not defined")
+    self:assert(not table.is_empty(self._inputFiles), "input files are not defined")
     self:assert(not self._isHandleMacro or is_table(self._commentTags), "comment tags are not defined")
     self:assert(not self._isPrintHeader or is_string(self._headerTag), "header tag is not defined")
     --
     self:print("reading files ...")
-    for i,path in ipairs(self._fileArr) do
+    for i,path in ipairs(self._inputFiles) do
         -- read file
         self:assert(files.is_file(path), "file not found:" .. tostring(path))
         local content = files.read(path)

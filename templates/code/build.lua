@@ -10,9 +10,9 @@ local Builder = require("./code_builder")
 -- template: [M[ command | argument ]M]
 
 local builder = Builder(false)
-builder:inputFiles("./test.c", "./test.html", "./test.js")
+builder:setInput("./test.c", "./test.html", "./test.js")
 builder:printHeader("--", 1)
 builder:handleMacro("//", "<!--")
-builder:outputFile("./target.any")
+builder:setOutput("./target.any")
 builder:start()
 

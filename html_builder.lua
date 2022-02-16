@@ -9,11 +9,6 @@ function Builder:__init__()
     Super.__init__(self, "html")
     self._lineArr = {}
     self._fileMap = {}
-    self:_prepareEnv()
-end
-
-function Builder:_prepareEnv()
-    Super._prepareEnv(self)
 end
 
 function Builder:inputFile(path)
@@ -34,11 +29,6 @@ end
 function Builder:containImage(isOnlyLocal)
     self._isContainImage = true
     self._isImageLocal = isOnlyLocal == true
-end
-
-function Builder:outputFile(path)
-    self:assert(self._outputFile == nil, "output can only be one file")
-    self._outputFile = path
 end
 
 local SCRIPT_TEMPLATE = [[

@@ -7,14 +7,16 @@ local CodeBuilder = require("code_builder")
 
 -- handle macro in c for including lua code
 local codeBuilder = CodeBuilder(false)
-codeBuilder:inputFiles("./test.c")
+codeBuilder:setInput("./test.c")
 codeBuilder:handleMacro("//")
-codeBuilder:outputFile("./target.c")
+codeBuilder:setOutput("./target.c")
 codeBuilder:start()
 
 -- build the target file and generate executable
 local cBuilder = CBuilder(false)
-cBuilder:installLibs("minilua")
-cBuilder:containLibs("minilua")
-cBuilder:compile("./target.c", "test", false)
-cBuilder:execute()
+cBuilder:setInput('./target.c')
+cBuilder:setLibs("minilua")
+cBuilder:setOutput('test')
+cBuilder:start(false)
+
+os.execute("start ./test.exe")

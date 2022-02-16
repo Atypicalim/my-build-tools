@@ -32,16 +32,10 @@ function Builder:__init__(buildType)
     self._buildDir = self._mainDir .. buildType .. "_dir/"
     self._cacheDir = self._mainDir .. "cache/"
     self._needUpdate = false
+    self._inputFiles = {}
+    self._outputFile = nil
+    files.mk_folder(self._buildDir)
     print('\n-----------------[Lua ' .. buildType .. ' Builder]---------------------\n')
-end
-
-function Builder:_prepareEnv()
-    if not class then
-        self:error('pure lua tools not found!')
-    end
-    if not files.is_folder(self._buildDir) then
-        files.mk_folder(self._buildDir)
-    end
 end
 
 function Builder:print(...)
@@ -119,6 +113,28 @@ function Builder:_readFile(path, isOnlyLocal, isBuffer)
     self:assert(#content > 0, "read file failed!, path:" .. path)
     self:print("read file succeeded!")
     return content
+end
+
+function Builder:setInput(...)
+    self:print("input files ...")
+    self:assert(table.is_empty(self._inputFiles), "input files are already defined")
+    local fileArr = {...}
+    for i,v in ipairs(fileArr) do
+        self:assert(files.is_file(v), "input file not found:" .. v)
+        self:print("input file:" .. v)
+        table.insert(self._inputFiles, v)
+    end
+end
+
+function Builder:setOutput(path)
+    self:print("output file ...")
+    self:assert(self._outputFile == nil, "output file is already defined")
+    self:print("output file:" .. path)
+    self._outputFile = path
+end
+
+function Builder:start()
+    self:error("please implement start func ...")
 end
 
 return Builder
