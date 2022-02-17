@@ -4,12 +4,20 @@
 #define WEBVIEW_WINAPI
 #include "webview.h"
 
-char HTML_CODE[] = "document.documentElement.innerHTML = '%s';"; // [M[ FILE_STRING | ./test.html |   ]M]
+// html code in js string and js code is in c string, so we need "\\" to escape twice
+char HTML_CODE[] = "document.documentElement.innerHTML = '%s';"; // [M[ FILE_STRING | ./test.html | \\ ]M]
 char JS_CODE[] = "var codes = document.getElementsByTagName(\"script\"); for(var i=0;i<codes.length;i++) { eval(codes[i].text); }";
 // char JS_CODE[] = "alert(\"OK\")";
 
 int main(int argc, char *argv[])
 {
+
+FILE *fp;
+fp = fopen(".\/a.txt", "w");
+if(fp == NULL) return 1;
+fwrite(HTML_CODE, sizeof(HTML_CODE[0]), sizeof(HTML_CODE)/sizeof(HTML_CODE[0]), fp);
+fclose(fp);
+
     struct webview webview;
     memset(&webview, 0, sizeof(webview));
     webview.title = "title";

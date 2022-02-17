@@ -49,15 +49,18 @@ end
 
 function Builder:_COMMAND_FILE_STRING(code, arguments)
     local filePath = arguments[1]
-    local wrapTag = arguments[2] or "\\n"
+    local escapeTag = arguments[2] or ""
     local minimize = arguments[3] ~= nil and string.lower(arguments[3]) == "true"
     self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
     local fileContent = files.read(filePath)
     local lineArr = string.explode(fileContent, "\n")
     for i,v in ipairs(lineArr) do
-        lineArr[i] = v:gsub("[\n\r]+$", " "):gsub("\"", "\\\""):gsub("\'", "\\\'")
+        lineArr[i] = v:gsub("[\n\r]+$", " ")
+            :gsub("\\", escapeTag .. "\\")
+            :gsub("\"", escapeTag .. [[\"]])
+            :gsub("\'", escapeTag .. "\'")
     end
-    local result = table.implode(lineArr, " " .. wrapTag .. " ")
+    local result = table.implode(lineArr, " " .. escapeTag .. "\\n" .. " ")
     if minimize then
         result = result:gsub("%s+", " ")
     end
