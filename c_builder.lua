@@ -131,17 +131,17 @@ function Builder:setLibs(...)
         self:_installLib(lib)
         self:_containLib(lib)
     end
-    self:print('CONTAIN LIB END!\n')
+    self:print('CONTAIN LIB END!')
 end
 
 function Builder:setIcon(iconPath)
-    self:print('CONTIAN INFO START!')
+    self:print('SET ICON START!')
     self:print('icon:', iconPath)
     local myRcInfo = string.format(MY_RC_FILE_TEMPLATE, iconPath)
     files.write(self.MY_RC_FILE_PATH, myRcInfo)
     local isOk, err = tools.execute(string.format("windres %s -O coff -o %s", self.MY_RC_FILE_PATH, self.MY_RES_FILE_PATH))
     self:assert(isOk, "resource compile failed, err:" .. tostring(err))
-    self:print('CONTIAN INFO END!\n')
+    self:print('SET ICON END!')
 end
 
 function Builder:start(isRelease)

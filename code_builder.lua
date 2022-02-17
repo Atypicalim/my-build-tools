@@ -6,7 +6,7 @@ local Base = require("builder_base")
 local Builder, Super = class("Builder", Base)
 
 function Builder:__init__()
-    Super.__init__(self, "c")
+    Super.__init__(self, "code")
     self._lineArr = {}
     self._macroStartTag = "[M["
     self._macroEndTag = "]M]"
@@ -49,18 +49,18 @@ end
 
 function Builder:_COMMAND_FILE_STRING(code, arguments)
     local filePath = arguments[1]
-    local escapeTag = arguments[2] or ""
+    local escapeTag = arguments[2] or [[]]
     local minimize = arguments[3] ~= nil and string.lower(arguments[3]) == "true"
     self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
     local fileContent = files.read(filePath)
     local lineArr = string.explode(fileContent, "\n")
     for i,v in ipairs(lineArr) do
         lineArr[i] = v:gsub("[\n\r]+$", " ")
-            :gsub("\\", escapeTag .. "\\")
-            :gsub("\"", escapeTag .. [[\"]])
-            :gsub("\'", escapeTag .. "\'")
+            :gsub([[\]], string.format([[%s\%s\]], escapeTag, escapeTag))
+            :gsub([["]], string.format([[%s\%s"]], escapeTag, escapeTag))
+            :gsub([[']], string.format([[%s\%s']], escapeTag, escapeTag))
     end
-    local result = table.implode(lineArr, " " .. escapeTag .. "\\n" .. " ")
+    local result = table.implode(lineArr, string.format([[ %s\n ]], escapeTag))
     if minimize then
         result = result:gsub("%s+", " ")
     end
