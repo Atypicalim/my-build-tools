@@ -7,7 +7,6 @@ local Builder = require("c_builder")
 local builder = Builder(false)
 builder:setInput('./test.c')
 builder:setLibs("tigr")
-builder:setIcon('./icon.ico')
 builder:setOutput('test')
 builder:start(false)
 
