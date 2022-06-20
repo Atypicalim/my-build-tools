@@ -132,6 +132,14 @@ CONFIGS = {
         [KEYS.BRANCH] = "master",
         [KEYS.DIR_I] = "./",
     },
+    -- Tiny cross-platform HTTP / HTTPS client library in C.
+    ["naett"] = {
+        [KEYS.URL] = "git@github.com:erkkah/naett.git",
+        [KEYS.BRANCH] = "main",
+        [KEYS.DIR_I] = "./",
+        [KEYS.LIB_L] = {"winhttp"},
+        [KEYS.FLAGS] = " -g -Wall -pedantic ",
+    },
 }
 
 local Builder, Super = class("Builder", Base)
