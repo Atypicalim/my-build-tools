@@ -7,7 +7,7 @@ local function download_and_import_by_git(gitUrl, entryName, workingDir)
     local slashPos = string.find(string.reverse(gitUrl), "/", 1, true)
     local pointPos = string.find(string.reverse(gitUrl), ".", 1, true)
     assert(slashPos ~= nil and pointPos ~= nil and slashPos > pointPos, "[LUA_GIT_IMPORT] invalid url:" .. gitUrl)
-    local folderName = "." .. string.sub(gitUrl, #gitUrl - slashPos + 2, #gitUrl - pointPos) .. "/"
+    local folderName = string.sub(gitUrl, #gitUrl - slashPos + 2, #gitUrl - pointPos) .. "/"
     workingDir = workingDir or os.getenv("HOME")
     assert(workingDir ~= nil, "[LUA_GIT_IMPORT] working dir not found !")
     package.path = package.path .. ";" .. workingDir .. "/" .. folderName .. "?.lua"
@@ -21,7 +21,10 @@ local function download_and_import_by_git(gitUrl, entryName, workingDir)
     end
 end
 
-download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "initialize", "./")
+local path = debug.getinfo(1).short_src
+path = string.gsub(path, '\\', "/")
+path = string.gsub(path, "[^\\/]+%.[^\\/]+", "")
+download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "initialize", path)
 
 local Builder = class("Builder")
 
