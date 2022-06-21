@@ -31,7 +31,7 @@ local Builder = class("Builder")
 function Builder:__init__(buildType)
     buildType = string.lower(buildType)
     self._printTag = "[build_" .. buildType .. "_tool]"
-    self._mainDir = "./.build/"
+    self._mainDir = files.csd() .. "/build/"
     self._buildDir = self._mainDir .. buildType .. "_dir/"
     self._cacheDir = self._mainDir .. "cache/"
     self._needUpdate = false
@@ -123,9 +123,10 @@ function Builder:setInput(...)
     self:assert(table.is_empty(self._inputFiles), "input files are already defined")
     local fileArr = {...}
     for i,v in ipairs(fileArr) do
-        self:assert(files.is_file(v), "input file not found:" .. v)
+        local path = files.csd(3) .. v
+        self:assert(files.is_file(path), "input file not found:" .. v)
         self:print("input file:" .. v)
-        table.insert(self._inputFiles, v)
+        table.insert(self._inputFiles, path)
     end
 end
 
@@ -133,7 +134,7 @@ function Builder:setOutput(path)
     self:print("output file ...")
     self:assert(self._outputFile == nil, "output file is already defined")
     self:print("output file:" .. path)
-    self._outputFile = path
+    self._outputFile = files.csd(3) .. path
 end
 
 function Builder:start()

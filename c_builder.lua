@@ -253,6 +253,7 @@ end
 function Builder:setIcon(iconPath)
     self:print('SET ICON START!')
     self:print('icon:', iconPath)
+    iconPath = files.csd(3) .. iconPath
     local myRcInfo = string.format(MY_RC_FILE_TEMPLATE, iconPath)
     files.write(self.MY_RC_FILE_PATH, myRcInfo)
     local isOk, err = tools.execute(string.format("windres %s -O coff -o %s", self.MY_RC_FILE_PATH, self.MY_RES_FILE_PATH))

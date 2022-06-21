@@ -17,4 +17,4 @@ cBuilder:setLibs("webview")
 cBuilder:setOutput('test')
 cBuilder:start(false)
 
-os.execute("start ./test.exe")
+os.execute("start " .. files.csd() .. "./test.exe")

@@ -10,4 +10,4 @@ builder:setLibs("naett")
 builder:setOutput('test')
 builder:start(false)
 
-os.execute("start ./test.exe")
+os.execute("start " .. files.csd() .. "./test.exe")

@@ -11,4 +11,4 @@ builder:setLibs("raygui")
 builder:setOutput('test')
 builder:start(false)
 
-os.execute("start ./test.exe")
+os.execute("start " .. files.csd() .. "./test.exe")
