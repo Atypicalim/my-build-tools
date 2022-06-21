@@ -1,0 +1,3 @@
+[submodule "pure-lua-tools"]
+	path = pure-lua-tools
+	url = git@github.com:kompasim/pure-lua-tools.git
