@@ -1,6 +1,7 @@
 
-pcall(os.execute, "git clone git@github.com:kompasim/my-build-tools.git ./.my-build-tools")
-package.path = package.path .. ";./.my-build-tools/?.lua"
+-- pcall(os.execute, "git clone git@github.com:kompasim/my-build-tools.git ./.my-build-tools")
+-- package.path = package.path .. ";./.my-build-tools/?.lua"
+package.path = package.path .. ";../../?.lua"
 
 local CBuilder = require("c_builder")
 local CodeBuilder = require("code_builder")
@@ -16,5 +17,4 @@ cBuilder:setInput('./target.c')
 cBuilder:setLibs("webview")
 cBuilder:setOutput('test')
 cBuilder:start(false)
-
-os.execute("start " .. files.csd() .. "./test.exe")
+cBuilder:run()

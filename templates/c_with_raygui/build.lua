@@ -10,5 +10,4 @@ builder:setLibs("raylib")
 builder:setLibs("raygui")
 builder:setOutput('test')
 builder:start(false)
-
-os.execute("start " .. files.csd() .. "./test.exe")
+builder:run()

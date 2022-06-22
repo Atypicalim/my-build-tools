@@ -151,7 +151,7 @@ function Builder:__init__(isDebug)
     self._linkingDirs = {}
     self._linkingTags = {}
     self._extraFlags = {}
-    self._executableFile = nil
+    self._targetExecutable = nil
     self._libPath = self._buildDir .. "libs/"
     files.mk_folder(self._libPath)
     self.MY_RES_FILE_PATH = self._buildDir .. ".lcb_resource.res"
@@ -253,12 +253,17 @@ end
 function Builder:setIcon(iconPath)
     self:print('SET ICON START!')
     self:print('icon:', iconPath)
-    iconPath = files.csd(3) .. iconPath
+    iconPath = self._projDir .. iconPath
     local myRcInfo = string.format(MY_RC_FILE_TEMPLATE, iconPath)
     files.write(self.MY_RC_FILE_PATH, myRcInfo)
     local isOk, err = tools.execute(string.format("windres %s -O coff -o %s", self.MY_RC_FILE_PATH, self.MY_RES_FILE_PATH))
     self:assert(isOk, "resource compile failed, err:" .. tostring(err))
     self:print('SET ICON END!')
+end
+
+function Builder:setOutput(path)
+    Super.setOutput(self, path)
+    self._targetExecutable = tools.is_windows() and string.format( "%s.exe", tostring(self._outputFile)) or tostring(self._outputFile)
 end
 
 function Builder:start(isRelease)
@@ -286,12 +291,11 @@ function Builder:start(isRelease)
         extraFlagsCmd = extraFlagsCmd .. " " .. v
     end
     --
-    local target = tools.is_windows() and string.format( "%s.exe", tostring(self._outputFile)) or tostring(self._outputFile)
     local compileCmds = string.format("%s", self.MY_RES_FILE_PATH)
     --
     local icludeCmds = string.format("%s", includeDirCmd)
     local linkCmds = string.format("%s %s", linkingDirCmd, linkingTagCmd)
-    local cmd = string.format("gcc %s -o %s %s %s %s %s", self._inputFiles[1], target, compileCmds, icludeCmds, linkCmds, extraFlagsCmd)
+    local cmd = string.format("gcc %s -o %s %s %s %s %s", self._inputFiles[1], self._targetExecutable, compileCmds, icludeCmds, linkCmds, extraFlagsCmd)
     --
     if isRelease then
         cmd = cmd .. " -O2 -mwindows"
@@ -305,14 +309,17 @@ function Builder:start(isRelease)
         self:print("gcc process failed!")
         self:error("err:" .. output)
     end
-    if files.is_file(target) then
-        self._executableFile = "." .. files.delimiter() .. target
-    end
     self:print("gcc process succeeded!")
     --
     files.delete(self.MY_RES_FILE_PATH)
     files.delete(self.MY_RC_FILE_PATH)
     self:print('PROCESS GCC END!\n')
+end
+
+function Builder:run(path)
+    path = path and (self._projDir .. path) or self._targetExecutable
+    self:print("RUNNING:" .. path)
+    os.execute(path)
 end
 
 return Builder

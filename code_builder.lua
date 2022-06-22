@@ -51,6 +51,7 @@ function Builder:_COMMAND_FILE_STRING(code, arguments)
     local filePath = arguments[1]
     local escapeTag = arguments[2] or [[]]
     local minimize = arguments[3] ~= nil and string.lower(arguments[3]) == "true"
+    filePath = self._projDir .. filePath
     self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
     local fileContent = files.read(filePath)
     local lineArr = string.explode(fileContent, "\n")
