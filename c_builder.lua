@@ -140,6 +140,26 @@ CONFIGS = {
         [KEYS.LIB_L] = {"winhttp"},
         [KEYS.FLAGS] = " -g -Wall -pedantic ",
     },
+    -- C library to encode and decode strings with base64 format
+    ["base64"] = {
+        [KEYS.URL] = "git@github.com:elzoughby/Base64.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./",
+    },
+    -- Small, portable implementation of the C11 threads API
+    ["thread"] = {
+        [KEYS.URL] = "git@github.com:tinycthread/tinycthread.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./source/",
+    },
+    -- A tiny embeddable HTTP server written in C89
+    ["sandbird"] = {
+        [KEYS.URL] = "git@github.com:rxi/sandbird.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./src/",
+        [KEYS.LIB_L] = {"ws2_32"},
+        [KEYS.FLAGS] = " -pedantic -Wall -Wextra ",
+    },
 }
 
 local Builder, Super = class("Builder", Base)
@@ -295,7 +315,11 @@ function Builder:start(isRelease)
     --
     local icludeCmds = string.format("%s", includeDirCmd)
     local linkCmds = string.format("%s %s", linkingDirCmd, linkingTagCmd)
-    local cmd = string.format("gcc %s -o %s %s %s %s %s", self._inputFiles[1], self._targetExecutable, compileCmds, icludeCmds, linkCmds, extraFlagsCmd)
+    local inputFiles = ""
+    for i,v in ipairs(self._inputFiles) do
+        inputFiles = inputFiles .. " " .. v
+    end
+    local cmd = string.format("gcc %s -o %s %s %s %s %s", inputFiles, self._targetExecutable, compileCmds, icludeCmds, linkCmds, extraFlagsCmd)
     --
     if isRelease then
         cmd = cmd .. " -O2 -mwindows"

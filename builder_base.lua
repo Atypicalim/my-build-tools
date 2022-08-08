@@ -24,7 +24,7 @@ end
 local path = debug.getinfo(1).short_src
 path = string.gsub(path, '\\', "/")
 path = string.gsub(path, "[^\\/]+%.[^\\/]+", "")
-download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "initialize", path)
+download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "tools", path)
 
 local Builder = class("Builder")
 
