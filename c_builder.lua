@@ -172,7 +172,7 @@ function Builder:__init__(isDebug)
     self._linkingTags = {}
     self._extraFlags = {}
     self._targetExecutable = nil
-    self._libPath = self._buildDir .. "libs/"
+    self._libPath = self._workDir .. "libs/"
     files.mk_folder(self._libPath)
     self.MY_RES_FILE_PATH = self._buildDir .. ".lcb_resource.res"
     self.MY_RC_FILE_PATH = self._buildDir .. ".lcb_resource.rc"

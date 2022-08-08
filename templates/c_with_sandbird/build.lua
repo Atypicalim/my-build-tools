@@ -5,7 +5,7 @@ package.path = package.path .. ";../../?.lua"
 local Builder = require("c_builder")
 
 local builder = Builder(false)
-builder:setInput('../../build/c_dir/libs/sandbird/src/sandbird.c', './test.c')
+builder:setInput('../../build/libs/sandbird/src/sandbird.c', './test.c')
 builder:setLibs("sandbird")
 builder:setOutput('test')
 builder:start(false)
