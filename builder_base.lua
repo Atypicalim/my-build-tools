@@ -91,6 +91,20 @@ function Builder:_downloadByZip(url, directory)
     self:assert(isOk, "unzip failed, err:" .. tostring(err))
 end
 
+function Builder:_downloadByGzip(url, directory)
+    if files.is_folder(directory) then
+        self:print('downloaded!')
+        return
+    end
+    local cacheFile = self:_downloadByUrl(url)
+    self:print('gunzipping...')
+    files.mk_folder(directory)
+    local cmd = string.format("tar xzvf %s -C %s", cacheFile, directory)
+    local isOk, err = tools.execute(cmd)
+    files.delete(cacheFile)
+    self:assert(isOk, "gunzip failed, err:" .. tostring(err))
+end
+
 function Builder:_downloadByUrl(url, path)
     local parts = string.explode(url, "%.")
     local ext = parts[#parts]

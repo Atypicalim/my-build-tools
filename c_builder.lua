@@ -19,10 +19,14 @@ KEYS = {
     DIR_L = "DIR_L", -- -L
     LIB_L = "LIB_L", -- -l
     FLAGS = "FLAGS", -- flags
+    WIN = "WIN",
+    LNX = "LNX",
+    MAC = "MAC",
 }
 TYPES = {
     GIT = "GIT",
     ZIP = "ZIP",
+    GZ = "GZ",
 }
 CONFIGS = {
     -- Single-file port of Lua, a powerful scripting language.
@@ -58,10 +62,18 @@ CONFIGS = {
     },
     -- A simple and easy-to-use library to enjoy videogames programming
     ["raylib"] = {
-        [KEYS.URL] = "https://github.com/raysan5/raylib/releases/download/4.0.0/raylib-4.0.0_win64_mingw-w64.zip",
-        [KEYS.DIR_I] = "raylib-4.0.0_win64_mingw-w64/include/",
-        [KEYS.DIR_L] = "raylib-4.0.0_win64_mingw-w64/lib/",
-        [KEYS.LIB_L] = {"raylib", "opengl32", "gdi32", "winmm"},
+        [KEYS.WIN] = {
+            [KEYS.URL] = "https://github.com/raysan5/raylib/releases/download/4.0.0/raylib-4.0.0_win64_mingw-w64.zip",
+            [KEYS.DIR_I] = "raylib-4.0.0_win64_mingw-w64/include/",
+            [KEYS.DIR_L] = "raylib-4.0.0_win64_mingw-w64/lib/",
+            [KEYS.LIB_L] = {"raylib", "opengl32", "gdi32", "winmm"},
+        },
+        [KEYS.MAC] = {
+            [KEYS.URL] = "https://github.com/raysan5/raylib/releases/download/4.0.0/raylib-4.0.0_macos.tar.gz",
+            [KEYS.DIR_I] = "raylib-4.0.0_macos/include/",
+            [KEYS.DIR_L] = "raylib-4.0.0_macos/lib/",
+            [KEYS.FLAGS] = " -lraylib -framework OpenGL -framework Cocoa -framework IOKit -framework CoreAudio -framework CoreVideo ",
+        },
     },
     -- A simple and easy-to-use immediate-mode gui library
     ["raygui"] = {
@@ -194,8 +206,27 @@ function Builder:_downloadByZip(config)
     Super._downloadByZip(self, url, directory)
 end
 
-function Builder:_installLib(name)
+function Builder:_downloadByGzip(config)
+    local name = config[KEYS.NAME]
+    local url = config[KEYS.URL]
+    local directory = self._libPath .. name .. "/"
+    Super._downloadByGzip(self, url, directory)
+end
+
+function Builder:_getConfig(name)
     local config = CONFIGS[name]
+    if tools.is_windows() then
+        table.merge(config, config[KEYS.WIN] or {})
+    elseif tools.is_mac() then
+        table.merge(config, config[KEYS.MAC] or {})
+    elseif tools.is_linux() then
+        table.merge(config, config[KEYS.LNX] or {})
+    end
+    return config
+end
+
+function Builder:_installLib(name)
+    local config = self:_getConfig(name)
     self:assert(config ~= nil, string.format("lib [%s] not found", name))
     local parts = string.explode(config[KEYS.URL], "%.")
     config[KEYS.EXT] = string.upper(parts[#parts])
@@ -205,13 +236,15 @@ function Builder:_installLib(name)
         self:_downloadByGit(config)
     elseif config[KEYS.TYPE] == TYPES.ZIP then
         self:_downloadByZip(config)
+    elseif config[KEYS.TYPE] == TYPES.GZ then
+        self:_downloadByGzip(config)
     else
         self:error(string.format('invalid lib type [%s]', config[KEYS.TYPE]))
     end
 end
 
 function Builder:_containLib(name)
-    local config = CONFIGS[name]
+    local config = self:_getConfig(name)
     local directory = self._libPath .. name .. "/"
     self:assert(config ~= nil, string.format("lib [%s] not found", name))
     self:assert(files.is_folder(directory), string.format("lib [%s] not installed", name))
@@ -323,7 +356,8 @@ function Builder:start(isRelease)
     for i,v in ipairs(self._inputFiles) do
         inputFiles = inputFiles .. " " .. v
     end
-    local cmd = string.format("gcc %s -o %s %s %s %s %s", inputFiles, self._targetExecutable, resCmds, icludeCmds, linkCmds, extraFlagsCmd)
+    local cc = tools.is_windows() and "gcc" or "clang"
+    local cmd = string.format("%s %s -o %s %s %s %s %s", cc, inputFiles, self._targetExecutable, resCmds, icludeCmds, linkCmds, extraFlagsCmd)
     --
     if isRelease then
         cmd = cmd .. " -O2 -mwindows"
