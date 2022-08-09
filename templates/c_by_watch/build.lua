@@ -4,7 +4,7 @@
 package.path = package.path .. ";../../?.lua"
 local Builder = require("c_builder")
 
-files.watch('test.c', function(path, newTime)
+files.watch(files.csd() .. 'test.c', function(path, newTime)
     print(path, os.date("modified at: %Y-%m-%d %H:%M:%S", newTime))
     local builder = Builder(false)
     builder:setInput('./test.c')

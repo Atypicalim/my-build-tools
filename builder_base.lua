@@ -24,14 +24,24 @@ end
 local path = debug.getinfo(1).short_src
 path = string.gsub(path, '\\', "/")
 path = string.gsub(path, "[^\\/]+%.[^\\/]+", "")
-download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "tools", path)
+download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "test", path)
 
 local Builder = class("Builder")
 
 function Builder:__init__(buildType)
     buildType = string.lower(buildType)
     self._printTag = "[build_" .. buildType .. "_tool]"
-    self._projDir = files.csd(6)
+    local dir = nil
+    local idx = 1
+    while true do
+        local d = files.csd(idx)
+        idx = idx + 1
+        if not d then break end
+        if (files.is_folder(d)) then
+            dir = d
+        end
+    end
+    self._projDir = dir
     self._workDir = files.csd() .. "/build/"
     self._buildDir = self._workDir .. buildType .. "_dir/"
     self._cacheDir = self._workDir .. "cache/"

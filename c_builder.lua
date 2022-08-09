@@ -273,6 +273,10 @@ end
 function Builder:setIcon(iconPath)
     self:print('SET ICON START!')
     self:print('icon:', iconPath)
+    if not tools.is_windows() then
+        self:print('SET ICON IGNORED!')
+        return
+    end
     iconPath = self._projDir .. iconPath
     local myRcInfo = string.format(MY_RC_FILE_TEMPLATE, iconPath)
     files.write(self.MY_RC_FILE_PATH, myRcInfo)
@@ -311,7 +315,7 @@ function Builder:start(isRelease)
         extraFlagsCmd = extraFlagsCmd .. " " .. v
     end
     --
-    local compileCmds = string.format("%s", self.MY_RES_FILE_PATH)
+    local resCmds = tools.is_windows() and string.format("%s", self.MY_RES_FILE_PATH) or ""
     --
     local icludeCmds = string.format("%s", includeDirCmd)
     local linkCmds = string.format("%s %s", linkingDirCmd, linkingTagCmd)
@@ -319,7 +323,7 @@ function Builder:start(isRelease)
     for i,v in ipairs(self._inputFiles) do
         inputFiles = inputFiles .. " " .. v
     end
-    local cmd = string.format("gcc %s -o %s %s %s %s %s", inputFiles, self._targetExecutable, compileCmds, icludeCmds, linkCmds, extraFlagsCmd)
+    local cmd = string.format("gcc %s -o %s %s %s %s %s", inputFiles, self._targetExecutable, resCmds, icludeCmds, linkCmds, extraFlagsCmd)
     --
     if isRelease then
         cmd = cmd .. " -O2 -mwindows"
