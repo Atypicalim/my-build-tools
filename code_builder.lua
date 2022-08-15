@@ -68,6 +68,9 @@ function Builder:_COMMAND_FILE_STRING(code, arguments)
     return string.format(code, result)
 end
 
+function Builder:_COMMAND_LINE_REFPLACE(code, arguments)
+    return arguments[1]
+end
 
 function Builder:_parseLine(line)
     if not self._isHandleMacro then
