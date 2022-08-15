@@ -32,6 +32,10 @@ function Builder:handleMacro(...)
     self:print("comment tags:" .. table.implode(self._commentTags, ","))
 end
 
+function Builder:setCallback(callback)
+    self._lineCallback = callback
+end
+
 function Builder:_COMMAND_FILE_BASE64(code, arguments)
     local filePath = arguments[1]
     self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
@@ -70,6 +74,11 @@ end
 
 function Builder:_COMMAND_LINE_REFPLACE(code, arguments)
     return arguments[1]
+end
+
+function Builder:_COMMAND_LINE_CALLBACK(code, arguments)
+    self:assert(self._lineCallback ~= nil, "user callback not found")
+    return self._lineCallback(code, unpack(arguments))
 end
 
 function Builder:_parseLine(line)
