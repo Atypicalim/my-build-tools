@@ -46,6 +46,7 @@ function Builder:__init__(buildType)
     self._buildDir = self._workDir .. buildType .. "_dir/"
     self._cacheDir = self._workDir .. "cache/"
     self._needUpdate = false
+    self._inputNames = {}
     self._inputFiles = {}
     self._outputFile = nil
     files.mk_folder(self._buildDir)
@@ -151,6 +152,7 @@ function Builder:setInput(...)
         local path = self._projDir .. v
         self:assert(files.is_file(path), "input file not found:" .. v)
         self:print("input file:" .. v)
+        table.insert(self._inputNames, v)
         table.insert(self._inputFiles, path)
     end
 end

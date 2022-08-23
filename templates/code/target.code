@@ -1,0 +1,17 @@
+
+// date:2022-08-23 22:25:54 file:./test.code 
+
+
+// lua code as a string after escape
+char luaCode[] = "local function test() \n     print(\"lua ...\") \n end \n test()"; 
+
+// html image tag by base64 data
+<img src="data:image/png;base64,iVBORwo="> 
+
+// js string with a plain text file content
+var strText = "text ..."; 
+
+
+// date:2022-08-23 22:25:54 file:./other.code 
+
+another code file ...

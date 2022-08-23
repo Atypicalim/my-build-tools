@@ -1,0 +1,9 @@
+
+// lua code as a string after escape
+char luaCode[] = "%s"; // [M[ FILE_STRING | ./src.lua ]M]
+
+// html image tag by base64 data
+<img src="data:image/png;base64,%s"> // [M[ FILE_BASE64 | ./src.png ]M]
+
+// js string with a plain text file content
+var strText = "%s"; // [M[ FILE_PLAIN | ./src.txt ]M]

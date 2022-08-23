@@ -8,7 +8,8 @@ local CodeBuilder = require("code_builder")
 
 local codeBuilder = CodeBuilder(false)
 codeBuilder:setInput("./test.c")
-codeBuilder:handleMacro("//")
+codeBuilder:setComment("//")
+codeBuilder:handleMacro()
 codeBuilder:setOutput("./target.c")
 codeBuilder:start()
 

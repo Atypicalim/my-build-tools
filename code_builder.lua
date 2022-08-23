@@ -12,24 +12,26 @@ function Builder:__init__()
     self._macroEndTag = "]M]"
 end
 
-function Builder:printHeader(headerTag, height)
-    self:print("print header ...")
-    self:assert(self._isPrintHeader == nil, "print header is already defined")
-    self:assert(is_string(headerTag), "header tag should be string")
-    self._isPrintHeader = true
-    self._headerTag = headerTag
-    self._headerHeight = height
-    self:print("header tag:" .. tostring(self._headerTag))
+function Builder:setComment(commentTag)
+    self:print("set comment ...")
+    self:assert(self._commentTag == nil, "comment tag is already defined")
+    self._commentTag = commentTag
+    self:print("comment tags:" .. self._commentTag)
 end
 
-function Builder:handleMacro(...)
+function Builder:addHeader(height)
+    self:print("add header ...")
+    self:assert(self._isPrintHeader == nil, "print header is already defined")
+    self._isPrintHeader = true
+    self._headerPadding = height or 1
+    self:print("header padding:" .. self._headerPadding)
+
+end
+
+function Builder:handleMacro()
     self:print("handle macro ...")
     self:assert(self._isHandleMacro == nil, "handle macro is already defined")
     self._isHandleMacro = true
-    self:assert(self._commentTags == nil, "comment tag is already defined")
-    self._commentTags = {...}
-    self:assert(not table.is_empty(self._commentTags), "comment tag should be string")
-    self:print("comment tags:" .. table.implode(self._commentTags, ","))
 end
 
 function Builder:setCallback(callback)
@@ -85,12 +87,7 @@ function Builder:_parseLine(line)
     if not self._isHandleMacro then
         return
     end
-    local commentPosition = nil
-    for i,v in ipairs(self._commentTags or {}) do
-        if not commentPosition then
-            commentPosition = string.find(line, v)
-        end
-    end
+    local commentPosition = string.find(line, self._commentTag)
     if not commentPosition then
         return
     end
@@ -117,8 +114,8 @@ function Builder:start()
     --
     self:print("start:")
     self:assert(not table.is_empty(self._inputFiles), "input files are not defined")
-    self:assert(not self._isHandleMacro or is_table(self._commentTags), "comment tags are not defined")
-    self:assert(not self._isPrintHeader or is_string(self._headerTag), "header tag is not defined")
+    self:assert(not self._isHandleMacro or is_string(self._commentTag), "comment tag is not defined")
+    self:assert(not self._isPrintHeader or is_string(self._commentTag), "header tag is not defined")
     --
     self:print("reading files ...")
     for i,path in ipairs(self._inputFiles) do
@@ -128,21 +125,18 @@ function Builder:start()
         self:assert(#content > 0, "input files are empty")
         local lineArr = string.explode(content, "\n")
         -- put header file
-        table.insert(self._lineArr, "\n")
         if self._isPrintHeader then
-            local headInfo = string.format(" date:%s file:%s ", os.date("%Y-%m-%d %H:%M:%S", os.time()), path)
-            local headWidth = #headInfo + 10
-            local tagLength = #self._headerTag
-            self._headerHeight = (self._headerHeight and self._headerHeight > 0) and self._headerHeight or 1
-            for _=1,self._headerHeight do
-                table.insert(self._lineArr, string.center(self._headerTag, headWidth, self._headerTag))
+            print('-->', path, self._projDir)
+            local headInfo = string.format(" date:%s file:%s ", os.date("%Y-%m-%d %H:%M:%S", os.time()), self._inputNames[i])
+            self._headerPadding = (self._headerPadding and self._headerPadding > 0) and self._headerPadding or 0
+            for _=1,self._headerPadding do
+                table.insert(self._lineArr, "")
             end
-            table.insert(self._lineArr, string.center(headInfo, headWidth, self._headerTag))
-            for _=1,self._headerHeight do
-                table.insert(self._lineArr, string.center(self._headerTag, headWidth, self._headerTag))
+            table.insert(self._lineArr, self._commentTag .. headInfo)
+            for _=1,self._headerPadding do
+                table.insert(self._lineArr, "")
             end
         end
-        table.insert(self._lineArr, "\n")
         -- parse file content
         for _,line in ipairs(lineArr) do
             local newLine = self:_parseLine(line)

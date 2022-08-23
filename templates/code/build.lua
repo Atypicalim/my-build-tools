@@ -6,14 +6,20 @@ local Builder = require("./code_builder")
 
 -- macro
 
--- fill line with data
+-- handle macro
 -- when found a [M] after comment tag is regarded as a macro
 -- template: [M[ command | argument ]M]
 
 local builder = Builder(false)
-builder:setInput("./test.c", "./test.html", "./test.js")
-builder:printHeader("--", 1)
-builder:handleMacro("//", "<!--")
-builder:setOutput("./target.any")
+builder:setInput("./test.code", "./other.code")
+builder:setComment("//")
+builder:addHeader()
+builder:handleMacro()
+builder:setOutput("./target.code")
+builder:setCallback(function(code, firsArg)
+    if firsArg == "ALPHABETS" then
+        return "// ALPHABETS ..."
+    end
+end)
 builder:start()
 
