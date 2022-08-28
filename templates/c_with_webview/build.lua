@@ -9,7 +9,7 @@ local CodeBuilder = require("code_builder")
 local codeBuilder = CodeBuilder(false)
 codeBuilder:setInput("./test.c")
 codeBuilder:setComment("//")
-codeBuilder:handleMacro()
+codeBuilder:handleMacro(true)
 codeBuilder:setOutput("./target.c")
 codeBuilder:start()
 

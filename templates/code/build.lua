@@ -14,12 +14,17 @@ local builder = Builder(false)
 builder:setInput("./test.code", "./other.code")
 builder:setComment("//")
 builder:addHeader()
-builder:handleMacro()
+builder:handleMacro(true)
 builder:setOutput("./target.code")
-builder:setCallback(function(code, firsArg)
-    if firsArg == "ALPHABETS" then
+-- a line with unhandled macro
+builder:onMacro(function(code, command, argument)
+    if command == "ALPHABETS" then
         return "// ALPHABETS ..."
     end
+end)
+-- a line without any macro
+builder:onLine(function(line)
+    return line
 end)
 builder:start()
 

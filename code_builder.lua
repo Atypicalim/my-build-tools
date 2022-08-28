@@ -25,17 +25,19 @@ function Builder:addHeader(height)
     self._isPrintHeader = true
     self._headerPadding = height or 1
     self:print("header padding:" .. self._headerPadding)
-
 end
 
-function Builder:handleMacro()
-    self:print("handle macro ...")
-    self:assert(self._isHandleMacro == nil, "handle macro is already defined")
-    self._isHandleMacro = true
+function Builder:handleMacro(value)
+    self:print("handle macro:" .. tostring(value))
+    self._isHandleMacro = value == true
 end
 
-function Builder:setCallback(callback)
-    self._lineCallback = callback
+function Builder:onMacro(macroCallback)
+    self._onMacroCallback = macroCallback
+end
+
+function Builder:onLine(lineCallback)
+    self._onLineCallback = lineCallback
 end
 
 function Builder:_COMMAND_FILE_BASE64(code, arguments)
@@ -78,36 +80,45 @@ function Builder:_COMMAND_LINE_REFPLACE(code, arguments)
     return arguments[1]
 end
 
-function Builder:_COMMAND_LINE_CALLBACK(code, arguments)
-    self:assert(self._lineCallback ~= nil, "user callback not found")
-    return self._lineCallback(code, unpack(arguments))
-end
-
-function Builder:_parseLine(line)
+function Builder:_parseLine(index, line)
     if not self._isHandleMacro then
-        return
+        if self._onLineCallback then
+            return self._onLineCallback(line)
+        end
+        return line
     end
     local commentPosition = string.find(line, self._commentTag)
     if not commentPosition then
-        return
+        if self._onLineCallback then
+            return self._onLineCallback(line)
+        end
+        return line
     end
     local macroStartIndex = string.find(line, self._macroStartTag, 1, true)
     local macroEndIndex = string.find(line, self._macroEndTag, 1, true)
     if not macroStartIndex or not macroEndIndex or macroStartIndex >= macroEndIndex then
-        return
+        if self._onLineCallback then
+            return self._onLineCallback(line)
+        end
+        return line
     end
     local code = string.sub(line, 1, commentPosition - 1)
     local macro = string.sub(line, macroStartIndex + #self._macroEndTag, macroEndIndex - 1)
     local body = string.explode(macro, "|")
-    self:assert(#body > 1, "invalid macro, line, " .. line)
+    self:assert(#body >= 1, "invalid macro, line: " .. line)
     local command = string.trim(body[1])
     local arguments = {}
     for i=2,#body do
         local argument = string.trim(body[i])
         table.insert(arguments, argument)
     end
-    self:assert(self['_COMMAND_' .. command] ~= nil, "command not found : " .. command)
-    return self['_COMMAND_' .. command](self, code, arguments)
+    if self['_COMMAND_' .. command] then
+        return self['_COMMAND_' .. command](self, code, arguments)
+    elseif self._onMacroCallback then
+        return self._onMacroCallback(code, command, unpack(arguments))
+    else
+        return line
+    end
 end
 
 function Builder:start()
@@ -126,7 +137,6 @@ function Builder:start()
         local lineArr = string.explode(content, "\n")
         -- put header file
         if self._isPrintHeader then
-            print('-->', path, self._projDir)
             local headInfo = string.format(" date:%s file:%s ", os.date("%Y-%m-%d %H:%M:%S", os.time()), self._inputNames[i])
             self._headerPadding = (self._headerPadding and self._headerPadding > 0) and self._headerPadding or 0
             for _=1,self._headerPadding do
@@ -138,9 +148,15 @@ function Builder:start()
             end
         end
         -- parse file content
-        for _,line in ipairs(lineArr) do
-            local newLine = self:_parseLine(line)
-            table.insert(self._lineArr, newLine or line)
+        for index,line in ipairs(lineArr) do
+            local newLine = self:_parseLine(index, line)
+            if is_table(newLine) then
+                for i,v in ipairs(newLine) do
+                    table.insert(self._lineArr, v)
+                end
+            elseif is_string(newLine) then
+                table.insert(self._lineArr, newLine)
+            end
         end
     end
     --
