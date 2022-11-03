@@ -180,6 +180,16 @@ CONFIGS = {
         [KEYS.DIR_I] = "./src/",
         [KEYS.FILES] = {"microtar.c"},
     },
+    -- Asynchronous networking for C
+    ["dyad"] = {
+        [KEYS.URL] = "git@github.com:rxi/dyad.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./src/",
+        [KEYS.FILES] = {"dyad.c"},
+        [KEYS.WIN] = {
+            [KEYS.LIB_L] = {"ws2_32"},
+        },
+    },
 }
 
 local Builder, Super = class("Builder", Base)
