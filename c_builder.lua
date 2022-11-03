@@ -19,6 +19,7 @@ KEYS = {
     DIR_L = "DIR_L", -- -L
     LIB_L = "LIB_L", -- -l
     FLAGS = "FLAGS", -- flags
+    FILES = "FILES", -- include source files in lib
     WIN = "WIN",
     LNX = "LNX",
     MAC = "MAC",
@@ -215,6 +216,7 @@ end
 
 function Builder:_getConfig(name)
     local config = CONFIGS[name]
+    self:assert(config ~= nil, string.format("lib [%s] not found", name))
     if tools.is_windows() then
         table.merge(config, config[KEYS.WIN] or {})
     elseif tools.is_mac() then
@@ -291,6 +293,22 @@ function Builder:_containLib(name)
     end
 end
 
+function Builder:_containFiles(name)
+    local config = self:_getConfig(name)
+    self:assert(config ~= nil, string.format("lib [%s] not found", name))
+    local directory = self._libPath .. name .. "/"
+    local arr = config[KEYS.FILES] or {}
+    for i,v in ipairs(arr) do
+        local path = v
+        if not files.is_file(path) then
+            path = directory .. config[KEYS.DIR_I] .. v
+        end
+        self:assert(files.is_file(path), "input file not found:" .. v)
+        table.insert(self._inputNames, v)
+        table.insert(self._inputFiles, path)
+    end
+end
+
 function Builder:setLibs(...)
     self:print('CONTAIN LIB START!')
     local libs = {...}
@@ -299,6 +317,7 @@ function Builder:setLibs(...)
         self:print(string.format("contain:[%s]", lib))
         self:_installLib(lib)
         self:_containLib(lib)
+        self:_containFiles(lib)
     end
     self:print('CONTAIN LIB END!')
 end

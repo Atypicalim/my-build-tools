@@ -149,7 +149,10 @@ function Builder:setInput(...)
     self:assert(table.is_empty(self._inputFiles), "input files are already defined")
     local fileArr = {...}
     for i,v in ipairs(fileArr) do
-        local path = self._projDir .. v
+        local path = v
+        if not files.is_file(path) then
+            path = self._projDir .. v
+        end
         self:assert(files.is_file(path), "input file not found:" .. v)
         self:print("input file:" .. v)
         table.insert(self._inputNames, v)
