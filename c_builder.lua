@@ -173,6 +173,13 @@ CONFIGS = {
         [KEYS.LIB_L] = {"ws2_32"},
         [KEYS.FLAGS] = " -pedantic -Wall -Wextra ",
     },
+    -- A lightweight tar library written in ANSI C
+    ["microtar"] = {
+        [KEYS.URL] = "git@github.com:rxi/microtar.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./src/",
+        [KEYS.FILES] = {"microtar.c"},
+    },
 }
 
 local Builder, Super = class("Builder", Base)
