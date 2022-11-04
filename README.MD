@@ -1,17 +1,13 @@
 ### My Build Tools
 
-> this is a personal library for package management and building, just clone this repo and use like the example below. there is some template project in `./template/` directory, just copy them and have a look at `build.lua` files.
+> this is a personal package management repository for c, we can merge codes and build single executable programs with it, there are some template projects in `./template/` directory showing how to use it.
 
-1. c
+available libs: 
 
-> package management and building single executable program
-
-2. html
-
-> merge all external script, style, image dependencies into single html file
-
-3. code
-
-> merge multiple code files and handle customized macro
-
----
+* lua
+* raylib
+* webview
+* base64
+* dyad
+* thread
+* ...
