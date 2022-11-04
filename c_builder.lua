@@ -190,6 +190,13 @@ CONFIGS = {
             [KEYS.LIB_L] = {"ws2_32"},
         },
     },
+    -- A simple, commented reference implementation of the MD5 hash algorithm
+    ["md5"] = {
+        [KEYS.URL] = "git@github.com:Zunawe/md5-c.git",
+        [KEYS.BRANCH] = "main",
+        [KEYS.DIR_I] = "./",
+        [KEYS.FILES] = {"md5.c"},
+    },
 }
 
 local Builder, Super = class("Builder", Base)
