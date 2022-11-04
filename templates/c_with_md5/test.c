@@ -22,5 +22,3 @@ int main(int argc, char **argv)
     print_hash(txt2);
     printf("end!\n");
 }
-
-#include <stdio.h>
