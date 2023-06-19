@@ -197,6 +197,12 @@ CONFIGS = {
         [KEYS.DIR_I] = "./",
         [KEYS.FILES] = {"md5.c"},
     },
+    -- stb single-file public domain libraries for C/C++
+    ["stb"] = {
+        [KEYS.URL] = "git@github.com:nothings/stb.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./",
+    },
 }
 
 local Builder, Super = class("Builder", Base)
