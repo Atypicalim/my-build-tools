@@ -3,7 +3,7 @@
 ]]
 
 local Base = require("builder_base")
-local Builder, Super = class("Builder", Base)
+local Builder, Super = class("CodeBuilder", Base)
 
 function Builder:__init__()
     Super.__init__(self, "code")
@@ -13,36 +13,41 @@ function Builder:__init__()
 end
 
 function Builder:setComment(commentTag)
-    self:print("set comment ...")
-    self:assert(self._commentTag == nil, "comment tag is already defined")
+    self:_print("set comment ...")
+    self:_assert(self._commentTag == nil, "comment tag is already defined")
     self._commentTag = commentTag
-    self:print("comment tags:" .. self._commentTag)
+    self:_print("comment tags:" .. self._commentTag)
+    return self
 end
 
 function Builder:addHeader(height)
-    self:print("add header ...")
-    self:assert(self._isPrintHeader == nil, "print header is already defined")
+    self:_print("add header ...")
+    self:_assert(self._isPrintHeader == nil, "print header is already defined")
     self._isPrintHeader = true
     self._headerPadding = height or 1
-    self:print("header padding:" .. self._headerPadding)
+    self:_print("header padding:" .. self._headerPadding)
+    return self
 end
 
 function Builder:handleMacro(value)
-    self:print("handle macro:" .. tostring(value))
+    self:_print("handle macro:" .. tostring(value))
     self._isHandleMacro = value == true
+    return self
 end
 
 function Builder:onMacro(macroCallback)
     self._onMacroCallback = macroCallback
+    return self
 end
 
 function Builder:onLine(lineCallback)
     self._onLineCallback = lineCallback
+    return self
 end
 
 function Builder:_COMMAND_FILE_BASE64(code, arguments)
     local filePath = arguments[1]
-    self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
+    self:_assert(files.is_file(filePath), "file not found, path:" .. filePath)
     local content = files.read(filePath)
     local data = encryption.base64_encode(content)
     return string.format(code, data)
@@ -50,7 +55,7 @@ end
 
 function Builder:_COMMAND_FILE_PLAIN(code, arguments)
     local filePath = arguments[1]
-    self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
+    self:_assert(files.is_file(filePath), "file not found, path:" .. filePath)
     local content = files.read(filePath)
     return string.format(code, content)
 end
@@ -60,7 +65,7 @@ function Builder:_COMMAND_FILE_STRING(code, arguments)
     local escapeTag = arguments[2] or [[]]
     local minimize = arguments[3] ~= nil and string.lower(arguments[3]) == "true"
     filePath = self._projDir .. filePath
-    self:assert(files.is_file(filePath), "file not found, path:" .. filePath)
+    self:_assert(files.is_file(filePath), "file not found, path:" .. filePath)
     local fileContent = files.read(filePath)
     local lineArr = string.explode(fileContent, "\n")
     for i,v in ipairs(lineArr) do
@@ -105,7 +110,7 @@ function Builder:_parseLine(index, line)
     local code = string.sub(line, 1, commentPosition - 1)
     local macro = string.sub(line, macroStartIndex + #self._macroEndTag, macroEndIndex - 1)
     local body = string.explode(macro, "|")
-    self:assert(#body >= 1, "invalid macro, line: " .. line)
+    self:_assert(#body >= 1, "invalid macro, line: " .. line)
     local command = string.trim(body[1])
     local arguments = {}
     for i=2,#body do
@@ -123,17 +128,17 @@ end
 
 function Builder:start()
     --
-    self:print("start:")
-    self:assert(not table.is_empty(self._inputFiles), "input files are not defined")
-    self:assert(not self._isHandleMacro or is_string(self._commentTag), "comment tag is not defined")
-    self:assert(not self._isPrintHeader or is_string(self._commentTag), "header tag is not defined")
+    self:_print("start:")
+    self:_assert(not table.is_empty(self._inputFiles), "input files are not defined")
+    self:_assert(not self._isHandleMacro or is_string(self._commentTag), "comment tag is not defined")
+    self:_assert(not self._isPrintHeader or is_string(self._commentTag), "header tag is not defined")
     --
-    self:print("reading files ...")
+    self:_print("reading files ...")
     for i,path in ipairs(self._inputFiles) do
         -- read file
-        self:assert(files.is_file(path), "file not found:" .. tostring(path))
+        self:_assert(files.is_file(path), "file not found:" .. tostring(path))
         local content = files.read(path)
-        self:assert(#content > 0, "input files are empty")
+        self:_assert(#content > 0, "input files are empty")
         local lineArr = string.explode(content, "\n")
         -- put header file
         if self._isPrintHeader then
@@ -160,12 +165,13 @@ function Builder:start()
         end
     end
     --
-    self:print("creating target ...")
+    self:_print("creating target ...")
     local html = table.concat(self._lineArr, "\n")
-    self:assert(self._outputFile ~= nil, "output path not found")
+    self:_assert(self._outputFile ~= nil, "output path not found")
     files.write(self._outputFile, html)
-    self:print("writing target succeeded!")
-    self:print("finish!\n")
+    self:_print("writing target succeeded!")
+    self:_print("finish!\n")
+    return self
 end
 
 return Builder

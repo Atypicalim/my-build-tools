@@ -205,7 +205,7 @@ CONFIGS = {
     },
 }
 
-local Builder, Super = class("Builder", Base)
+local Builder, Super = class("CBuilder", Base)
 
 function Builder:__init__(isDebug)
     Super.__init__(self, "C")
@@ -246,7 +246,7 @@ end
 
 function Builder:_getConfig(name)
     local config = CONFIGS[name]
-    self:assert(config ~= nil, string.format("lib [%s] not found", name))
+    self:_assert(config ~= nil, string.format("lib [%s] not found", name))
     if tools.is_windows() then
         table.merge(config, config[KEYS.WIN] or {})
     elseif tools.is_mac() then
@@ -259,7 +259,7 @@ end
 
 function Builder:_installLib(name)
     local config = self:_getConfig(name)
-    self:assert(config ~= nil, string.format("lib [%s] not found", name))
+    self:_assert(config ~= nil, string.format("lib [%s] not found", name))
     local parts = string.explode(config[KEYS.URL], "%.")
     config[KEYS.EXT] = string.upper(parts[#parts])
     config[KEYS.TYPE] = config[KEYS.EXT]
@@ -271,19 +271,19 @@ function Builder:_installLib(name)
     elseif config[KEYS.TYPE] == TYPES.GZ then
         self:_downloadByGzip(config)
     else
-        self:error(string.format('invalid lib type [%s]', config[KEYS.TYPE]))
+        self:_error(string.format('invalid lib type [%s]', config[KEYS.TYPE]))
     end
 end
 
 function Builder:_containLib(name)
     local config = self:_getConfig(name)
     local directory = self._libPath .. name .. "/"
-    self:assert(config ~= nil, string.format("lib [%s] not found", name))
-    self:assert(files.is_folder(directory), string.format("lib [%s] not installed", name))
+    self:_assert(config ~= nil, string.format("lib [%s] not found", name))
+    self:_assert(files.is_folder(directory), string.format("lib [%s] not installed", name))
     --
     local function insertInclue(dir)
         dir = directory .. dir
-        self:assert(files.is_folder(dir), string.format("include directory [%s] not found", dir))
+        self:_assert(files.is_folder(dir), string.format("include directory [%s] not found", dir))
         table.insert(self._includeDirs, dir)
     end
     if is_string(config[KEYS.DIR_I]) then
@@ -296,7 +296,7 @@ function Builder:_containLib(name)
     --
     local function insertLinking(dir)
         dir = directory .. dir
-        self:assert(files.is_folder(dir), string.format("linking directory [%s] not found", dir))
+        self:_assert(files.is_folder(dir), string.format("linking directory [%s] not found", dir))
         table.insert(self._linkingDirs, dir)
     end
     if is_string(config[KEYS.DIR_L]) then
@@ -325,7 +325,7 @@ end
 
 function Builder:_containFiles(name)
     local config = self:_getConfig(name)
-    self:assert(config ~= nil, string.format("lib [%s] not found", name))
+    self:_assert(config ~= nil, string.format("lib [%s] not found", name))
     local directory = self._libPath .. name .. "/"
     local arr = config[KEYS.FILES] or {}
     for i,v in ipairs(arr) do
@@ -333,49 +333,55 @@ function Builder:_containFiles(name)
         if not files.is_file(path) then
             path = directory .. config[KEYS.DIR_I] .. v
         end
-        self:assert(files.is_file(path), "input file not found:" .. v)
+        self:_assert(files.is_file(path), "input file not found:" .. v)
         table.insert(self._inputNames, v)
         table.insert(self._inputFiles, path)
     end
 end
 
 function Builder:setLibs(...)
-    self:print('CONTAIN LIB START!')
+    self:_print('CONTAIN LIB START!')
     local libs = {...}
+    if is_table(libs[1]) then
+        libs = libs[1]
+    end
     for i=1,#libs,1 do
         local lib = libs[i]
-        self:print(string.format("contain:[%s]", lib))
+        self:_print(string.format("contain:[%s]", lib))
         self:_installLib(lib)
         self:_containLib(lib)
         self:_containFiles(lib)
     end
-    self:print('CONTAIN LIB END!')
+    self:_print('CONTAIN LIB END!')
+    return self
 end
 
 function Builder:setIcon(iconPath)
-    self:print('SET ICON START!')
-    self:print('icon:', iconPath)
+    self:_print('SET ICON START!')
+    self:_print('icon:', iconPath)
     if not tools.is_windows() then
-        self:print('SET ICON IGNORED!')
+        self:_print('SET ICON IGNORED!')
         return
     end
     iconPath = self._projDir .. iconPath
     local myRcInfo = string.format(MY_RC_FILE_TEMPLATE, iconPath)
     files.write(self.MY_RC_FILE_PATH, myRcInfo)
     local isOk, err = tools.execute(string.format("windres %s -O coff -o %s", self.MY_RC_FILE_PATH, self.MY_RES_FILE_PATH))
-    self:assert(isOk, "resource compile failed, err:" .. tostring(err))
-    self:print('SET ICON END!')
+    self:_assert(isOk, "resource compile failed, err:" .. tostring(err))
+    self:_print('SET ICON END!')
+    return self
 end
 
 function Builder:setOutput(path)
     Super.setOutput(self, path)
     self._targetExecutable = tools.is_windows() and string.format( "%s.exe", tostring(self._outputFile)) or tostring(self._outputFile)
+    return self
 end
 
 function Builder:start(isRelease)
-    self:print('PROCESS GCC START!')
-    self:assert(self._inputFiles[1] ~= nil, "input files are not defined!")
-    self:assert(self._outputFile ~= nil, "output file is not defined!")
+    self:_print('PROCESS GCC START!')
+    self:_assert(self._inputFiles[1] ~= nil, "input files are not defined!")
+    self:_assert(self._outputFile ~= nil, "output file is not defined!")
     --
     local includeDirCmd = ""
     for _,v in ipairs(self._includeDirs) do
@@ -413,23 +419,24 @@ function Builder:start(isRelease)
     end
     --
     if self._isDebug then
-        self:print(string.format("cmd:%s", cmd))
+        self:_print(string.format("cmd:%s", cmd))
     end
     local isOk, output = tools.execute(cmd)
     if not isOk then
-        self:print("gcc process failed!")
-        self:error("err:" .. output)
+        self:_print("gcc process failed!")
+        self:_error("err:" .. output)
     end
-    self:print("gcc process succeeded!")
+    self:_print("gcc process succeeded!")
     --
     files.delete(self.MY_RES_FILE_PATH)
     files.delete(self.MY_RC_FILE_PATH)
-    self:print('PROCESS GCC END!\n')
+    self:_print('PROCESS GCC END!\n')
+    return self
 end
 
 function Builder:run(path)
     path = path and (self._projDir .. path) or self._targetExecutable
-    self:print("RUNNING:" .. path)
+    self:_print("RUNNING:" .. path)
     os.execute(path)
 end
 

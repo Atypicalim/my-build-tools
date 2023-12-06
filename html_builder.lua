@@ -3,7 +3,7 @@
 ]]
 
 local Base = require("builder_base")
-local Builder, Super = class("Builder", Base)
+local Builder, Super = class("HtmlBuilder", Base)
 
 function Builder:__init__()
     Super.__init__(self, "html")
@@ -12,23 +12,27 @@ function Builder:__init__()
 end
 
 function Builder:inputFile(path)
-    self:assert(self._inputFile == nil, "input can only be one file")
+    self:_assert(self._inputFile == nil, "input can only be one file")
     self._inputFile = path
+    return self
 end
 
 function Builder:containScript(isOnlyLocal)
     self._isContainScript = true
     self._isScriptLocal = isOnlyLocal == true
+    return self
 end
 
 function Builder:containStyle(isOnlyLocal)
     self._isContainStyle = true
     self._isStyleLocal = isOnlyLocal == true
+    return self
 end
 
 function Builder:containImage(isOnlyLocal)
     self._isContainImage = true
     self._isImageLocal = isOnlyLocal == true
+    return self
 end
 
 local SCRIPT_TEMPLATE = [[
@@ -39,7 +43,7 @@ local SCRIPT_TEMPLATE = [[
 
 function Builder:_processScript(line, path)
     if not self._isContainScript then return end
-    self:print("process script:", path)
+    self:_print("process script:", path)
     local content = self:_readFile(path, self._isScriptLocal)
     return string.format(SCRIPT_TEMPLATE, path, content)
 end
@@ -52,14 +56,14 @@ local STYLE_TEMPLATE = [[
 
 function Builder:_processStyle(line, path)
     if not self._isContainStyle then return end
-    self:print("process style:", path)
+    self:_print("process style:", path)
     local content = self:_readFile(path, self._isScriptLocal)
     return string.format(STYLE_TEMPLATE, path, content)
 end
 
 function Builder:_processImage(line, path)
     if not self._isContainImage then return end
-    self:print("process image:", path)
+    self:_print("process image:", path)
     local content = self:_readFile(path, self._isScriptLocal, true)
     local base64 = encryption.base64_encode(content)
     local data = string.format("data:image/png;base64,%s", base64)
@@ -68,13 +72,13 @@ end
 
 function Builder:start()
     --
-    self:print("start:")
-    self:print("contain script:", self._isContainScript == true)
-    self:print("contain style:", self._isContainStyle == true)
-    self:print("contain image:", self._isContainImage == true)
-    self:assert(self._inputFile ~= nil, "input path not found")
+    self:_print("start:")
+    self:_print("contain script:", self._isContainScript == true)
+    self:_print("contain style:", self._isContainStyle == true)
+    self:_print("contain image:", self._isContainImage == true)
+    self:_assert(self._inputFile ~= nil, "input path not found")
     local content = files.read(self._inputFile)
-    self:assert(#content > 0, "input file is empty")
+    self:_assert(#content > 0, "input file is empty")
     self._lineArr = string.explode(content, "\n")
     --
     local urlRule = "[\'\"]([^\n\'\"]*)[\'\"]"
@@ -102,14 +106,15 @@ function Builder:start()
             self._lineArr[i] = newLine
         end
     end
-    self:print("contain end.")
+    self:_print("contain end.")
     --
-    self:print("creating target ...")
+    self:_print("creating target ...")
     local html = table.concat(self._lineArr, "\n")
-    self:assert(self._outputFile ~= nil, "output path not found")
+    self:_assert(self._outputFile ~= nil, "output path not found")
     files.write(self._outputFile, html)
-    self:print("writing target succeeded!")
-    self:print("finish!\n")
+    self:_print("writing target succeeded!")
+    self:_print("finish!\n")
+    return self
 end
 
 return Builder
