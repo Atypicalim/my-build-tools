@@ -104,9 +104,8 @@ function Builder:_parseLine(index, line)
     end
 end
 
-function Builder:start()
+function Builder:_processBuild()
     --
-    self:_print("start:")
     self:_assert(not table.is_empty(self._inputFiles), "input files are not defined")
     self:_assert(is_string(self._commentTag), "comment tag is not defined")
     --
@@ -140,7 +139,6 @@ function Builder:start()
     self:_assert(self._outputFile ~= nil, "output path not found")
     files.write(self._outputFile, html)
     self:_print("writing target succeeded!")
-    self:_print("finish!\n")
     return self
 end
 

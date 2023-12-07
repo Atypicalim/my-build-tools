@@ -64,14 +64,13 @@ function Builder:_processImage(line, path)
     return string.gsub(line, string.escape(path), data)
 end
 
-function Builder:start()
+function Builder:_processBuild()
     --
-    self:_print("start:")
     self:_print("contain script:", self._isContainScript == true)
     self:_print("contain style:", self._isContainStyle == true)
     self:_print("contain image:", self._isContainImage == true)
-    self:_assert(#self._inputFiles < 1, "input file not found")
-    self:_assert(#self._inputFiles > 1, "input file too much")
+    self:_assert(#self._inputFiles >= 1, "input file not found")
+    self:_assert(#self._inputFiles <= 1, "input file too much")
     local content = files.read(self._inputFiles[1])
     self:_assert(#content > 0, "input file is empty")
     self._lineArr = string.explode(content, "\n")
@@ -108,7 +107,6 @@ function Builder:start()
     self:_assert(self._outputFile ~= nil, "output path not found")
     files.write(self._outputFile, html)
     self:_print("writing target succeeded!")
-    self:_print("finish!\n")
     return self
 end
 

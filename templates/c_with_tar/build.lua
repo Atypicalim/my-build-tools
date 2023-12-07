@@ -8,6 +8,6 @@ local builder = Builder(false)
 builder:setInput('./test.c')
 builder:setLibs("microtar")
 builder:setOutput('test')
-builder:start(false)
+builder:start()
 
 os.execute("" .. files.csd() .. "./test.exe")

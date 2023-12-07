@@ -8,6 +8,6 @@ local builder = Builder(false)
 builder:setInput('./test.c')
 builder:setLibs("stb")
 builder:setOutput('test')
-builder:start(false)
+builder:start()
 
 os.execute("start " .. files.csd() .. "./test.exe test.jpg test.png")

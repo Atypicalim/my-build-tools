@@ -207,9 +207,8 @@ CONFIGS = {
 
 local Builder, Super = class("CBuilder", Base)
 
-function Builder:__init__(isDebug)
+function Builder:__init__()
     Super.__init__(self, "C")
-    self._isDebug = isDebug == true
     self._includeDirs = {}
     self._linkingDirs = {}
     self._linkingTags = {}
@@ -378,7 +377,7 @@ function Builder:setOutput(path)
     return self
 end
 
-function Builder:start(isRelease)
+function Builder:_processBuild()
     self:_print('PROCESS GCC START!')
     self:_assert(self._inputFiles[1] ~= nil, "input files are not defined!")
     self:_assert(self._outputFile ~= nil, "output file is not defined!")
@@ -414,7 +413,7 @@ function Builder:start(isRelease)
     local cc = tools.is_windows() and "gcc" or "clang"
     local cmd = string.format("%s %s -o %s %s %s %s %s", cc, inputFiles, self._targetExecutable, resCmds, icludeCmds, linkCmds, extraFlagsCmd)
     --
-    if isRelease then
+    if self._isRelease then
         cmd = cmd .. " -O2 -mwindows"
     end
     --

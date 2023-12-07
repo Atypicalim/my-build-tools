@@ -47,6 +47,8 @@ function Builder:__init__(buildType)
     self._cacheDir = self._workDir .. "cache/"
     self._needUpdate = false
     self._name = "UNKNOWN"
+    self._isDebug = false
+    self._isRelease = false
     self._inputNames = {}
     self._inputFiles = {}
     self._outputFile = nil
@@ -154,6 +156,16 @@ function Builder:getName(name)
     return self._name
 end
 
+function Builder:setDebug(value)
+    assert(is_boolean(value), 'invalid task name for builder')
+    self._isDebug = value
+end
+
+function Builder:setRelease(value)
+    assert(is_boolean(value), 'invalid task name for builder')
+    self._isRelease = value
+end
+
 function Builder:setInput(...)
     self:_print("input files ...")
     self:_assert(table.is_empty(self._inputFiles), "input files are already defined")
@@ -179,8 +191,15 @@ function Builder:setOutput(path)
     return self
 end
 
-function Builder:start()
+function Builder:_processBuild()
     self:_error("please implement start func ...")
+end
+
+function Builder:start()
+    self:_print('BUILD START:')
+    self:_processBuild()
+    self:_print('BUILD END!\n')
+    return self
 end
 
 return Builder
