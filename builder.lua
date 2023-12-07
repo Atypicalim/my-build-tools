@@ -6,8 +6,12 @@ local CBuilder = require("c_builder")
 local HtmlBuilder = require("html_builder")
 local CodeBuilder = require("code_builder")
 
-local builder = {}
+if not rawget(_G, 'builder') then
+    rawset(_G, 'builder', {})
+end
+local builder = rawget(_G, 'builder')
 local UI_LENGTH = 25
+local tasks = {}
 
 function string.split_by_upper(word)
     local res = {}
@@ -17,7 +21,28 @@ function string.split_by_upper(word)
     return res
 end
 
-function _builder_help(obj)
+function table.reduce(this, func, accumulator)
+    if not is_function(func) and is_function(accumulator) then
+        local temp = func
+        func = accumulator
+        accumulator = temp
+    end
+    table.foreach(this, function(k, v)
+        if not accumulator then
+            if is_number(v) then
+                accumulator = 0
+            elseif is_string(v) then
+                accumulator = ""
+            elseif is_table(v) then
+                accumulator = {}
+            end
+        end
+        accumulator = func(accumulator, v)
+    end)
+    return accumulator
+end
+
+local function _builder_help(obj)
     print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
     print("|" .. string.center(obj.__name__ .. " Help", UI_LENGTH, " ") .. "|")
     print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
@@ -47,21 +72,33 @@ function _builder_help(obj)
     print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
 end
 
-function _builder_build(cls, args)
-    local obj = cls(false)
+local function _builder_parse(obj, args)
     for k,v in pairs(args) do
         assert(string.valid(k), 'invalid argument key for builder' .. tostring(k))
         local wrds = k:lower():explode("_")
-        local name = ""
-        for i,word in ipairs(wrds) do
-            name = name .. string.upper(string.sub(word, 1, 1)) .. string.sub(word, 2, -1)
-        end
+        local name = wrds:reduce(function(accumulator, word)
+            return accumulator .. string.upper(string.sub(word, 1, 1)) .. string.sub(word, 2, -1)
+        end)
         local func = obj['set' .. name]
         assert(is_function(func), 'unknown argument key for builder:' .. tostring(k))
         func(obj, v)
     end
-    obj.help = _builder_help
-    return obj
+end
+
+local function _builder_build(cls, argsOrName)
+    local obj = cls(false)
+    local fun = function(args)
+        _builder_parse(obj, args)
+        obj.help = _builder_help
+        table.insert(tasks, obj)
+        return obj
+    end
+    if is_string(argsOrName) then
+        obj:setName(argsOrName)
+        return fun
+    else
+        return fun(argsOrName)
+    end
 end
 
 function builder.c(...)
@@ -81,14 +118,45 @@ function builder.help()
     print("|" .. string.center("builder help", UI_LENGTH, " ") .. "|")
     print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
     print('| builders:')
-    for i,v in pairs(builder) do
-        print('|', string.left(tostring(i), 10, " "))
+    for k,v in pairs(builder) do
+        print('|', "*", k)
     end
     print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
 end
 
-if arg and #arg > 0 then
-    -- run or create build.lua
-else
+function builder.tasks()
+    print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
+    print("|" .. string.center("builder list", UI_LENGTH, " ") .. "|")
+    print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
+    print('| tasks:')
+    for i,obj in ipairs(tasks) do
+        print('|', i .. ".", obj:getName())
+    end
+    print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
+end
+
+function builder.find(name)
+    assert(string.valid(name), 'invalid task name for builder')
+    for i,obj in ipairs(tasks) do
+        if obj:getName() == name then
+            return obj
+        end
+    end
+end
+
+
+if debug.getinfo(2).name == "require" then
     return builder
+elseif files.is_file("./build.lua") then
+    require('build')
+    local name = arg and arg[1] or "UNKNOWN"
+    local obj = builder.find(name)
+    if obj then
+        obj:start()
+    else
+        error('task object not found for name: ' .. name)
+    end
+else
+    -- run or create build.lua
+    error('build.lua file not found for builder')
 end

@@ -46,6 +46,7 @@ function Builder:__init__(buildType)
     self._buildDir = self._workDir .. buildType .. "_dir/"
     self._cacheDir = self._workDir .. "cache/"
     self._needUpdate = false
+    self._name = "UNKNOWN"
     self._inputNames = {}
     self._inputFiles = {}
     self._outputFile = nil
@@ -54,15 +55,15 @@ function Builder:__init__(buildType)
 end
 
 function Builder:_print(...)
-    print(self._printTag, ...)
+    print(string.format("%s %s", self._printTag, self._name), ...)
 end
 
 function Builder:_assert(v, msg)
-    assert(v, string.format("%s %s", self._printTag, msg))
+    assert(v, string.format("%s %s %s", self._printTag, self._name, msg))
 end
 
 function Builder:_error(msg)
-    error(string.format("%s %s", self._printTag, msg))
+    error(string.format("%s %s %s", self._printTag, self._name, msg))
 end
 
 function Builder:_downloadByGit(url, branch, directory)
@@ -142,6 +143,15 @@ function Builder:_readFile(path, isOnlyLocal, isBuffer)
     self:_assert(#content > 0, "read file failed!, path:" .. path)
     self:_print("read file succeeded!")
     return content
+end
+
+function Builder:setName(name)
+    assert(string.valid(name), 'invalid task name for builder')
+    self._name = name
+end
+
+function Builder:getName(name)
+    return self._name
 end
 
 function Builder:setInput(...)
