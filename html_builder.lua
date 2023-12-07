@@ -11,12 +11,6 @@ function Builder:__init__()
     self._fileMap = {}
 end
 
-function Builder:inputFile(path)
-    self:_assert(self._inputFile == nil, "input can only be one file")
-    self._inputFile = path
-    return self
-end
-
 function Builder:containScript(isOnlyLocal)
     self._isContainScript = true
     self._isScriptLocal = isOnlyLocal == true
@@ -76,8 +70,9 @@ function Builder:start()
     self:_print("contain script:", self._isContainScript == true)
     self:_print("contain style:", self._isContainStyle == true)
     self:_print("contain image:", self._isContainImage == true)
-    self:_assert(self._inputFile ~= nil, "input path not found")
-    local content = files.read(self._inputFile)
+    self:_assert(#self._inputFiles < 1, "input file not found")
+    self:_assert(#self._inputFiles > 1, "input file too much")
+    local content = files.read(self._inputFiles[1])
     self:_assert(#content > 0, "input file is empty")
     self._lineArr = string.explode(content, "\n")
     --

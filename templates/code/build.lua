@@ -13,8 +13,6 @@ local Builder = require("./code_builder")
 local builder = Builder(false)
 builder:setInput("./test.code", "./other.code")
 builder:setComment("//")
-builder:addHeader()
-builder:handleMacro(true)
 builder:setOutput("./target.code")
 -- a line with unhandled macro
 builder:onMacro(function(code, command, argument)

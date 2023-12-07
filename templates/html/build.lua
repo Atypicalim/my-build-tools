@@ -5,7 +5,7 @@ package.path = package.path .. ";../../?.lua"
 local Builder = require("./html_builder")
 
 local builder = Builder(false)
-builder:inputFile("./test.html")
+builder:setInput("./test.html")
 builder:containScript()
 builder:containStyle()
 builder:containImage()

@@ -10,28 +10,12 @@ function Builder:__init__()
     self._lineArr = {}
     self._macroStartTag = "[M["
     self._macroEndTag = "]M]"
+    self._commentTag = "//"
 end
 
 function Builder:setComment(commentTag)
-    self:_print("set comment ...")
-    self:_assert(self._commentTag == nil, "comment tag is already defined")
+    assert(string.valid(commentTag), 'invalid comment tag')
     self._commentTag = commentTag
-    self:_print("comment tags:" .. self._commentTag)
-    return self
-end
-
-function Builder:addHeader(height)
-    self:_print("add header ...")
-    self:_assert(self._isPrintHeader == nil, "print header is already defined")
-    self._isPrintHeader = true
-    self._headerPadding = height or 1
-    self:_print("header padding:" .. self._headerPadding)
-    return self
-end
-
-function Builder:handleMacro(value)
-    self:_print("handle macro:" .. tostring(value))
-    self._isHandleMacro = value == true
     return self
 end
 
@@ -86,12 +70,6 @@ function Builder:_COMMAND_LINE_REFPLACE(code, arguments)
 end
 
 function Builder:_parseLine(index, line)
-    if not self._isHandleMacro then
-        if self._onLineCallback then
-            return self._onLineCallback(line)
-        end
-        return line
-    end
     local commentPosition = string.find(line, self._commentTag)
     if not commentPosition then
         if self._onLineCallback then
@@ -130,8 +108,7 @@ function Builder:start()
     --
     self:_print("start:")
     self:_assert(not table.is_empty(self._inputFiles), "input files are not defined")
-    self:_assert(not self._isHandleMacro or is_string(self._commentTag), "comment tag is not defined")
-    self:_assert(not self._isPrintHeader or is_string(self._commentTag), "header tag is not defined")
+    self:_assert(is_string(self._commentTag), "comment tag is not defined")
     --
     self:_print("reading files ...")
     for i,path in ipairs(self._inputFiles) do
@@ -140,18 +117,11 @@ function Builder:start()
         local content = files.read(path)
         self:_assert(#content > 0, "input files are empty")
         local lineArr = string.explode(content, "\n")
-        -- put header file
-        if self._isPrintHeader then
-            local headInfo = string.format(" date:%s file:%s ", os.date("%Y-%m-%d %H:%M:%S", os.time()), self._inputNames[i])
-            self._headerPadding = (self._headerPadding and self._headerPadding > 0) and self._headerPadding or 0
-            for _=1,self._headerPadding do
-                table.insert(self._lineArr, "")
-            end
-            table.insert(self._lineArr, self._commentTag .. headInfo)
-            for _=1,self._headerPadding do
-                table.insert(self._lineArr, "")
-            end
-        end
+        -- write header
+        local headInfo = string.format(" date:%s file:%s ", os.date("%Y-%m-%d %H:%M:%S", os.time()), self._inputNames[i])
+        table.insert(self._lineArr, "")
+        table.insert(self._lineArr, self._commentTag .. headInfo)
+        table.insert(self._lineArr, "")
         -- parse file content
         for index,line in ipairs(lineArr) do
             local newLine = self:_parseLine(index, line)
