@@ -3,16 +3,15 @@
 -- package.path = package.path .. ";./.my-build-tools/?.lua"
 package.path = package.path .. ";../../?.lua"
 
-local CBuilder = require("c_builder")
-local CodeBuilder = require("code_builder")
+local builder = require("builder")
 
-local codeBuilder = CodeBuilder(false)
+local codeBuilder = builder.code {}
 codeBuilder:setInput("./test.c")
 codeBuilder:setComment("//")
 codeBuilder:setOutput("./target.c")
 codeBuilder:start()
 
-local cBuilder = CBuilder(false)
+local cBuilder = builder.c {}
 cBuilder:setInput('./target.c')
 cBuilder:setLibs("webview")
 cBuilder:setOutput('test')
