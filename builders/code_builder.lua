@@ -2,10 +2,10 @@
     code
 ]]
 
-local MyCodeBuilder, Super = class("MyCodeBuilder", MyBuilderBase)
+MyCodeBuilder, MyCodeSuper = class("MyCodeBuilder", MyBuilderBase)
 
 function MyCodeBuilder:__init__()
-    Super.__init__(self, "code")
+    MyCodeSuper.__init__(self, "code")
     self._lineArr = {}
     self._macroStartTag = "[M["
     self._macroEndTag = "]M]"

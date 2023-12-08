@@ -203,10 +203,10 @@ CONFIGS = {
     },
 }
 
-local MyCBuilder, Super = class("MyCBuilder", MyBuilderBase)
+MyCBuilder, MyCSuper = class("MyCBuilder", MyBuilderBase)
 
 function MyCBuilder:__init__()
-    Super.__init__(self, "C")
+    MyCSuper.__init__(self, "C")
     self._includeDirs = {}
     self._linkingDirs = {}
     self._linkingTags = {}
@@ -224,21 +224,21 @@ function MyCBuilder:_downloadByGit(config)
     local url = config[KEYS.URL]
     local branch = config[KEYS.BRANCH] or 'master'
     local directory = self._libPath .. config[KEYS.NAME] .. "/"
-    Super._downloadByGit(self, url, branch, directory)
+    MyCSuper._downloadByGit(self, url, branch, directory)
 end
 
 function MyCBuilder:_downloadByZip(config)
     local name = config[KEYS.NAME]
     local url = config[KEYS.URL]
     local directory = self._libPath .. name .. "/"
-    Super._downloadByZip(self, url, directory)
+    MyCSuper._downloadByZip(self, url, directory)
 end
 
 function MyCBuilder:_downloadByGzip(config)
     local name = config[KEYS.NAME]
     local url = config[KEYS.URL]
     local directory = self._libPath .. name .. "/"
-    Super._downloadByGzip(self, url, directory)
+    MyCSuper._downloadByGzip(self, url, directory)
 end
 
 function MyCBuilder:_getConfig(name)
@@ -370,7 +370,7 @@ function MyCBuilder:setIcon(iconPath)
 end
 
 function MyCBuilder:setOutput(path)
-    Super.setOutput(self, path)
+    MyCSuper.setOutput(self, path)
     self._targetExecutable = tools.is_windows() and string.format( "%s.exe", tostring(self._outputFile)) or tostring(self._outputFile)
     return self
 end

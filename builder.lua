@@ -8,6 +8,7 @@ require('test')
 
 -- import available builders
 package.path = package.path .. ";builders/?.lua"
+dofile(files.csd() .. "builder_base.lua")
 dofile(files.csd() .. "builders/c_builder.lua")
 dofile(files.csd() .. "builders/html_builder.lua")
 dofile(files.csd() .. "builders/code_builder.lua")

@@ -2,10 +2,10 @@
     html
 ]]
 
-local MyHtmlBuilder, Super = class("MyHtmlBuilder", MyBuilderBase)
+MyHtmlBuilder, MyHtmlSuper = class("MyHtmlBuilder", MyBuilderBase)
 
 function MyHtmlBuilder:__init__()
-    Super.__init__(self, "html")
+    MyHtmlSuper.__init__(self, "html")
     self._lineArr = {}
     self._fileMap = {}
 end
@@ -28,7 +28,7 @@ function MyHtmlBuilder:containImage(isOnlyLocal)
     return self
 end
 
-local SCRIPT_TEMPLATE = [[
+local HTML_SCRIPT_TEMPLATE = [[
 <script type="text/javascript" origin_file="%s">
 %s
 </script>
@@ -38,10 +38,10 @@ function MyHtmlBuilder:_processScript(line, path)
     if not self._isContainScript then return end
     self:_print("process script:", path)
     local content = self:_readFile(path, self._isScriptLocal)
-    return string.format(SCRIPT_TEMPLATE, path, content)
+    return string.format(HTML_SCRIPT_TEMPLATE, path, content)
 end
 
-local STYLE_TEMPLATE = [[
+local HTML_STYLE_TEMPLATE = [[
 <style type="text/css" file="%s">
 %s
 </style>
@@ -51,7 +51,7 @@ function MyHtmlBuilder:_processStyle(line, path)
     if not self._isContainStyle then return end
     self:_print("process style:", path)
     local content = self:_readFile(path, self._isScriptLocal)
-    return string.format(STYLE_TEMPLATE, path, content)
+    return string.format(HTML_STYLE_TEMPLATE, path, content)
 end
 
 function MyHtmlBuilder:_processImage(line, path)
