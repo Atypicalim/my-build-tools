@@ -2,33 +2,9 @@
     base
 ]]
 
--- download lua tools
-local function download_and_import_by_git(gitUrl, entryName, workingDir)
-    local slashPos = string.find(string.reverse(gitUrl), "/", 1, true)
-    local pointPos = string.find(string.reverse(gitUrl), ".", 1, true)
-    assert(slashPos ~= nil and pointPos ~= nil and slashPos > pointPos, "[LUA_GIT_IMPORT] invalid url:" .. gitUrl)
-    local folderName = string.sub(gitUrl, #gitUrl - slashPos + 2, #gitUrl - pointPos) .. "/"
-    workingDir = workingDir or os.getenv("HOME")
-    assert(workingDir ~= nil, "[LUA_GIT_IMPORT] working dir not found !")
-    package.path = package.path .. ";" .. workingDir .. "/" .. folderName .. "?.lua"
-    local isOk, err = pcall(require, entryName)
-    if not isOk then
-        print('[LUA_GIT_IMPORT] downloading ...')
-        os.execute("git clone " .. gitUrl .. " " .. workingDir .. "/" .. folderName)
-        isOk, err = pcall(require, entryName)
-        assert(isOk, "[LUA_GIT_IMPORT] import failed:" .. tostring(err))
-        print('[LUA_GIT_IMPORT] import succeeded!')
-    end
-end
+local BuilderBase = class("BuilderBase")
 
-local path = debug.getinfo(1).short_src
-path = string.gsub(path, '\\', "/")
-path = string.gsub(path, "[^\\/]+%.[^\\/]+", "")
-download_and_import_by_git("git@github.com:kompasim/pure-lua-tools.git", "test", path)
-
-local Builder = class("Builder")
-
-function Builder:__init__(buildType)
+function BuilderBase:__init__(buildType)
     buildType = string.lower(buildType)
     self._printTag = "[build_" .. buildType .. "_tool]"
     local dir = nil
@@ -56,19 +32,19 @@ function Builder:__init__(buildType)
     print('\n-----------------[Lua ' .. buildType .. ' Builder]---------------------\n')
 end
 
-function Builder:_print(...)
+function BuilderBase:_print(...)
     print(string.format("%s %s", self._printTag, self._name), ...)
 end
 
-function Builder:_assert(v, msg)
+function BuilderBase:_assert(v, msg)
     assert(v, string.format("%s %s %s", self._printTag, self._name, msg))
 end
 
-function Builder:_error(msg)
+function BuilderBase:_error(msg)
     error(string.format("%s %s %s", self._printTag, self._name, msg))
 end
 
-function Builder:_downloadByGit(url, branch, directory)
+function BuilderBase:_downloadByGit(url, branch, directory)
     if not files.is_folder(directory) then
         self:_print('cloning...')
         local cmd = string.format("git clone %s %s --branch %s --single-branch", url, directory, branch)
@@ -82,7 +58,7 @@ function Builder:_downloadByGit(url, branch, directory)
     end
 end
 
-function Builder:_downloadByZip(url, directory)
+function BuilderBase:_downloadByZip(url, directory)
     if files.is_folder(directory) then
         self:_print('downloaded!')
         return
@@ -95,7 +71,7 @@ function Builder:_downloadByZip(url, directory)
     self:_assert(isOk, "unzip failed, err:" .. tostring(err))
 end
 
-function Builder:_downloadByGzip(url, directory)
+function BuilderBase:_downloadByGzip(url, directory)
     if files.is_folder(directory) then
         self:_print('downloaded!')
         return
@@ -109,7 +85,7 @@ function Builder:_downloadByGzip(url, directory)
     self:_assert(isOk, "gunzip failed, err:" .. tostring(err))
 end
 
-function Builder:_downloadByUrl(url, path)
+function BuilderBase:_downloadByUrl(url, path)
     local parts = string.explode(url, "%.")
     local ext = parts[#parts]
     local cacheFile = path or self._cacheDir .. "temp." .. ext
@@ -124,7 +100,7 @@ function Builder:_downloadByUrl(url, path)
     return cacheFile
 end
 
-function Builder:_readFile(path, isOnlyLocal, isBuffer)
+function BuilderBase:_readFile(path, isOnlyLocal, isBuffer)
     self:_print("read file:" .. path)
     local isRemote = string.find(path, "http") == 1
     self:_print("is remote:" .. tostring(isRemote))
@@ -147,26 +123,26 @@ function Builder:_readFile(path, isOnlyLocal, isBuffer)
     return content
 end
 
-function Builder:setName(name)
+function BuilderBase:setName(name)
     assert(string.valid(name), 'invalid task name for builder')
     self._name = name
 end
 
-function Builder:getName(name)
+function BuilderBase:getName(name)
     return self._name
 end
 
-function Builder:setDebug(value)
+function BuilderBase:setDebug(value)
     assert(is_boolean(value), 'invalid task name for builder')
     self._isDebug = value
 end
 
-function Builder:setRelease(value)
+function BuilderBase:setRelease(value)
     assert(is_boolean(value), 'invalid task name for builder')
     self._isRelease = value
 end
 
-function Builder:setInput(...)
+function BuilderBase:setInput(...)
     self:_print("input files ...")
     self:_assert(table.is_empty(self._inputFiles), "input files are already defined")
     local fileArr = {...}
@@ -183,7 +159,7 @@ function Builder:setInput(...)
     return self
 end
 
-function Builder:setOutput(path)
+function BuilderBase:setOutput(path)
     self:_print("output file ...")
     self:_assert(self._outputFile == nil, "output file is already defined")
     self:_print("output file:" .. path)
@@ -191,15 +167,15 @@ function Builder:setOutput(path)
     return self
 end
 
-function Builder:_processBuild()
+function BuilderBase:_processBuild()
     self:_error("please implement start func ...")
 end
 
-function Builder:start()
+function BuilderBase:start()
     self:_print('BUILD START:')
     self:_processBuild()
     self:_print('BUILD END!\n')
     return self
 end
 
-return Builder
+return BuilderBase

@@ -2,9 +2,15 @@
     builder
 ]]
 
-local CBuilder = require("c_builder")
-local HtmlBuilder = require("html_builder")
-local CodeBuilder = require("code_builder")
+-- import lua tools
+package.path = package.path .. ";../../pure-lua-tools/?.lua"
+require('test')
+
+-- import available builders
+package.path = package.path .. ";builders/?.lua"
+local CBuilder = dofile(files.csd() .. "builders/c_builder.lua")
+local HtmlBuilder = dofile(files.csd() .. "builders/html_builder.lua")
+local CodeBuilder = dofile(files.csd() .. "builders/code_builder.lua")
 
 if not rawget(_G, 'builder') then
     rawset(_G, 'builder', {})

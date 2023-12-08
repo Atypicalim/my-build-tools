@@ -2,8 +2,6 @@
     c
 ]]
 
-local Base = require("builder_base")
-
 -- add resources such as icon and version info
 local MY_RC_FILE_TEMPLATE = [[
 id ICON "%s"
@@ -205,9 +203,10 @@ CONFIGS = {
     },
 }
 
-local Builder, Super = class("CBuilder", Base)
+local Base = require("builder_base")
+local CBuilder, Super = class("CBuilder", Base)
 
-function Builder:__init__()
+function CBuilder:__init__()
     Super.__init__(self, "C")
     self._includeDirs = {}
     self._linkingDirs = {}
@@ -222,28 +221,28 @@ function Builder:__init__()
     files.write(self.MY_RC_FILE_PATH, "")
 end
 
-function Builder:_downloadByGit(config)
+function CBuilder:_downloadByGit(config)
     local url = config[KEYS.URL]
     local branch = config[KEYS.BRANCH] or 'master'
     local directory = self._libPath .. config[KEYS.NAME] .. "/"
     Super._downloadByGit(self, url, branch, directory)
 end
 
-function Builder:_downloadByZip(config)
+function CBuilder:_downloadByZip(config)
     local name = config[KEYS.NAME]
     local url = config[KEYS.URL]
     local directory = self._libPath .. name .. "/"
     Super._downloadByZip(self, url, directory)
 end
 
-function Builder:_downloadByGzip(config)
+function CBuilder:_downloadByGzip(config)
     local name = config[KEYS.NAME]
     local url = config[KEYS.URL]
     local directory = self._libPath .. name .. "/"
     Super._downloadByGzip(self, url, directory)
 end
 
-function Builder:_getConfig(name)
+function CBuilder:_getConfig(name)
     local config = CONFIGS[name]
     self:_assert(config ~= nil, string.format("lib [%s] not found", name))
     if tools.is_windows() then
@@ -256,7 +255,7 @@ function Builder:_getConfig(name)
     return config
 end
 
-function Builder:_installLib(name)
+function CBuilder:_installLib(name)
     local config = self:_getConfig(name)
     self:_assert(config ~= nil, string.format("lib [%s] not found", name))
     local parts = string.explode(config[KEYS.URL], "%.")
@@ -274,7 +273,7 @@ function Builder:_installLib(name)
     end
 end
 
-function Builder:_containLib(name)
+function CBuilder:_containLib(name)
     local config = self:_getConfig(name)
     local directory = self._libPath .. name .. "/"
     self:_assert(config ~= nil, string.format("lib [%s] not found", name))
@@ -322,7 +321,7 @@ function Builder:_containLib(name)
     end
 end
 
-function Builder:_containFiles(name)
+function CBuilder:_containFiles(name)
     local config = self:_getConfig(name)
     self:_assert(config ~= nil, string.format("lib [%s] not found", name))
     local directory = self._libPath .. name .. "/"
@@ -338,7 +337,7 @@ function Builder:_containFiles(name)
     end
 end
 
-function Builder:setLibs(...)
+function CBuilder:setLibs(...)
     self:_print('CONTAIN LIB START!')
     local libs = {...}
     if is_table(libs[1]) then
@@ -355,7 +354,7 @@ function Builder:setLibs(...)
     return self
 end
 
-function Builder:setIcon(iconPath)
+function CBuilder:setIcon(iconPath)
     self:_print('SET ICON START!')
     self:_print('icon:', iconPath)
     if not tools.is_windows() then
@@ -371,13 +370,13 @@ function Builder:setIcon(iconPath)
     return self
 end
 
-function Builder:setOutput(path)
+function CBuilder:setOutput(path)
     Super.setOutput(self, path)
     self._targetExecutable = tools.is_windows() and string.format( "%s.exe", tostring(self._outputFile)) or tostring(self._outputFile)
     return self
 end
 
-function Builder:_processBuild()
+function CBuilder:_processBuild()
     self:_print('PROCESS GCC START!')
     self:_assert(self._inputFiles[1] ~= nil, "input files are not defined!")
     self:_assert(self._outputFile ~= nil, "output file is not defined!")
@@ -433,10 +432,10 @@ function Builder:_processBuild()
     return self
 end
 
-function Builder:run(path)
+function CBuilder:run(path)
     path = path and (self._projDir .. path) or self._targetExecutable
     self:_print("RUNNING:" .. path)
     os.execute(path)
 end
 
-return Builder
+return CBuilder

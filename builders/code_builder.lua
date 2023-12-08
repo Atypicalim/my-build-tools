@@ -3,9 +3,9 @@
 ]]
 
 local Base = require("builder_base")
-local Builder, Super = class("CodeBuilder", Base)
+local CodeBuilder, Super = class("CodeBuilder", Base)
 
-function Builder:__init__()
+function CodeBuilder:__init__()
     Super.__init__(self, "code")
     self._lineArr = {}
     self._macroStartTag = "[M["
@@ -13,23 +13,23 @@ function Builder:__init__()
     self._commentTag = "//"
 end
 
-function Builder:setComment(commentTag)
+function CodeBuilder:setComment(commentTag)
     assert(string.valid(commentTag), 'invalid comment tag')
     self._commentTag = commentTag
     return self
 end
 
-function Builder:onMacro(macroCallback)
+function CodeBuilder:onMacro(macroCallback)
     self._onMacroCallback = macroCallback
     return self
 end
 
-function Builder:onLine(lineCallback)
+function CodeBuilder:onLine(lineCallback)
     self._onLineCallback = lineCallback
     return self
 end
 
-function Builder:_COMMAND_FILE_BASE64(code, arguments)
+function CodeBuilder:_COMMAND_FILE_BASE64(code, arguments)
     local filePath = arguments[1]
     self:_assert(files.is_file(filePath), "file not found, path:" .. filePath)
     local content = files.read(filePath)
@@ -37,14 +37,14 @@ function Builder:_COMMAND_FILE_BASE64(code, arguments)
     return string.format(code, data)
 end
 
-function Builder:_COMMAND_FILE_PLAIN(code, arguments)
+function CodeBuilder:_COMMAND_FILE_PLAIN(code, arguments)
     local filePath = arguments[1]
     self:_assert(files.is_file(filePath), "file not found, path:" .. filePath)
     local content = files.read(filePath)
     return string.format(code, content)
 end
 
-function Builder:_COMMAND_FILE_STRING(code, arguments)
+function CodeBuilder:_COMMAND_FILE_STRING(code, arguments)
     local filePath = arguments[1]
     local escapeTag = arguments[2] or [[]]
     local minimize = arguments[3] ~= nil and string.lower(arguments[3]) == "true"
@@ -65,11 +65,11 @@ function Builder:_COMMAND_FILE_STRING(code, arguments)
     return string.format(code, result)
 end
 
-function Builder:_COMMAND_LINE_REFPLACE(code, arguments)
+function CodeBuilder:_COMMAND_LINE_REFPLACE(code, arguments)
     return arguments[1]
 end
 
-function Builder:_parseLine(index, line)
+function CodeBuilder:_parseLine(index, line)
     local commentPosition = string.find(line, self._commentTag)
     if not commentPosition then
         if self._onLineCallback then
@@ -104,7 +104,7 @@ function Builder:_parseLine(index, line)
     end
 end
 
-function Builder:_processBuild()
+function CodeBuilder:_processBuild()
     --
     self:_assert(not table.is_empty(self._inputFiles), "input files are not defined")
     self:_assert(is_string(self._commentTag), "comment tag is not defined")
@@ -142,4 +142,4 @@ function Builder:_processBuild()
     return self
 end
 
-return Builder
+return CodeBuilder
