@@ -8,9 +8,9 @@ require('test')
 
 -- import available builders
 package.path = package.path .. ";builders/?.lua"
-local CBuilder = dofile(files.csd() .. "builders/c_builder.lua")
-local HtmlBuilder = dofile(files.csd() .. "builders/html_builder.lua")
-local CodeBuilder = dofile(files.csd() .. "builders/code_builder.lua")
+dofile(files.csd() .. "builders/c_builder.lua")
+dofile(files.csd() .. "builders/html_builder.lua")
+dofile(files.csd() .. "builders/code_builder.lua")
 
 if not rawget(_G, 'builder') then
     rawset(_G, 'builder', {})
@@ -25,27 +25,6 @@ function string.split_by_upper(word)
         table.insert(res, sub)
     end
     return res
-end
-
-function table.reduce(this, func, accumulator)
-    if not is_function(func) and is_function(accumulator) then
-        local temp = func
-        func = accumulator
-        accumulator = temp
-    end
-    table.foreach(this, function(k, v)
-        if not accumulator then
-            if is_number(v) then
-                accumulator = 0
-            elseif is_string(v) then
-                accumulator = ""
-            elseif is_table(v) then
-                accumulator = {}
-            end
-        end
-        accumulator = func(accumulator, v)
-    end)
-    return accumulator
 end
 
 local function _builder_help(obj)
@@ -108,15 +87,15 @@ local function _builder_build(cls, argsOrName)
 end
 
 function builder.c(...)
-    return _builder_build(CBuilder, ...)
+    return _builder_build(MyCBuilder, ...)
 end
 
 function builder.html(...)
-    return _builder_build(HtmlBuilder, ...)
+    return _builder_build(MyHtmlBuilder, ...)
 end
 
 function builder.code(...)
-    return _builder_build(CodeBuilder, ...)
+    return _builder_build(MyCodeBuilder, ...)
 end
 
 function builder.help()

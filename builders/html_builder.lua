@@ -2,28 +2,27 @@
     html
 ]]
 
-local Base = require("builder_base")
-local HtmlBuilder, Super = class("HtmlBuilder", Base)
+local MyHtmlBuilder, Super = class("MyHtmlBuilder", MyBuilderBase)
 
-function HtmlBuilder:__init__()
+function MyHtmlBuilder:__init__()
     Super.__init__(self, "html")
     self._lineArr = {}
     self._fileMap = {}
 end
 
-function HtmlBuilder:containScript(isOnlyLocal)
+function MyHtmlBuilder:containScript(isOnlyLocal)
     self._isContainScript = true
     self._isScriptLocal = isOnlyLocal == true
     return self
 end
 
-function HtmlBuilder:containStyle(isOnlyLocal)
+function MyHtmlBuilder:containStyle(isOnlyLocal)
     self._isContainStyle = true
     self._isStyleLocal = isOnlyLocal == true
     return self
 end
 
-function HtmlBuilder:containImage(isOnlyLocal)
+function MyHtmlBuilder:containImage(isOnlyLocal)
     self._isContainImage = true
     self._isImageLocal = isOnlyLocal == true
     return self
@@ -35,7 +34,7 @@ local SCRIPT_TEMPLATE = [[
 </script>
 ]]
 
-function HtmlBuilder:_processScript(line, path)
+function MyHtmlBuilder:_processScript(line, path)
     if not self._isContainScript then return end
     self:_print("process script:", path)
     local content = self:_readFile(path, self._isScriptLocal)
@@ -48,14 +47,14 @@ local STYLE_TEMPLATE = [[
 </style>
 ]]
 
-function HtmlBuilder:_processStyle(line, path)
+function MyHtmlBuilder:_processStyle(line, path)
     if not self._isContainStyle then return end
     self:_print("process style:", path)
     local content = self:_readFile(path, self._isScriptLocal)
     return string.format(STYLE_TEMPLATE, path, content)
 end
 
-function HtmlBuilder:_processImage(line, path)
+function MyHtmlBuilder:_processImage(line, path)
     if not self._isContainImage then return end
     self:_print("process image:", path)
     local content = self:_readFile(path, self._isScriptLocal, true)
@@ -64,7 +63,7 @@ function HtmlBuilder:_processImage(line, path)
     return string.gsub(line, string.escape(path), data)
 end
 
-function HtmlBuilder:_processBuild()
+function MyHtmlBuilder:_processBuild()
     --
     self:_print("contain script:", self._isContainScript == true)
     self:_print("contain style:", self._isContainStyle == true)
@@ -109,5 +108,3 @@ function HtmlBuilder:_processBuild()
     self:_print("writing target succeeded!")
     return self
 end
-
-return HtmlBuilder

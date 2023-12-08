@@ -2,9 +2,9 @@
     base
 ]]
 
-local BuilderBase = class("BuilderBase")
+MyBuilderBase = class("MyBuilderBase")
 
-function BuilderBase:__init__(buildType)
+function MyBuilderBase:__init__(buildType)
     buildType = string.lower(buildType)
     self._printTag = "[build_" .. buildType .. "_tool]"
     local dir = nil
@@ -32,19 +32,19 @@ function BuilderBase:__init__(buildType)
     print('\n-----------------[Lua ' .. buildType .. ' Builder]---------------------\n')
 end
 
-function BuilderBase:_print(...)
+function MyBuilderBase:_print(...)
     print(string.format("%s %s", self._printTag, self._name), ...)
 end
 
-function BuilderBase:_assert(v, msg)
+function MyBuilderBase:_assert(v, msg)
     assert(v, string.format("%s %s %s", self._printTag, self._name, msg))
 end
 
-function BuilderBase:_error(msg)
+function MyBuilderBase:_error(msg)
     error(string.format("%s %s %s", self._printTag, self._name, msg))
 end
 
-function BuilderBase:_downloadByGit(url, branch, directory)
+function MyBuilderBase:_downloadByGit(url, branch, directory)
     if not files.is_folder(directory) then
         self:_print('cloning...')
         local cmd = string.format("git clone %s %s --branch %s --single-branch", url, directory, branch)
@@ -58,7 +58,7 @@ function BuilderBase:_downloadByGit(url, branch, directory)
     end
 end
 
-function BuilderBase:_downloadByZip(url, directory)
+function MyBuilderBase:_downloadByZip(url, directory)
     if files.is_folder(directory) then
         self:_print('downloaded!')
         return
@@ -71,7 +71,7 @@ function BuilderBase:_downloadByZip(url, directory)
     self:_assert(isOk, "unzip failed, err:" .. tostring(err))
 end
 
-function BuilderBase:_downloadByGzip(url, directory)
+function MyBuilderBase:_downloadByGzip(url, directory)
     if files.is_folder(directory) then
         self:_print('downloaded!')
         return
@@ -85,7 +85,7 @@ function BuilderBase:_downloadByGzip(url, directory)
     self:_assert(isOk, "gunzip failed, err:" .. tostring(err))
 end
 
-function BuilderBase:_downloadByUrl(url, path)
+function MyBuilderBase:_downloadByUrl(url, path)
     local parts = string.explode(url, "%.")
     local ext = parts[#parts]
     local cacheFile = path or self._cacheDir .. "temp." .. ext
@@ -100,7 +100,7 @@ function BuilderBase:_downloadByUrl(url, path)
     return cacheFile
 end
 
-function BuilderBase:_readFile(path, isOnlyLocal, isBuffer)
+function MyBuilderBase:_readFile(path, isOnlyLocal, isBuffer)
     self:_print("read file:" .. path)
     local isRemote = string.find(path, "http") == 1
     self:_print("is remote:" .. tostring(isRemote))
@@ -123,26 +123,26 @@ function BuilderBase:_readFile(path, isOnlyLocal, isBuffer)
     return content
 end
 
-function BuilderBase:setName(name)
+function MyBuilderBase:setName(name)
     assert(string.valid(name), 'invalid task name for builder')
     self._name = name
 end
 
-function BuilderBase:getName(name)
+function MyBuilderBase:getName(name)
     return self._name
 end
 
-function BuilderBase:setDebug(value)
+function MyBuilderBase:setDebug(value)
     assert(is_boolean(value), 'invalid task name for builder')
     self._isDebug = value
 end
 
-function BuilderBase:setRelease(value)
+function MyBuilderBase:setRelease(value)
     assert(is_boolean(value), 'invalid task name for builder')
     self._isRelease = value
 end
 
-function BuilderBase:setInput(...)
+function MyBuilderBase:setInput(...)
     self:_print("input files ...")
     self:_assert(table.is_empty(self._inputFiles), "input files are already defined")
     local fileArr = {...}
@@ -159,7 +159,7 @@ function BuilderBase:setInput(...)
     return self
 end
 
-function BuilderBase:setOutput(path)
+function MyBuilderBase:setOutput(path)
     self:_print("output file ...")
     self:_assert(self._outputFile == nil, "output file is already defined")
     self:_print("output file:" .. path)
@@ -167,15 +167,13 @@ function BuilderBase:setOutput(path)
     return self
 end
 
-function BuilderBase:_processBuild()
+function MyBuilderBase:_processBuild()
     self:_error("please implement start func ...")
 end
 
-function BuilderBase:start()
+function MyBuilderBase:start()
     self:_print('BUILD START:')
     self:_processBuild()
     self:_print('BUILD END!\n')
     return self
 end
-
-return BuilderBase
