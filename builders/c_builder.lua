@@ -212,8 +212,6 @@ function MyCBuilder:__init__()
     self._linkingTags = {}
     self._extraFlags = {}
     self._targetExecutable = nil
-    self._libPath = self._workDir .. "libs/"
-    files.mk_folder(self._libPath)
     self.MY_RES_FILE_PATH = self._buildDir .. ".lcb_resource.res"
     self.MY_RC_FILE_PATH = self._buildDir .. ".lcb_resource.rc"
     files.write(self.MY_RES_FILE_PATH, "")
@@ -223,21 +221,21 @@ end
 function MyCBuilder:_downloadByGit(config)
     local url = config[KEYS.URL]
     local branch = config[KEYS.BRANCH] or 'master'
-    local directory = self._libPath .. config[KEYS.NAME] .. "/"
+    local directory = self._libsDir .. config[KEYS.NAME] .. "/"
     MyCSuper._downloadByGit(self, url, branch, directory)
 end
 
 function MyCBuilder:_downloadByZip(config)
     local name = config[KEYS.NAME]
     local url = config[KEYS.URL]
-    local directory = self._libPath .. name .. "/"
+    local directory = self._libsDir .. name .. "/"
     MyCSuper._downloadByZip(self, url, directory)
 end
 
 function MyCBuilder:_downloadByGzip(config)
     local name = config[KEYS.NAME]
     local url = config[KEYS.URL]
-    local directory = self._libPath .. name .. "/"
+    local directory = self._libsDir .. name .. "/"
     MyCSuper._downloadByGzip(self, url, directory)
 end
 
@@ -274,7 +272,7 @@ end
 
 function MyCBuilder:_containLib(name)
     local config = self:_getConfig(name)
-    local directory = self._libPath .. name .. "/"
+    local directory = self._libsDir .. name .. "/"
     self:_assert(config ~= nil, string.format("lib [%s] not found", name))
     self:_assert(files.is_folder(directory), string.format("lib [%s] not installed", name))
     --
@@ -323,7 +321,7 @@ end
 function MyCBuilder:_containFiles(name)
     local config = self:_getConfig(name)
     self:_assert(config ~= nil, string.format("lib [%s] not found", name))
-    local directory = self._libPath .. name .. "/"
+    local directory = self._libsDir .. name .. "/"
     local arr = config[KEYS.FILES] or {}
     for i,v in ipairs(arr) do
         local path = v

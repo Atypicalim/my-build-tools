@@ -4,12 +4,15 @@
 
 -- import lua tools
 package.path = package.path .. ";./pure-lua-tools/?.lua"
+package.path = package.path .. ";../../pure-lua-tools/?.lua"
 require('test')
 
 -- import available builders
+package.path = package.path .. ";./?.lua"
 package.path = package.path .. ";builders/?.lua"
 dofile(files.csd() .. "builder_base.lua")
 dofile(files.csd() .. "builders/c_builder.lua")
+dofile(files.csd() .. "builders/lua_builder.lua")
 dofile(files.csd() .. "builders/html_builder.lua")
 dofile(files.csd() .. "builders/code_builder.lua")
 
@@ -18,7 +21,7 @@ if not rawget(_G, 'builder') then
 end
 local builder = rawget(_G, 'builder')
 local UI_LENGTH = 48
-local builders = {"c", "html", "code"}
+local builders = {"c", "lua", "html", "code"}
 local tasks = {}
 
 local MY_BUILDER_TEMPLATE = [[
@@ -27,7 +30,7 @@ local MY_BUILDER_TEMPLATE = [[
 -- package.path = package.path .. ";./.my-build-tools/?.lua"
 
 local builder = require("builder")
-local task = builder.html {
+local task = builder.%s {
     name = "%s",
     debug = false,
     release = false,
@@ -53,7 +56,7 @@ local function _builder_init()
     local taskName = console.print_enter()
     print("| please select task type:")
     local taskType = console.print_select(builders)
-    local myBuilderText = string.format(MY_BUILDER_TEMPLATE, taskName, taskType, taskType)
+    local myBuilderText = string.format(MY_BUILDER_TEMPLATE, taskType, taskName, taskType, taskType)
     files.write('./build.lua', myBuilderText)
     print("| created!")
 end
@@ -121,6 +124,10 @@ function builder.c(...)
     return _builder_build(MyCBuilder, ...)
 end
 
+function builder.lua(...)
+    return _builder_build(MyLuaBuilder, ...)
+end
+
 function builder.html(...)
     return _builder_build(MyHtmlBuilder, ...)
 end
@@ -171,13 +178,6 @@ if debug.getinfo(2).name == "require" then
     return builder
 elseif files.is_file("./build.lua") then
     require('build')
-    local name = arg and arg[1] or "UNKNOWN"
-    local obj = builder.find(name)
-    if obj then
-        obj:start()
-    else
-        error('task object not found for name: ' .. name)
-    end
 else
     _builder_init()
 end

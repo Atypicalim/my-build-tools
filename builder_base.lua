@@ -21,6 +21,9 @@ function MyBuilderBase:__init__(buildType)
     self._workDir = files.csd() .. "/build/"
     self._buildDir = self._workDir .. buildType .. "_dir/"
     self._cacheDir = self._workDir .. "cache/"
+    self._libsDir = self._workDir .. buildType .. "_libs/"
+    files.mk_folder(self._cacheDir)
+    files.mk_folder(self._libsDir)
     self._needUpdate = false
     self._name = "UNKNOWN"
     self._isDebug = false
@@ -58,6 +61,20 @@ function MyBuilderBase:_downloadByGit(url, branch, directory)
     end
 end
 
+function MyBuilderBase:_downloadByTar(url, directory)
+    if files.is_folder(directory) then
+        self:_print('downloaded!')
+        return
+    end
+    local cacheFile = self:_downloadByUrl(url)
+    self:_print('untarring...')
+    files.mk_folder(directory)
+    local cmd = string.format("tar -xvzf %s -C %s", cacheFile, directory)
+    local isOk, err = tools.execute(cmd)
+    files.delete(cacheFile)
+    self:_assert(isOk, "untar failed, err:" .. tostring(err))
+end
+
 function MyBuilderBase:_downloadByZip(url, directory)
     if files.is_folder(directory) then
         self:_print('downloaded!')
@@ -65,6 +82,7 @@ function MyBuilderBase:_downloadByZip(url, directory)
     end
     local cacheFile = self:_downloadByUrl(url)
     self:_print('unzipping...')
+    files.mk_folder(directory)
     local cmd = string.format("unzip %s -d %s", cacheFile, directory)
     local isOk, err = tools.execute(cmd)
     files.delete(cacheFile)
