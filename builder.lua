@@ -3,7 +3,7 @@
 ]]
 
 -- import lua tools
-package.path = package.path .. ";../../pure-lua-tools/?.lua"
+package.path = package.path .. ";./pure-lua-tools/?.lua"
 require('test')
 
 -- import available builders
@@ -17,8 +17,24 @@ if not rawget(_G, 'builder') then
     rawset(_G, 'builder', {})
 end
 local builder = rawget(_G, 'builder')
-local UI_LENGTH = 25
+local UI_LENGTH = 48
+local builders = {"c", "html", "code"}
 local tasks = {}
+
+local MY_BUILDER_TEMPLATE = [[
+
+-- pcall(os.execute, "git clone git@github.com:kompasim/my-build-tools.git ./.my-build-tools")
+-- package.path = package.path .. ";./.my-build-tools/?.lua"
+
+local builder = require("builder")
+local task = builder.html {
+    name = "%s",
+    debug = false,
+    release = false,
+    input = "./source.%s",
+    output = "./target",
+} :start()
+]]
 
 function string.split_by_upper(word)
     local res = {}
@@ -26,6 +42,20 @@ function string.split_by_upper(word)
         table.insert(res, sub)
     end
     return res
+end
+
+local function _builder_init()
+    print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
+    print("|" .. string.center("My Builder", UI_LENGTH, " ") .. "|")
+    print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
+    print("| build.lua not found, craeting ...")
+    print("| please enter task name:")
+    local taskName = console.print_enter()
+    print("| please select task type:")
+    local taskType = console.print_select(builders)
+    local myBuilderText = string.format(MY_BUILDER_TEMPLATE, taskName, taskType, taskType)
+    files.write('./build.lua', myBuilderText)
+    print("| created!")
 end
 
 local function _builder_help(obj)
@@ -104,8 +134,14 @@ function builder.help()
     print("|" .. string.center("builder help", UI_LENGTH, " ") .. "|")
     print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
     print('| builders:')
+    for _,v in pairs(builders) do
+        print('|', "*", v)
+    end
+    print('| functions:')
     for k,v in pairs(builder) do
-        print('|', "*", k)
+        if not table.find_value(builders, k) then
+            print('|', "*", k)
+        end
     end
     print("-" .. string.center("-", UI_LENGTH, "-") .. "-")
 end
@@ -143,6 +179,5 @@ elseif files.is_file("./build.lua") then
         error('task object not found for name: ' .. name)
     end
 else
-    -- run or create build.lua
-    error('build.lua file not found for builder')
+    _builder_init()
 end
