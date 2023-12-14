@@ -27,15 +27,11 @@ function MyLuaBuilder:_processBuild()
         inputs = inputs .. v .. " "
     end
     -- glue srlua.exe source.lua target.exe
+    self:_print('packaging...')
     local cmd = string.format("%s %s %s %s.exe", glue, srlua, inputs, self._outputFile)
-    if self._isRelease then
-        cmd = cmd
-    end
     if self._isDebug then
         self:_print(string.format("cmd:%s", cmd))
     end
-    -- 
-    self:_print('packaging...')
     local isOk, output = tools.execute(cmd)
     if not isOk then
         self:_print("package process failed!")

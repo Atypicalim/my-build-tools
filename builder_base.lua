@@ -164,14 +164,14 @@ end
 function MyBuilderBase:setInput(...)
     self:_print("input files ...")
     self:_assert(table.is_empty(self._inputFiles), "input files are already defined")
-    local fileArr = {...}
-    for i,v in ipairs(fileArr) do
+    local inputArr = {...}
+    for i,v in ipairs(inputArr) do
         local path = v
         if not files.is_file(path) then
             path = self._projDir .. v
         end
-        self:_assert(files.is_file(path), "input file not found:" .. v)
-        self:_print("input file:" .. v)
+        self:_assert(files.is_file(path) or files.is_folder(path), "input file not found:" .. v)
+        self:_print("input path:" .. v)
         table.insert(self._inputNames, v)
         table.insert(self._inputFiles, path)
     end
