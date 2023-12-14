@@ -4,8 +4,6 @@
 
 MyLuaBuilder, MyLuaSuper = class("MyLuaBuilder", MyBuilderBase)
 
-local SRLUA = "https://web.archive.org/web/20130721014948if_/http://www.soongsoft.com/lhf/lua/5.1/srlua.tgz"
-
 function MyLuaBuilder:__init__()
     MyLuaSuper.__init__(self, "lua")
     self._targetExecutable = nil
@@ -21,13 +19,9 @@ function MyLuaBuilder:_processBuild()
     self:_print('PROCESS PACKAGE START!')
     self:_assert(self._inputFiles[1] ~= nil, "input files are not defined!")
     self:_assert(self._outputFile ~= nil, "output file is not defined!")
-    --
-    self:_print('downlaoding srlua ...')
-    local directory = self._libsDir .. "srlua/"
-    MyCSuper._downloadByTar(self, SRLUA, directory)
-    --
-    local glue = directory .. "srlua/Release/glue.exe"
-    local srlua = directory .. "srlua/Release/srlua.exe"
+    -- https://web.archive.org/web/20130721014948if_/http://www.soongsoft.com/lhf/lua/5.1/srlua.tgz
+    local glue = self._rootDir .. "tools/srlua/glue.exe"
+    local srlua = self._rootDir .. "tools/srlua/srlua.exe"
     local inputs = ""
     for i,v in ipairs(self._inputFiles) do
         inputs = inputs .. v .. " "

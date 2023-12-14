@@ -6,8 +6,8 @@ package.path = package.path .. ";../../?.lua"
 local builder = require("builder")
 
 local builder = builder.lua {}
-builder:setInput('./test.lua')
-builder:setOutput('test')
+builder:setInput('./example.lua')
+builder:setOutput('example')
 builder:start()
 builder:run()
 
