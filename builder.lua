@@ -13,7 +13,6 @@ package.path = package.path .. ";builders/?.lua"
 dofile(files.csd() .. "builder_base.lua")
 dofile(files.csd() .. "builders/c_builder.lua")
 dofile(files.csd() .. "builders/lua_builder.lua")
-dofile(files.csd() .. "builders/love_builder.lua")
 dofile(files.csd() .. "builders/html_builder.lua")
 dofile(files.csd() .. "builders/code_builder.lua")
 
@@ -22,7 +21,7 @@ if not rawget(_G, 'builder') then
 end
 local builder = rawget(_G, 'builder')
 local UI_LENGTH = 48
-local builders = {"c", "lua", "love", "html", "code"}
+local builders = {"c", "lua", "html", "code"}
 local tasks = {}
 
 local MY_BUILDER_TEMPLATE = [[
@@ -127,10 +126,6 @@ end
 
 function builder.lua(...)
     return _builder_build(MyLuaBuilder, ...)
-end
-
-function builder.love(...)
-    return _builder_build(MyLoveBuilder, ...)
 end
 
 function builder.html(...)
