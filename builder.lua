@@ -4,6 +4,7 @@
 
 -- import lua tools
 package.path = package.path .. ";./pure-lua-tools/?.lua"
+package.path = package.path .. ";./../pure-lua-tools/?.lua"
 package.path = package.path .. ";../../pure-lua-tools/?.lua"
 require('test')
 
