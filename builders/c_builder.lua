@@ -201,6 +201,12 @@ CONFIGS = {
         [KEYS.BRANCH] = "master",
         [KEYS.DIR_I] = "./",
     },
+    -- Include binary files in C/C++
+    ["incbin"] = {
+        [KEYS.URL] = "git@github.com:graphitemaster/incbin.git",
+        [KEYS.BRANCH] = "main",
+        [KEYS.DIR_I] = "./",
+    },
 }
 
 MyCBuilder, MyCSuper = class("MyCBuilder", MyBuilderBase)
