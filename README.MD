@@ -12,7 +12,14 @@ local builder = require("builder").c {
 } :start():run()
 ```
 
-2. libs: 
+2. builders
+
+* c
+* lua
+* code
+* html
+
+3. libs: 
 
 * lua
 * raylib
