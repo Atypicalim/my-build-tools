@@ -431,12 +431,20 @@ function MyCBuilder:_processBuild()
     --
     files.delete(self.MY_RES_FILE_PATH)
     files.delete(self.MY_RC_FILE_PATH)
-    self:_print('PROCESS GCC END!\n')
+    self:_print('PROCESS GCC END!')
     return self
 end
 
 function MyCBuilder:run(path)
     path = path and (self._projDir .. path) or self._targetExecutable
-    self:_print("RUNNING:" .. path)
-    os.execute(path)
+    local _path = Path(path)
+    local dir = _path:getDir()
+    local nameWithExt, name, ext = _path:getNameWithExt()
+    self:_print("RUNNING:" .. _path:get())
+    local exe = tools.is_windows() and ".\\" .. nameWithExt or "./" .. name
+    local cmd = string.format("cd %s && %s", dir, exe)
+    if self._isDebug then
+        self:_print("cmd:" .. cmd)
+    end
+    os.execute(cmd)
 end
