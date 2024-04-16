@@ -5,6 +5,7 @@ package.path = package.path .. ";../?.lua"
 local builder = require("builder")
 
 local builder = builder.c {}
+builder:setDebug(false)
 builder:setInput('./test.c')
 builder:setLibs({
     "thread",
@@ -13,6 +14,11 @@ builder:setLibs({
     "microtar",
     "minicoro",
     "incbin",
+    "naett",
+    "tigr",
+    "webview",
+    "sandbird",
+    "stb",
 })
 builder:setOutput('test')
 builder:start()

@@ -170,6 +170,7 @@ CONFIGS = {
         [KEYS.DIR_I] = "./src/",
         [KEYS.LIB_L] = {"ws2_32"},
         [KEYS.FLAGS] = " -pedantic -Wall -Wextra ",
+        [KEYS.FILES] = {"sandbird.c"},
     },
     -- A lightweight tar library written in ANSI C
     ["microtar"] = {

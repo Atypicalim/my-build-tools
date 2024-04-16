@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
+
+
+char HTML_CODE[] = "data:text/html,%s"; // [M[ FILE_STRING | ../resources/test.html ]M]
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -136,6 +140,148 @@ void run_incbin() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// tigr
+#include "tigr.c"
+void run_tigr() {
+    printf("\ntigr.start:\n");
+    Tigr *screen = tigrWindow(320, 240, "Hello", 0);
+    while (!tigrClosed(screen))
+    {
+        tigrClear(screen, tigrRGB(0x80, 0x90, 0xa0));
+        tigrPrint(screen, tfont, 120, 110, tigrRGB(0xff, 0xff, 0xff), "hello...");
+        tigrUpdate(screen);
+    }
+    tigrFree(screen);
+    printf("tigr.end!\n");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// webview
+#define WEBVIEW_IMPLEMENTATION
+#include "webview.h"
+static void webview_callback(struct webview *w, const char *arg) {
+  printf("Callback called with '%s'\n", arg);
+}
+void run_webview() {
+    printf("\nwebview.start:\n");
+    //
+    INCBIN(Html, "../resources/test.html");
+    char* t = malloc(1024 * 10);
+    sprintf (t, "data:text/html,%s", gHtmlData);
+    // 
+    struct webview webview;
+    memset(&webview, 0, sizeof(webview));
+    webview.title = "title";
+    webview.url = t;
+    webview.width = 550;
+    webview.height = 550;
+    webview.resizable = FALSE;
+    webview.debug = TRUE;
+    webview.external_invoke_cb = &webview_callback;
+    int r = webview_init(&webview);
+    do {
+        r = webview_loop(&webview, 1);
+    } while (r == 0);
+    webview_exit(&webview);
+    //
+    printf("webview.end!\n");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// stb
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+void run_stb() {
+    printf("\nstb.start:\n");
+    char *input = "../resources/test.jpg";
+    char *out = "./test.png";
+    //
+    int width, height, channels;
+    unsigned char *data = stbi_load(input, &width, &height, &channels, 0);
+    if (!data) {
+        printf("stb.read [%s] failed!\n", input);
+        return 1;
+    }
+    //
+    printf("stb.read:%s\n", input);
+    printf("stb.width: %d\n", width);
+    printf("stb.height: %d\n", height);
+    printf("stb.channels: %d\n", channels);
+    unsigned bytePerPixel = channels;
+    for (int x = 0; x < 100; x++) {
+        for (int y = 0; y < 100; y++) {
+            int offset = channels * (y * width + x);
+            data[offset + 0] = 0;
+            data[offset + 1] = data[offset + 1] / 1;
+            data[offset + 2] = data[offset + 2] / 2;
+        }
+    }
+    //
+    stbi_write_png(out, width, height, channels, data, width * channels);
+    stbi_image_free(data);
+    printf("stb.write:%s\n", out);
+    printf("stb.end!\n");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// naett
+#include "naett.c"
+void run_naett() {
+    printf("\naett.start:\n");
+    //
+    naettInit(NULL);
+    naettReq* req = naettRequest("http://ip.jsontest.com/", naettMethod("GET"), naettHeader("accept", "*/*"));
+    naettRes* res = naettMake(req);
+    //
+    while (!naettComplete(res)) {
+        usleep(100 * 1000);
+    }
+    if (naettGetStatus(res) < 0) {
+        printf("naett.failed!\n");
+        return 1;
+    }
+    int bodyLength = 0;
+    const char* body = naettGetBody(res, &bodyLength);
+    //
+    printf("naett.Header-> '%s'\n", naettGetHeader(res, "Content-Type"));
+    printf("naett.Length-> %d bytes\n", bodyLength);
+    printf("naett.body:%s\n", body);
+    printf("naett.end!\n");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// sandbird
+#include "sandbird.h"
+static int sandbird_handler(sb_Event *e) {
+    if (e->type == SB_EV_REQUEST) {
+        printf("request:addr:[%s],method:[%s],path:[%s]\n", e->address, e->method, e->path);
+        sb_send_status(e->stream, 200, "OK");
+        sb_send_header(e->stream, "Content-Type", "text/plain");
+        sb_writef(e->stream, "Hello world!");
+    }
+    return SB_RES_OK;
+}
+void run_sandbird() {
+    printf("\nsandbird.start:\n");
+    sb_Options opt;
+    memset(&opt, 0, sizeof(opt));
+    opt.port = "8000";
+    opt.handler = sandbird_handler;
+    sb_Server *server = sb_new_server(&opt);
+    printf("sandbird.addr: http://localhost:%s\n", opt.port);
+    while (1) sb_poll_server(server, 1000);
+    sb_close_server(server);
+    printf("sandbird.end!\n");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 int main(int argc, char **argv)
 {
     // run_thread();
@@ -144,5 +290,9 @@ int main(int argc, char **argv)
     // run_tar();
     // run_coro();
     // run_incbin();
-    // 1**4;
+    // run_tigr();
+    // run_webview();
+    // run_stb();
+    // run_naett();
+    // run_sandbird();
 }
