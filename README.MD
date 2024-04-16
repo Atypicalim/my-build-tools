@@ -12,14 +12,22 @@ local builder = require("builder").c {
 } :start():run()
 ```
 
-2. builders
+2. watch:
+
+```lua
+files.watch('./test.c', function(path, newTime)
+    print(path, os.date("modified at: %Y-%m-%d %H:%M:%S", newTime))
+end)
+```
+
+3. builders
 
 * c
 * lua
 * code
 * html
 
-3. libs: 
+4. libs: 
 
 * lua
 * raylib
