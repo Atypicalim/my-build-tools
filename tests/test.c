@@ -4,12 +4,37 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+// #define TEST_INCBIN
+// #define TEST_THREAD
+// #define TEST_MD5
+// #define TEST_BASE64
+// #define TEST_TAR
+// #define TEST_CORO
+// #define TEST_LUA
+// #define TEST_TIGR
+// #define TEST_RAYLIB
+// #define TEST_WEBVIEW
+// #define TEST_STB
+// #define TEST_NAETT
+// #define TEST_SANDBOX
 
-char HTML_CODE[] = "data:text/html,%s"; // [M[ FILE_STRING | ../resources/test.html ]M]
+////////////////////////////////////////////////////////////////////////////////
+
+// incbin
+#ifdef TEST_INCBIN
+#include "incbin.h"
+void run_incbin() {
+    printf("\nincbin.start:\n");
+    INCBIN(Dynamic, "../resources/test.txt");
+    printf("incbin.txt:%s\n", gDynamicData);
+    printf("incbin.end!\n");
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // thread
+#ifdef TEST_THREAD
 #include "tinycthread.c"
 int _thread_body(void *aArg)
 {
@@ -28,10 +53,12 @@ void run_thread() {
     }
     printf("thread.end!\n");
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // md5
+#ifdef TEST_MD5
 #include "md5.h"
 void _md5_print(uint8_t *p){
 	for(unsigned int i = 0; i < 16; ++i){
@@ -52,10 +79,12 @@ void run_md5()
     _md5_print(txt2);
     printf("md5.end!\n");
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // base64
+#ifdef TEST_BASE64
 #include "base64.c"
 void run_base64()
 {
@@ -70,10 +99,12 @@ void run_base64()
     free(decodedText);
     printf("base64.end!\n");
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // tar
+#ifdef TEST_TAR
 #include "microtar.h"
 void run_tar() {
     printf("\ntar.start:\n");
@@ -98,10 +129,12 @@ void run_tar() {
     //
     printf("tar.end!\n");
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // coro
+#ifdef TEST_CORO
 #define MINICORO_IMPL
 #include "minicoro.h"
 void _coro_body(mco_coro *co)
@@ -126,21 +159,50 @@ void run_coro() {
     mco_destroy(co);
     printf("coro.end!\n");
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// incbin
-#include "incbin.h"
-void run_incbin() {
-    printf("\nincbin.start:\n");
-    INCBIN(Dynamic, "../resources/test.txt");
-    printf("incbin.txt:%s\n", gDynamicData);
-    printf("incbin.end!\n");
+// lua
+#ifdef TEST_LUA
+#define LUA_IMPL
+#define LUAA_LUAIMPLEMENTATION
+#include "minilua.h"
+#include "lautoc.c"
+int lua_my_fib(int n) {
+    if (n == 0) { return 0; }
+    if (n == 1) { return 1; }
+    return lua_my_fib(n-1) + lua_my_fib(n-2);
 }
+int lua_my_call(lua_State* L) {
+    char *name = lua_tostring(L, 1);
+    return luaA_call_name(L, name);
+}
+void run_lua() {
+    printf("\nlua.start:\n");
+    INCBIN(Script, "../resources/test.lua");
+    // 
+    lua_State *L = luaL_newstate();
+    if(L == NULL) return -1;
+    //
+    luaA_open(L);
+    luaA_function(L, lua_my_fib, int, int);
+    lua_register(L, "lua_my_call", lua_my_call);
+    //
+    luaL_openlibs(L);
+    luaL_loadstring(L, gScriptData);
+    lua_call(L, 0, 0);
+    //
+    luaA_close(L);
+    lua_close(L);
+    printf("lua.end!\n");
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // tigr
+#ifdef TEST_TIGR
 #include "tigr.c"
 void run_tigr() {
     printf("\ntigr.start:\n");
@@ -154,10 +216,41 @@ void run_tigr() {
     tigrFree(screen);
     printf("tigr.end!\n");
 }
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+
+// raylib
+#ifdef TEST_RAYLIB
+#include "raylib.h"
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
+void run_raylib() {
+    printf("\nraylib.start:\n");
+    Rectangle button_rect = { 150, 150, 175, 75 };
+    InitWindow(500, 500, "raylib...");
+    SetTargetFPS(60);
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        // 
+        if(GuiButton(button_rect, "Click me!")) {
+            printf("raylib.pressed!\n");
+        }
+        // 
+        DrawText("hello...", 30, 30, 36, LIGHTGRAY);
+        EndDrawing();
+    }
+    CloseWindow();
+    printf("raylib.end!\n");
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // webview
+#ifdef TEST_WEBVIEW
 #define WEBVIEW_IMPLEMENTATION
 #include "webview.h"
 static void webview_callback(struct webview *w, const char *arg) {
@@ -167,13 +260,13 @@ void run_webview() {
     printf("\nwebview.start:\n");
     //
     INCBIN(Html, "../resources/test.html");
-    char* t = malloc(1024 * 10);
-    sprintf (t, "data:text/html,%s", gHtmlData);
+    char* content = malloc(1024 * 10);
+    sprintf(content, "data:text/html,%s", gHtmlData);
     // 
     struct webview webview;
     memset(&webview, 0, sizeof(webview));
     webview.title = "title";
-    webview.url = t;
+    webview.url = content;
     webview.width = 550;
     webview.height = 550;
     webview.resizable = FALSE;
@@ -187,10 +280,12 @@ void run_webview() {
     //
     printf("webview.end!\n");
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // stb
+#ifdef TEST_STB
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -226,10 +321,12 @@ void run_stb() {
     printf("stb.write:%s\n", out);
     printf("stb.end!\n");
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // naett
+#ifdef TEST_NAETT
 #include "naett.c"
 void run_naett() {
     printf("\naett.start:\n");
@@ -253,10 +350,12 @@ void run_naett() {
     printf("naett.body:%s\n", body);
     printf("naett.end!\n");
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // sandbird
+#ifdef TEST_SANDBOX
 #include "sandbird.h"
 static int sandbird_handler(sb_Event *e) {
     if (e->type == SB_EV_REQUEST) {
@@ -279,20 +378,62 @@ void run_sandbird() {
     sb_close_server(server);
     printf("sandbird.end!\n");
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char **argv)
 {
-    // run_thread();
-    // run_base64();
-    // run_md5();
-    // run_tar();
-    // run_coro();
-    // run_incbin();
-    // run_tigr();
-    // run_webview();
-    // run_stb();
-    // run_naett();
-    // run_sandbird();
+    #ifdef TEST_THREAD
+    run_thread();
+    #endif
+
+    #ifdef TEST_MD5
+    run_md5();
+    #endif
+
+    #ifdef TEST_BASE64
+    run_base64();
+    #endif
+
+    #ifdef TEST_TAR
+    run_tar();
+    #endif
+
+    #ifdef TEST_CORO
+    run_coro();
+    #endif
+
+    #ifdef TEST_INCBIN
+    run_incbin();
+    #endif
+
+    #ifdef TEST_LUA
+    run_lua();
+    #endif
+
+    #ifdef TEST_TIGR
+    run_tigr();
+    #endif
+
+    #ifdef TEST_RAYLIB
+    run_raylib();
+    #endif
+
+    #ifdef TEST_WEBVIEW
+    run_webview();
+    #endif
+
+    #ifdef TEST_STB
+    run_stb();
+    #endif
+
+    #ifdef TEST_NAETT
+    run_naett();
+    #endif
+
+    #ifdef TEST_SANDBOX
+    run_sandbird();
+    #endif
+
 }
