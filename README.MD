@@ -8,8 +8,7 @@
 local builder = require("builder").c {
     input = "./test.c",
     output = "test",
-    libs = {},
-} :start():run()
+} setLibs({}):setIcon('./test.ico'):start():run()
 ```
 
 2. watch:
