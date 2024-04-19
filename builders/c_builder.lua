@@ -208,6 +208,13 @@ CONFIGS = {
         [KEYS.BRANCH] = "main",
         [KEYS.DIR_I] = "./",
     },
+    -- A simple Bitmap (BMP) library.
+    ["bmp"] = {
+        [KEYS.URL] = "git@github.com:marc-q/libbmp.git",
+        [KEYS.BRANCH] = "master",
+        [KEYS.DIR_I] = "./",
+        [KEYS.FILES] = {"libbmp.c"},
+    },
 }
 
 MyCBuilder, MyCSuper = class("MyCBuilder", MyBuilderBase)

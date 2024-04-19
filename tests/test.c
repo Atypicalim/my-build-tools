@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <math.h>
 
 // #define TEST_INCBIN
 // #define TEST_THREAD
@@ -15,6 +16,7 @@
 // #define TEST_RAYLIB
 // #define TEST_WEBVIEW
 // #define TEST_STB
+// #define TEST_BMP
 // #define TEST_NAETT
 // #define TEST_SANDBOX
 
@@ -325,6 +327,35 @@ void run_stb() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// bmp
+#ifdef TEST_BMP
+#include "libbmp.h"
+void run_bmp() {
+    printf("bmp.start:\n");
+    char *path = "../resources/test.bmp";
+    // 
+	bmp_img img;
+    int width = 128;
+    int height = 128;
+    printf("bmp.write:%d*%d\n", width, height);
+	bmp_img_init_df (&img, width, height);
+	for (size_t y = 0, x; y < height; y++) {
+		for (x = 0; x < width; x++) {
+            unsigned char r = x % 255;
+            unsigned char g = y % 255;
+            unsigned char b = (r + g) % 128;
+			bmp_pixel_init (&img.img_pixels[y][x], r, g, b);
+		}
+	}
+	bmp_img_write (&img, path);
+	bmp_img_free (&img);
+    // 
+    printf("bmp.end!\n");
+}
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+
 // naett
 #ifdef TEST_NAETT
 #include "naett.c"
@@ -426,6 +457,10 @@ int main(int argc, char **argv)
 
     #ifdef TEST_STB
     run_stb();
+    #endif
+
+    #ifdef TEST_BMP
+    run_bmp();
     #endif
 
     #ifdef TEST_NAETT

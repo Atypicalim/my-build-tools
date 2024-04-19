@@ -14,13 +14,14 @@ builder:setLibs({
     "microtar",
     "minicoro",
     "incbin",
-    "naett",
     "minilua", "luaauto",
     "tigr",
     "raylib",
     "webview",
-    "sandbird",
     "stb",
+    "bmp",
+    "naett",
+    "sandbird",
 })
 builder:setOutput('test')
 builder:start()
