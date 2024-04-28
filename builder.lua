@@ -11,6 +11,7 @@ require('test')
 -- import available builders
 package.path = package.path .. ";./?.lua"
 package.path = package.path .. ";builders/?.lua"
+dofile(files.csd() .. "src/constants.lua")
 dofile(files.csd() .. "builder_base.lua")
 dofile(files.csd() .. "builders/c_builder.lua")
 dofile(files.csd() .. "builders/lua_builder.lua")

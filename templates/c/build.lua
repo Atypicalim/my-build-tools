@@ -4,17 +4,17 @@
 package.path = package.path .. ";../../?.lua"
 local builder = require("builder")
 
-local builder = builder.c {}
-builder:setInput('./client.c')
-builder:setLibs("dyad")
-builder:setOutput('client')
-builder:start()
+local bldr = builder.c {}
+bldr:setInput('./client.c')
+bldr:setLibs("dyad")
+bldr:setOutput('client')
+bldr:start()
 
-local builder = builder.c {}
-builder:setInput('./server.c')
-builder:setLibs("dyad")
-builder:setOutput('server')
-builder:start()
+local bldr = builder.c {}
+bldr:setInput('./server.c')
+bldr:setLibs("dyad")
+bldr:setOutput('server')
+bldr:start()
 
 os.execute("Start " .. files.csd() .. "./server.exe")
 os.execute("Start " .. files.csd() .. "./client.exe")
