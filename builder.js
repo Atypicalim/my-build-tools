@@ -186,6 +186,8 @@ builder.find = function (name) {
     }
 };
 
+builder.tools = require("./src/tools.js");
+
 if (require.main === module) {
     builderInit();
 } else {

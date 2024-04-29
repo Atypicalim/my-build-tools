@@ -11,7 +11,7 @@
 ### 2. Usage
 
 ```js
-let builder = require("builder")
+let builder = require("my-build-tools")
 let task = builder.c({
     input = "./test.c",
     output = "test",

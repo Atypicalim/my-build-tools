@@ -109,6 +109,10 @@ files.read = (path, encoding = 'utf-8') => {
     return fs.readFileSync(path, {encoding: encoding});
 }
 
+files.copy = (_from, _to) => {
+    fs.copyFileSync(_from, _to);
+}
+
 files.size = (_path) => {
     try {
         var stats = fs.statSync(_path);
