@@ -189,7 +189,8 @@ tools.spawn = (cmd, args = [], options = {}) => {
         cwd: process.cwd(),
         env: process.env,
         stdio: [process.stdin, process.stdout, process.stderr],
-        encoding: 'utf-8'
+        encoding: 'utf-8',
+        shell: process.platform == 'win32'
     }
     Object.assign(_options, options)
     var child = child_process.spawnSync(cmd, args, _options);

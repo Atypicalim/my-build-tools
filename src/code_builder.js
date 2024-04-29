@@ -14,11 +14,16 @@ class MyCodeBuilder extends MyBuilderBase {
         this._macroStartTag = "[M[";
         this._macroEndTag = "]M]";
         this._commentTag = "//";
+        this._headFormat = '{0} {1}';
     }
 
-    setComment(commentTag) {
+    setComment(commentTag, headFormat) {
         js.assert(js.is_text(commentTag), 'invalid comment tag');
         this._commentTag = commentTag;
+        console.log("\n\n\n-->", "comment", commentTag, headFormat);
+        if (headFormat !== undefined) {
+            this._headFormat = headFormat;
+        }
         return this;
     }
 
@@ -116,13 +121,16 @@ class MyCodeBuilder extends MyBuilderBase {
             const content = files.read(path);
             this._assert(content.length > 0, "input files are empty");
             const lineArr = content.split("\n");
-
-            const currDate = new Date();
-            const headInfo = ` date:${currDate.toLocaleString()} file:${this._inputNames[i]} `;
-            this._lineArr.push("");
-            this._lineArr.push(this._commentTag + headInfo);
-            this._lineArr.push("");
-
+            //
+            if (js.is_text(this._headFormat)) {
+                const currName = this._inputNames[i];
+                const currDate = new Date().toLocaleString();
+                const headInfo = this._headFormat.format(currName, currDate);
+                this._lineArr.push("");
+                this._lineArr.push(this._commentTag + " " + headInfo);
+                this._lineArr.push("");
+            }
+            //
             for (let index = 0; index < lineArr.length; index++) {
                 const line = lineArr[index];
                 const newLine = this._parseLine(index, line);
