@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include "dyad.h"
 
 static void onData(dyad_Event *e) {

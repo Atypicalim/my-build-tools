@@ -1,32 +1,31 @@
-### My Build Tools
+## My Build Tools
 
-> this is a personal package management repository for c, we can merge codes and build single executable programs with it, there are some template projects in `./template/` directory showing how to use it.
+### 0. Description
 
-1. usage:
+> this is a personal package management and building tool for c, we can merge codes and build single executable programs with it, there are some template projects in `./template/` directory showing how to use it.
 
-```lua
-local builder = require("builder").c {
+### 1. Installing
+
+> just clone this repository to your workspace.
+
+### 2. Usage
+
+```js
+let builder = require("builder")
+let task = builder.c({
     input = "./test.c",
     output = "test",
-} setLibs({}):setIcon('./test.ico'):start():run()
+}).setLibs([]):setIcon('./test.ico'):start():run()
 ```
 
-2. watch:
-
-```lua
-files.watch('./test.c', function(path, newTime)
-    print(path, os.date("modified at: %Y-%m-%d %H:%M:%S", newTime))
-end)
-```
-
-3. builders
+### 3. Builders
 
 * c
 * lua
 * code
 * html
 
-4. libs: 
+### 4. Libs
 
 * lua
 * raylib
@@ -35,3 +34,7 @@ end)
 * dyad
 * thread
 * ...
+
+### 3. More
+
+> for more information please visit [github](https://github.com/kompasim/my-build-tools).

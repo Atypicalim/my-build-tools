@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-// #define TEST_INCBIN
+#define TEST_INCBIN
 // #define TEST_THREAD
 // #define TEST_MD5
 // #define TEST_BASE64
@@ -331,7 +331,7 @@ void run_stb() {
 #ifdef TEST_BMP
 #include "libbmp.h"
 void run_bmp() {
-    printf("bmp.start:\n");
+    printf("\nbmp.start:\n");
     char *path = "../resources/test.bmp";
     // 
 	bmp_img img;
@@ -415,6 +415,11 @@ void run_sandbird() {
 
 int main(int argc, char **argv)
 {
+
+    #ifdef TEST_INCBIN
+    run_incbin();
+    #endif
+
     #ifdef TEST_THREAD
     run_thread();
     #endif
@@ -433,10 +438,6 @@ int main(int argc, char **argv)
 
     #ifdef TEST_CORO
     run_coro();
-    #endif
-
-    #ifdef TEST_INCBIN
-    run_incbin();
     #endif
 
     #ifdef TEST_LUA
