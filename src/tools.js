@@ -193,7 +193,11 @@ tools.spawn = (cmd, args = [], options = {}) => {
     }
     Object.assign(_options, options)
     var child = child_process.spawnSync(cmd, args, _options);
-    return [child.error == null, child.error, child];
+    if (child.error == null) {
+        return [true, child];
+    } else {
+        return [false, child.error];
+    }
 }
 
 tools.get_separator = () => {
