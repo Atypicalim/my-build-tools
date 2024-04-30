@@ -18,7 +18,7 @@ function MyBuilderBase:__init__(buildType)
         end
     end
     self._projDir = dir
-    self._rootDir = files.csd()
+    self._rootDir = files.csd() .. "../"
     self._workDir = self._rootDir .. "/build/"
     self._buildDir = self._workDir .. buildType .. "_dir/"
     self._cacheDir = self._workDir .. "cache/"

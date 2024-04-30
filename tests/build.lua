@@ -5,15 +5,15 @@ package.path = package.path .. ";../?.lua"
 local builder = require("builder")
 
 local builder = builder.c {}
-builder:setDebug(false)
+builder:setDebug(true)
 builder:setInput('./test.c')
 builder:setLibs({
+    "incbin",
     "thread",
     "md5",
     "base64",
     "microtar",
     "minicoro",
-    "incbin",
     "minilua", "luaauto",
     "tigr",
     "raylib",

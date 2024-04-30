@@ -12,11 +12,11 @@ require('test')
 package.path = package.path .. ";./?.lua"
 package.path = package.path .. ";builders/?.lua"
 dofile(files.csd() .. "src/constants.lua")
-dofile(files.csd() .. "builder_base.lua")
-dofile(files.csd() .. "builders/c_builder.lua")
-dofile(files.csd() .. "builders/lua_builder.lua")
-dofile(files.csd() .. "builders/html_builder.lua")
-dofile(files.csd() .. "builders/code_builder.lua")
+dofile(files.csd() .. "src/builder_base.lua")
+dofile(files.csd() .. "src/c_builder.lua")
+dofile(files.csd() .. "src/lua_builder.lua")
+dofile(files.csd() .. "src/html_builder.lua")
+dofile(files.csd() .. "src/code_builder.lua")
 
 if not rawget(_G, 'builder') then
     rawset(_G, 'builder', {})

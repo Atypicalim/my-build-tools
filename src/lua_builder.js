@@ -28,8 +28,8 @@ class MyLuaBuilder extends MyBuilderBase {
         this._assert(this._inputFiles[0] !== undefined, "input files are not defined!");
         this._assert(this._outputFile !== undefined, "output file is not defined!");
         // https://web.archive.org/web/20130721014948if_/http://www.soongsoft.com/lhf/lua/5.1/srlua.tgz
-        const glue = this._rootDir + "tools/srlua/glue.exe";
-        const srlua = this._rootDir + "tools/srlua/srlua.exe";
+        const glue = this._rootDir + "resources/srlua/glue.exe";
+        const srlua = this._rootDir + "resources/srlua/srlua.exe";
         let inputs = "";
         for (let i = 0; i < this._inputFiles.length; i++) {
             inputs += this._inputFiles[i] + " ";
