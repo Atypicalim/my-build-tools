@@ -264,8 +264,8 @@ class MyCBuilder extends MyBuilderBase {
         if (this._isDebug) {
             this._print(`cmd:${cmd}`);
         }
-        let [isOk, err] = tools.spawn(exe, [], {cwd: dir});
-        this._print(`RUNNED:${isOk}`, err || "");
+        let [isOk, extra] = tools.spawn(exe, [], {cwd: dir});
+        this._print(`RUNNED:${isOk}`, isOk ? "" : extra);
     }
 }
 
