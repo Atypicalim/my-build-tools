@@ -10,8 +10,8 @@ let fs = require("fs");
 
 class MyHtmlBuilder extends MyBuilderBase {
 
-    constructor() {
-        super("html");
+    constructor(...args) {
+        super("html", ...args);
         this._lineArr = [];
         this._fileMap = {};
     }

@@ -14,8 +14,8 @@ id ICON "%s"
 
 class MyCBuilder extends MyBuilderBase {
 
-    constructor() {
-        super("C");
+    constructor(...args) {
+        super("C", ...args);
         this._includeDirs = [];
         this._linkingDirs = [];
         this._linkingTags = [];
@@ -25,6 +25,10 @@ class MyCBuilder extends MyBuilderBase {
         this.MY_RC_FILE_PATH = this._buildDir + ".lcb_resource.rc";
         files.write(this.MY_RES_FILE_PATH, "");
         files.write(this.MY_RC_FILE_PATH, "");
+    }
+
+    _initBuilder() {
+        
     }
 
     _downloadByGit(config) {

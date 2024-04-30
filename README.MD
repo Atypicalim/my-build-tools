@@ -12,10 +12,10 @@
 
 ```js
 let builder = require("my-build-tools")
-let task = builder.c({
+let task = new builder.C({
     input = "./test.c",
     output = "test",
-}).setLibs([]):setIcon('./test.ico'):start():run()
+}).setDebug(false).setLibs([]):setIcon('./test.ico'):start():run()
 ```
 
 ### 3. Builders

@@ -8,8 +8,8 @@ const { MyBuilderBase } = require("./builder_base.js");
 
 class MyCodeBuilder extends MyBuilderBase {
 
-    constructor() {
-        super("code");
+    constructor(...args) {
+        super("code", ...args);
         this._lineArr = [];
         this._macroStartTag = "[M[";
         this._macroEndTag = "]M]";
@@ -20,7 +20,6 @@ class MyCodeBuilder extends MyBuilderBase {
     setComment(commentTag, headFormat) {
         js.assert(js.is_text(commentTag), 'invalid comment tag');
         this._commentTag = commentTag;
-        console.log("\n\n\n-->", "comment", commentTag, headFormat);
         if (headFormat !== undefined) {
             this._headFormat = headFormat;
         }

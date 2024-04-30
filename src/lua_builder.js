@@ -10,8 +10,8 @@ const child_process = require('child_process');
 
 class MyLuaBuilder extends MyBuilderBase {
 
-    constructor() {
-        super("lua");
+    constructor(...args) {
+        super("lua", ...args);
         this._targetExecutable = null;
     }
 

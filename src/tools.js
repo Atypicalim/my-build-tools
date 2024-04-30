@@ -51,6 +51,10 @@ js.is_object = (value) => {
     return !Array.isArray(value) && typeof value == 'object';
 }
 
+js.is_function = (val) => {
+    return typeof val == 'function';
+}
+
 js.print = (...args) => {
     console.log(...args);
 }

@@ -2,15 +2,7 @@
  * builder
  */
 
-
-//  import available builders
-// import { KEYS, TYPES, CONFIGS } from "./src/constants.js";
-// import { MyCBuilder } from "./src/c_builder.js";
-// import { MyLuaBuilder } from "./src/lua_builder.js";
-// import { MyHtmlBuilder } from "./src/html_builder.js";
-// import { MyCodeBuilder } from "./src/code_builder.js";
-// import "readline";
-
+const { MyBuilderBase } = require("./src/builder_base.js");
 const { MyCBuilder } = require("./src/c_builder.js");
 const { MyLuaBuilder } = require("./src/lua_builder.js");
 const { MyHtmlBuilder } = require("./src/html_builder.js");
@@ -18,11 +10,7 @@ const { MyCodeBuilder } = require("./src/code_builder.js");
 
 const { js, files, terminal, tools } = require("./src/tools.js");
 
-if (!globalThis.builder) {
-    globalThis.builder = {};
-}
-
-const builder = globalThis.builder;
+const builder = {};
 const UI_LENGTH = 48;
 const builders = ["c", "lua", "html", "code"];
 const tasks = [];
@@ -97,54 +85,32 @@ function builderHelp(obj) {
     console.log("-" + "-".repeat(UI_LENGTH) + "-");
 }
 
-function builderParse(obj, args) {
+MyBuilderBase.createFunc = (obj, args) => {
+    args = args || {};
     for (const [k, v] of Object.entries(args)) {
-        if (!js.is_text(k)) {
-            throw new Error('Invalid argument key for builder: ' + String(k));
-        }
+        js.assert(js.is_text(k), 'Invalid argument key for builder: ' + String(k));
         const wrds = k.toLowerCase().split("_");
         const name = wrds.reduce((accumulator, word) => {
             return accumulator + word.charAt(0).toUpperCase() + word.slice(1);
         }, "");
         const func = obj['set' + name];
-        if (typeof func !== 'function') {
-            throw new Error('Unknown argument key for builder: ' + String(k));
-        }
+        js.assert(js.is_function(func), 'Unknown argument key for builder: ' + String(k));
         func.call(obj, v);
     }
+    obj.help = builderHelp;
+    tasks.push(obj);
+    return obj;
 }
 
-function builderBuild(cls, argsOrName) {
-    const obj = new cls(false);
-    const fun = function (args) {
-        builderParse(obj, args);
-        obj.help = builderHelp;
-        tasks.push(obj);
-        return obj;
-    };
-    if (typeof argsOrName === 'string') {
-        obj.setName(argsOrName);
-        return fun;
-    } else {
-        return fun(argsOrName);
-    }
-}
+builder.C = MyCBuilder
+builder.Lua = MyLuaBuilder
+builder.Html = MyHtmlBuilder
+builder.Code = MyCodeBuilder
 
-builder.c = function (...args) {
-    return builderBuild(MyCBuilder, ...args);
-};
-
-builder.lua = function (...args) {
-    return builderBuild(MyLuaBuilder, ...args);
-};
-
-builder.html = function (...args) {
-    return builderBuild(MyHtmlBuilder, ...args);
-};
-
-builder.code = function (...args) {
-    return builderBuild(MyCodeBuilder, ...args);
-};
+builder.c = (...args) => new MyCBuilder(...args);
+builder.lua = (...args) => new MyLuaBuilder(...args);
+builder.html = (...args) => new MyHtmlBuilder(...args);
+builder.code = (...args) => new MyCodeBuilder(...args);
 
 builder.help = function () {
     console.log("-" + "-".repeat(UI_LENGTH) + "-");

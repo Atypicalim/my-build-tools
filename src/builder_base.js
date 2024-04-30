@@ -8,7 +8,9 @@ var path = require("path");
 
 class MyBuilderBase {
 
-    constructor(buildType) {
+    static createFunc = null;
+
+    constructor(buildType, ...args) {
         buildType = buildType.toLowerCase();
         this._separator = tools.get_separator();
         this._printTag = "[build_" + buildType + "_tool]";
@@ -28,6 +30,8 @@ class MyBuilderBase {
         this._inputFiles = [];
         this._outputFile = null;
         files.mk_folder(this._buildDir);
+        //
+        MyBuilderBase.createFunc(this, ...args);
         console.log(`\n-----------------[JS ${buildType} Builder]---------------------\n`);
         this._print("PROJ_DIR", this._projDir);
         this._print("ROOT_DIR", this._rootDir);

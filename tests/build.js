@@ -3,7 +3,7 @@
 
 const builder = require("../builder");
 
-const bldr = builder.c({});
+let bldr = new builder.C();
 bldr.setDebug(false);
 bldr.setInput('./test.c');
 bldr.setLibs([
