@@ -2,7 +2,7 @@ import os
 import base64
 from datetime import datetime
 from .constants import KEYS, TYPES
-from .tools import js, files, tools, encryption
+from .tools import py, files, tools, encryption
 from .builder_base import MyBuilderBase
 
 class MyCodeBuilder(MyBuilderBase):
@@ -16,7 +16,7 @@ class MyCodeBuilder(MyBuilderBase):
         self._headFormat = '{0} {1}'
 
     def setComment(self, commentTag, headFormat=None):
-        js.assert(js.is_text(commentTag), 'invalid comment tag')
+        py.check(py.is_text(commentTag), 'invalid comment tag')
         self._commentTag = commentTag
         if headFormat is not None:
             self._headFormat = headFormat
@@ -58,7 +58,7 @@ class MyCodeBuilder(MyBuilderBase):
         result = f" {escapeTag}\\n ".join(lineArr)
         if minimize:
             result = " ".join(result.split())
-        js.print("\n\n\n--->", result)
+        py.print("\n\n\n--->", result)
         return code.format(result)
 
     def _COMMAND_LINE_REFPLACE(self, code, args):
@@ -100,7 +100,7 @@ class MyCodeBuilder(MyBuilderBase):
                 content = f.read()
             self._assert(len(content) > 0, "input files are empty")
             lineArr = content.split("\n")
-            if js.is_text(self._headFormat):
+            if py.is_text(self._headFormat):
                 currName = self._inputNames[i]
                 currDate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 headInfo = self._headFormat.format(currName, currDate)

@@ -1,7 +1,7 @@
 import os
 import subprocess
 from constants import KEYS, TYPES
-from tools import js, files, tools
+from tools import py, files, tools
 from builder_base import MyBuilderBase
 
 class MyLuaBuilder(MyBuilderBase):

@@ -3,3 +3,5 @@ build
 .build
 pure-lua-tools
 .pure-lua-tools
+
+__pycache__/

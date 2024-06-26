@@ -1,3 +1,5 @@
+
+import sys
 import os
 import shutil
 import subprocess
@@ -5,8 +7,10 @@ from urllib import request
 import tarfile
 import zipfile
 
+sys.path.append('./src/')
+sys.path.append('../src/')
 from constants import KEYS, TYPES
-from tools import js, files, tools, httpy
+from tools import py, files, tools, httpy
 
 class MyBuilderBase:
 
@@ -129,18 +133,18 @@ class MyBuilderBase:
         return content
 
     def setName(self, name):
-        js.assert(js.is_text(name), 'invalid task name for builder')
+        py.check(py.is_text(name), 'invalid task name for builder')
         self._name = name
 
     def getName(self):
         return self._name
 
     def setDebug(self, value):
-        js.assert(isinstance(value, bool), 'invalid task name for builder')
+        py.check(isinstance(value, bool), 'invalid task name for builder')
         self._isDebug = value
 
     def setRelease(self, value):
-        js.assert(isinstance(value, bool), 'invalid task name for builder')
+        py.check(isinstance(value, bool), 'invalid task name for builder')
         self._isRelease = value
 
     def setInput(self, *args):

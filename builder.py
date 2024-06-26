@@ -8,7 +8,7 @@ from src.lua_builder import MyLuaBuilder
 from src.html_builder import MyHtmlBuilder
 from src.code_builder import MyCodeBuilder
 
-from src.tools import js, files, terminal, tools
+from src.tools import py, files, terminal, tools
 
 builder = {}
 UI_LENGTH = 48
@@ -78,11 +78,11 @@ def builder_help(obj):
 def create_func(obj, args=None):
     args = args or {}
     for k, v in args.items():
-        js.assert_(js.is_text(k), 'Invalid argument key for builder: ' + str(k))
+        py.assert_(py.is_text(k), 'Invalid argument key for builder: ' + str(k))
         wrds = k.lower().split("_")
         name = "".join(word.capitalize() for word in wrds)
         func = getattr(obj, 'set' + name, None)
-        js.assert_(callable(func), 'Unknown argument key for builder: ' + str(k))
+        py.assert_(callable(func), 'Unknown argument key for builder: ' + str(k))
         func(v)
     obj.help = builder_help
     tasks.append(obj)
@@ -90,15 +90,15 @@ def create_func(obj, args=None):
 
 MyBuilderBase.create_func = create_func
 
-builder['C'] = MyCBuilder
-builder['Lua'] = MyLuaBuilder
-builder['Html'] = MyHtmlBuilder
-builder['Code'] = MyCodeBuilder
+C = MyCBuilder
+Lua = MyLuaBuilder
+Html = MyHtmlBuilder
+Code = MyCodeBuilder
 
-builder['c'] = lambda *args: MyCBuilder(*args)
-builder['lua'] = lambda *args: MyLuaBuilder(*args)
-builder['html'] = lambda *args: MyHtmlBuilder(*args)
-builder['code'] = lambda *args: MyCodeBuilder(*args)
+c = lambda *args: MyCBuilder(*args)
+lua = lambda *args: MyLuaBuilder(*args)
+html = lambda *args: MyHtmlBuilder(*args)
+code = lambda *args: MyCodeBuilder(*args)
 
 def builder_help_func():
     print("-" + "-" * UI_LENGTH + "-")
@@ -127,7 +127,7 @@ def builder_tasks():
 builder['tasks'] = builder_tasks
 
 def builder_find(name):
-    if not js.is_text(name):
+    if not py.is_text(name):
         raise ValueError('Invalid task name for builder')
     for obj in tasks:
         if obj.get_name() == name:
@@ -141,5 +141,5 @@ if __name__ == "__main__":
     import asyncio
     asyncio.run(builder_init())
 else:
-    import sys
-    sys.modules[__name__] = builder
+    pass
+

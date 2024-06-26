@@ -1,7 +1,7 @@
 import re
 import base64
 from constants import KEYS, TYPES
-from tools import js, files, tools, encryption
+from tools import py, files, tools, encryption
 from builder_base import MyBuilderBase
 
 class MyHtmlBuilder(MyBuilderBase):

@@ -3,8 +3,8 @@ import subprocess
 import yaml
 from pathlib import Path
 from builder_base import MyBuilderBase
-from tools import js, files, tools
-from constants import KEYS, TYPES, CONFIGS
+from tools import py, files, tools
+from constants import KEYS, TYPES
 
 MY_RC_FILE_TEMPLATE = """
 id ICON "%s"
@@ -86,7 +86,7 @@ class MyCBuilder(MyBuilderBase):
             self._assert(files.is_folder(dir), f"include directory [{dir}] not found")
             self._includeDirs.append(dir)
 
-        if js.is_string(config[KEYS.DIR_I]):
+        if py.is_string(config[KEYS.DIR_I]):
             insertInclude(config[KEYS.DIR_I])
         elif isinstance(config[KEYS.DIR_I], list):
             for v in config[KEYS.DIR_I]:
@@ -97,7 +97,7 @@ class MyCBuilder(MyBuilderBase):
             self._assert(files.is_folder(dir), f"linking directory [{dir}] not found")
             self._linkingDirs.append(dir)
 
-        if js.is_string(config[KEYS.DIR_L]):
+        if py.is_string(config[KEYS.DIR_L]):
             insertLinking(config[KEYS.DIR_L])
         elif isinstance(config[KEYS.DIR_L], list):
             for v in config[KEYS.DIR_L]:
@@ -106,13 +106,13 @@ class MyCBuilder(MyBuilderBase):
         def insertTags(tag):
             self._linkingTags.append(tag)
 
-        if js.is_string(config[KEYS.LIB_L]):
+        if py.is_string(config[KEYS.LIB_L]):
             insertTags(config[KEYS.LIB_L])
         elif isinstance(config[KEYS.LIB_L], list):
             for v in config[KEYS.LIB_L]:
                 insertTags(v)
 
-        if js.is_string(config[KEYS.FLAGS]):
+        if py.is_string(config[KEYS.FLAGS]):
             self._extraFlags.append(config[KEYS.FLAGS])
 
     def _containFiles(self, name):
