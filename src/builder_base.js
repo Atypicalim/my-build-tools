@@ -2,7 +2,7 @@
  * base
  */
 
-const { KEYS, TYPES, CONFIGS } = require("./constants.js");
+const { KEYS, TYPES } = require("./constants.js");
 const { js, files, tools, httpy } = require("./tools.js");
 var path = require("path");
 

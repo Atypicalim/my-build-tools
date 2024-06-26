@@ -7,6 +7,8 @@ const { js, files, tools } = require("./tools.js");
 const { MyBuilderBase } = require("./builder_base.js");
 
 const child_process = require('child_process');
+const yaml = require('js-yaml');
+const fs   = require('fs');
 
 const MY_RC_FILE_TEMPLATE = `
 id ICON "%s"
@@ -53,7 +55,9 @@ class MyCBuilder extends MyBuilderBase {
     }
 
     _getConfig(name) {
-        const config = CONFIGS[name];
+        const file = fs.readFileSync('../src/origins.yml', 'utf8');
+        const configs = yaml.load(file);
+        const config = configs[name];
         this._assert(config !== undefined, `lib [${name}] not found`);
         if (tools.is_windows()) {
             Object.assign(config, config[KEYS.WIN] || {});

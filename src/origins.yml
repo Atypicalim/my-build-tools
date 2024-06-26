@@ -1,0 +1,158 @@
+
+# Single-file port of Lua, a powerful scripting language.
+minilua:
+    URL: "git@github.com:edubart/minilua.git"
+    BRANCH: "main"
+    DIR_I: "./"
+# Automagically use C Functions and Structs with the Lua API
+luaauto:
+    URL: "git@github.com:orangeduck/LuaAutoC.git"
+    BRANCH: "master"
+    DIR_I: "./"
+# Single header asymmetric stackful cross-platform coroutine library in pure C.
+minicoro:
+    URL: "git@github.com:edubart/minicoro.git"
+    BRANCH: "main"
+    DIR_I: "./"
+# Single file audio playback and capture library written in C.
+miniaudio:
+    URL: "git@github.com:mackron/miniaudio.git"
+    BRANCH: "master"
+    DIR_I: "./"
+# the TIny GRaphics library for Windows, macOS, Linux, iOS and Android.
+tigr:
+    URL: "git@github.com:erkkah/tigr.git"
+    BRANCH: "master"
+    DIR_I: "./"
+    LIB_L: ["opengl32", "gdi32"]
+# A simple and easy-to-use library to enjoy videogames programming
+raylib:
+    WIN:
+        URL: "https://github.com/raysan5/raylib/releases/download/4.0.0/raylib-4.0.0_win64_mingw-w64.zip"
+        DIR_I: "raylib-4.0.0_win64_mingw-w64/include/"
+        DIR_L: "raylib-4.0.0_win64_mingw-w64/lib/"
+        LIB_L: ["raylib", "opengl32", "gdi32", "winmm"]
+    MAC:
+        URL: "https://github.com/raysan5/raylib/releases/download/4.0.0/raylib-4.0.0_macos.tar.gz"
+        DIR_I: "raylib-4.0.0_macos/include/"
+        DIR_L: "raylib-4.0.0_macos/lib/"
+        FLAGS: " -lraylib -framework OpenGL -framework Cocoa -framework IOKit -framework CoreAudio -framework CoreVideo "
+# A simple and easy-to-use immediate-mode gui library
+raygui:
+    URL: "https://github.com/raysan5/raygui/archive/refs/tags/3.1.zip"
+    DIR_I: "./raygui-3.1/"
+# A tiny cross-platform webview C library to build modern cross-platform GUIs
+webview:
+    URL: "git@github.com:javalikescript/webview-c.git"
+    BRANCH: "master"
+    DIR_I: ["./", "./ms.webview2/include"]
+    LIB_L: ["ole32", "comctl32", "oleaut32", "uuid", "gdi32"]
+    FLAGS: "-DWEBVIEW_WINAPI=1"
+# A simple logging library implemented in C99
+log:
+    URL: "git@github.com:rxi/log.c.git"
+    BRANCH: "master"
+    DIR_I: "./src/"
+# A Tiny Garbage Collector for C
+tgc:
+    URL: "git@github.com:orangeduck/tgc.git"
+    BRANCH: "master"
+    DIR_I: "./"
+# A tiny ANSI C library for loading .ini config files
+ini:
+    URL: "git@github.com:rxi/ini.git"
+    BRANCH: "master"
+    DIR_I: "./src/"
+# Dynamic memory tracker for C
+dmt:
+    URL: "git@github.com:rxi/dmt.git"
+    BRANCH: "master"
+    DIR_I: "./src/"
+    FLAGS: " -Wall"
+# A tiny C library for generating uuid4 strings
+uuid4:
+    URL: "git@github.com:rxi/uuid4.git"
+    BRANCH: "master"
+    DIR_I: "./src/"
+# tiny file dialogs
+tinyfiledialogs:
+    URL: "git@github.com:native-toolkit/tinyfiledialogs.git"
+    BRANCH: "master"
+    LIB_L: ["comdlg32", "ole32"]
+    DIR_I: "./"
+# (Keep It) Simple Stupid Database
+kissdb:
+    URL: "git@github.com:adamierymenko/kissdb.git"
+    BRANCH: "master"
+    DIR_I: "./"
+# Lightweight JSON library written in C.
+parson:
+    URL: "git@github.com:kgabis/parson.git"
+    BRANCH: "master"
+    DIR_I: "./"
+# single header utf8 string functions for C and C++
+utf8:
+    URL: "git@github.com:sheredom/utf8.h.git"
+    BRANCH: "master"
+    DIR_I: "./"
+# Tiny cross-platform HTTP / HTTPS client library in C.
+naett:
+    URL: "git@github.com:erkkah/naett.git"
+    BRANCH: "main"
+    DIR_I: "./"
+    LIB_L: ["winhttp"]
+    FLAGS: " -g -Wall -pedantic "
+# C library to encode and decode strings with base64 format
+base64:
+    URL: "git@github.com:elzoughby/Base64.git"
+    BRANCH: "master"
+    DIR_I: "./"
+# Small, portable implementation of the C11 threads API
+thread:
+    URL: "git@github.com:tinycthread/tinycthread.git"
+    BRANCH: "master"
+    DIR_I: "./source/"
+# A tiny embeddable HTTP server written in C89
+sandbird:
+    URL: "git@github.com:rxi/sandbird.git"
+    BRANCH: "master"
+    DIR_I: "./src/"
+    LIB_L: ["ws2_32"]
+    FLAGS: " -pedantic -Wall -Wextra "
+    FILES: ["sandbird.c"]
+# A lightweight tar library written in ANSI C
+microtar:
+    URL: "git@github.com:rxi/microtar.git"
+    BRANCH: "master"
+    DIR_I: "./src/"
+    FILES: ["microtar.c"]
+# Asynchronous networking for C
+dyad:
+    URL: "git@github.com:rxi/dyad.git"
+    BRANCH: "master"
+    DIR_I: "./src/"
+    FILES: ["dyad.c"]
+    WIN:
+        LIB_L: ["ws2_32"]
+# A simple, commented reference implementation of the MD5 hash algorithm
+md5:
+    URL: "git@github.com:Zunawe/md5-c.git"
+    BRANCH: "main"
+    DIR_I: "./"
+    FILES: ["md5.c"]
+# stb single-file public domain libraries for C/C++
+stb:
+    URL: "git@github.com:nothings/stb.git"
+    BRANCH: "master"
+    DIR_I: "./"
+# Include binary files in C/C++
+incbin:
+    URL: "git@github.com:graphitemaster/incbin.git"
+    BRANCH: "main"
+    DIR_I: "./"
+# A simple Bitmap (BMP) library.
+bmp:
+    URL: "git@github.com:marc-q/libbmp.git"
+    BRANCH: "master"
+    DIR_I: "./"
+    FILES: ["libbmp.c"]

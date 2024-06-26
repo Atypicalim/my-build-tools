@@ -2,7 +2,7 @@
  * html
  */
 
-const { KEYS, TYPES, CONFIGS } = require("./constants.js");
+const { KEYS, TYPES } = require("./constants.js");
 const { js, files, tools, encryption } = require("./tools.js");
 const { MyBuilderBase } = require("./builder_base.js");
 
