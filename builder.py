@@ -8,6 +8,7 @@ from src.lua_builder import MyLuaBuilder
 from src.html_builder import MyHtmlBuilder
 from src.code_builder import MyCodeBuilder
 
+from constants import Globals, KEYS, TYPES
 from src.tools import py, files, terminal, tools
 
 builder = {}
@@ -88,7 +89,8 @@ def create_func(obj, args=None):
     tasks.append(obj)
     return obj
 
-MyBuilderBase.create_func = create_func
+Globals.createFunc = create_func
+
 
 C = MyCBuilder
 Lua = MyLuaBuilder

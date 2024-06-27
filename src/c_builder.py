@@ -86,34 +86,40 @@ class MyCBuilder(MyBuilderBase):
             self._assert(files.is_folder(dir), f"include directory [{dir}] not found")
             self._includeDirs.append(dir)
 
-        if py.is_string(config[KEYS.DIR_I]):
-            insertInclude(config[KEYS.DIR_I])
-        elif isinstance(config[KEYS.DIR_I], list):
-            for v in config[KEYS.DIR_I]:
-                insertInclude(v)
-
         def insertLinking(dir):
             dir = directory + dir
             self._assert(files.is_folder(dir), f"linking directory [{dir}] not found")
             self._linkingDirs.append(dir)
 
-        if py.is_string(config[KEYS.DIR_L]):
-            insertLinking(config[KEYS.DIR_L])
-        elif isinstance(config[KEYS.DIR_L], list):
-            for v in config[KEYS.DIR_L]:
+
+        dirIncContent = config.get(KEYS.DIR_I)
+        dirLibContent = config.get(KEYS.DIR_L)
+        libContent = config.get(KEYS.LIB_L)
+        flagContent = config.get(KEYS.FLAGS)
+
+        if py.is_string(dirIncContent):
+            insertInclude(dirIncContent)
+        elif py.is_array(dirIncContent):
+            for v in dirIncContent:
+                insertInclude(v)
+
+        if py.is_string(dirLibContent):
+            insertLinking(dirLibContent)
+        elif py.is_array(dirLibContent):
+            for v in dirLibContent:
                 insertLinking(v)
 
-        def insertTags(tag):
-            self._linkingTags.append(tag)
+        if py.is_string(libContent):
+            self._linkingTags.append(libContent)
+        elif py.is_array(libContent):
+            for v in libContent:
+                self._linkingTags.append(v)
 
-        if py.is_string(config[KEYS.LIB_L]):
-            insertTags(config[KEYS.LIB_L])
-        elif isinstance(config[KEYS.LIB_L], list):
-            for v in config[KEYS.LIB_L]:
-                insertTags(v)
-
-        if py.is_string(config[KEYS.FLAGS]):
-            self._extraFlags.append(config[KEYS.FLAGS])
+        if py.is_string(flagContent):
+            self._extraFlags.append(flagContent)
+        elif py.is_array(flagContent):
+            for v in flagContent:
+                self._extraFlags.append(v)
 
     def _containFiles(self, name):
         config = self._getConfig(name)

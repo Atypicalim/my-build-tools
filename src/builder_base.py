@@ -9,7 +9,7 @@ import zipfile
 
 sys.path.append('./src/')
 sys.path.append('../src/')
-from constants import KEYS, TYPES
+from constants import Globals, KEYS, TYPES
 from tools import py, files, tools, httpy
 
 class MyBuilderBase:
@@ -36,7 +36,7 @@ class MyBuilderBase:
         self._inputFiles = []
         self._outputFile = None
         files.mk_folder(self._buildDir)
-        MyBuilderBase.createFunc(self, *args)
+        Globals.createFunc(self, *args)
         print(f"\n-----------------[JS {buildType} Builder]---------------------\n")
         self._print("PROJ_DIR", self._projDir)
         self._print("ROOT_DIR", self._rootDir)
