@@ -111,31 +111,32 @@ class terminal:
 
 def tools_execute(cmd, args=[], cwd=None, encoding='gbk'):
     try:
-        r = subprocess.check_output(
+        p = subprocess.check_output(
             cmd,
             shell = True,
             cwd = cwd,
             encoding = encoding,
             stderr = subprocess.STDOUT
         )
-        return [True, r]
+        return [True, p]
     except subprocess.CalledProcessError as e:
         return [False, "cmd:<{}> code:({}) msg:{}".format(e.cmd, e.returncode, e.output)]
     except Exception as e:
-        return [False, "code:{} msg:{}".format(e.errno, e.strerror)]
+        return [False, e]
     
 def tools_spawn(cmd, args=[], cwd=None, encoding='gbk'):
     try:
-        result = subprocess.Popen(
+        p = subprocess.Popen(
             [cmd] + args,
             encoding = encoding,
             cwd = cwd
         )
-        return [True, result]
+        p.wait()
+        return [True, p.returncode]
     except subprocess.CalledProcessError as e:
         return [False, "cmd:<{}> code:{} msg:{}".format(e.cmd, e.returncode, e.output)]
     except Exception as e:
-        return [False, "code:{} msg:{}".format(e.errno, e.strerror)]
+        return [False, e]
         
 
 def tools_parse_path(_path):
