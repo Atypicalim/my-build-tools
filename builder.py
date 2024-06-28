@@ -42,14 +42,14 @@ tasks = []
 
 MY_BUILDER_TEMPLATE = """
 import builder
-task = builder.{0}({
+task = builder.{0}({{
     'name': "{1}",
     'debug': False,
-    'input':"./test.c",
+    'input':"./test.{0}",
     'output':"test",
-})
+}})
 task.setLibs([])
-task.setIcon('./main.{0}')
+task.setIcon('../../resources/test.ico')
 task.start()
 task.run()
 """
@@ -70,13 +70,13 @@ async def builder_init():
     print("-" + "-" * UI_LENGTH + "-")
     print("|" + string_padd_center("My Builder", UI_LENGTH, " ") + "|")
     print("-" + "-" * UI_LENGTH + "-")
-    print("| build.lua not found, creating ...")
+    print("| build.py not found, creating ...")
     print("| please enter task name:")
     task_name = await terminal.read_line()
     print("| please select task type:")
     task_type = await terminal.read_selection(builders)
-    my_builder_text = MY_BUILDER_TEMPLATE % (task_type, task_name, task_type)
-    files.write('./build.lua', my_builder_text, 'utf-8')
+    my_builder_text = MY_BUILDER_TEMPLATE.format(task_type, task_name)
+    files.write('./build.py', my_builder_text, 'utf-8')
     print("| created!")
 
 def builder_help(obj):
@@ -105,11 +105,11 @@ def builder_help(obj):
 
 def create_func(obj, args={}):
     for k, v in args.items():
-        py.assert_(py.is_text(k), 'Invalid argument key for builder: ' + str(k))
+        py.check(py.is_text(k), 'Invalid argument key for builder: ' + str(k))
         wrds = k.lower().split("_")
         name = "".join(word.capitalize() for word in wrds)
         func = getattr(obj, 'set' + name, None)
-        py.assert_(callable(func), 'Unknown argument key for builder: ' + str(k))
+        py.check(callable(func), 'Unknown argument key for builder: ' + str(k))
         func(v)
     obj.help = builder_help
     tasks.append(obj)

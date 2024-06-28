@@ -13,7 +13,7 @@ id ICON "%s"
 class MyCBuilder(MyBuilderBase):
 
     def __init__(self, *args):
-        super().__init__("C", *args)
+        super().__init__("C")
         self._includeDirs = []
         self._linkingDirs = []
         self._linkingTags = []
@@ -23,9 +23,7 @@ class MyCBuilder(MyBuilderBase):
         self.MY_RC_FILE_PATH = self._buildDir + ".lcb_resource.rc"
         files.write(self.MY_RES_FILE_PATH, "", 'utf-8')
         files.write(self.MY_RC_FILE_PATH, "", 'utf-8')
-
-    def _initBuilder(self):
-        pass
+        self._parse(*args)
 
     def _downloadByGit(self, config):
         url = config[KEYS.URL]

@@ -7,8 +7,9 @@ from builder_base import *
 class MyLuaBuilder(MyBuilderBase):
 
     def __init__(self, *args):
-        super().__init__("lua", *args)
+        super().__init__("lua")
         self._targetExecutable = None
+        self._parse(*args)
 
     def setOutput(self, path):
         super().setOutput(path)

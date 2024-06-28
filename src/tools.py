@@ -92,12 +92,14 @@ class files:
 async def read_line(msg="input:"):
     return input(msg)
 
-async def read_selection(msg="select:", options=[]):
+async def read_selection(options, msg="select:"):
     print(msg, options)
     while True:
         txt = await read_line()
         if txt in options:
             return txt
+        else:
+            print("invalid!")
 
 class terminal:
     read_line = read_line

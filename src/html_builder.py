@@ -7,9 +7,10 @@ from builder_base import *
 class MyHtmlBuilder(MyBuilderBase):
 
     def __init__(self, *args):
-        super().__init__("html", *args)
+        super().__init__("html")
         self._lineArr = []
         self._fileMap = {}
+        self._parse(*args)
 
     def containScript(self, isOnlyLocal=False):
         self._isContainScript = True

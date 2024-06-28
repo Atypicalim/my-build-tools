@@ -9,7 +9,7 @@ class MyBuilderBase:
 
     createFunc = None
 
-    def __init__(self, buildType, *args):
+    def __init__(self, buildType):
         buildType = buildType.lower()
         self._separator = tools.get_separator()
         self._printTag = f"[build_{buildType}_tool]"
@@ -29,11 +29,14 @@ class MyBuilderBase:
         self._inputFiles = []
         self._outputFile = None
         files.mk_folder(self._buildDir)
-        Globals.createFunc(self, *args)
         print(f"\n-----------------[{buildType} Builder]---------------------\n")
         self._print("PROJ_DIR", self._projDir)
         self._print("ROOT_DIR", self._rootDir)
         self._print("WORK_DIR", self._workDir)
+
+    def _parse(self, args):
+        Globals.createFunc(self, args)
+        
 
     def _print(self, *args):
         print(self._printTag, self._name, *args)
