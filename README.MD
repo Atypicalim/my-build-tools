@@ -10,12 +10,17 @@
 
 ### 2. Usage
 
-```js
-let builder = require("my-build-tools")
-let task = new builder.C({
-    input = "./test.c",
-    output = "test",
-}).setDebug(false).setLibs([]):setIcon('./test.ico'):start():run()
+```python
+import builder
+task = builder.C(
+    input="./test.c",
+    output="test",
+)
+task.setDebug(False)
+task.setLibs([])
+task.setIcon('./test.ico')
+task.start()
+task.run()
 ```
 
 ### 3. Builders

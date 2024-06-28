@@ -9,7 +9,7 @@ currentPath = os.path.dirname(__file__)
 sourcePath = os.path.join(currentPath, "src")
 sys.path.append(sourcePath)
 
-from constants import *
+import tools as _tools
 from tools import *
 
 from c_builder import MyCBuilder
@@ -17,20 +17,22 @@ from lua_builder import MyLuaBuilder
 from html_builder import MyHtmlBuilder
 from code_builder import MyCodeBuilder
 
-builder = {}
 UI_LENGTH = 48
 builders = ["c", "lua", "html", "code"]
 tasks = []
 
 MY_BUILDER_TEMPLATE = """
-  const builder = require("builder");
-  const task = builder.%s({
-      name: "%s",
-      debug: False,
-      release: False,
-      input: "./source.%s",
-      output: "./target"
-  }).start();
+import builder
+task = builder.{0}({
+    'name': "{1}",
+    'debug': False,
+    'input':"./test.c",
+    'output':"test",
+})
+task.setLibs([])
+task.setIcon('./main.{0}')
+task.start()
+task.run()
 """
 
 def split_by_upper(word):
@@ -54,7 +56,7 @@ async def builder_init():
     task_name = await terminal.read_line()
     print("| please select task type:")
     task_type = await terminal.read_selection(builders)
-    my_builder_text = MY_BUILDER_TEMPLATE % (task_type, task_name, task_type, task_type)
+    my_builder_text = MY_BUILDER_TEMPLATE % (task_type, task_name, task_type)
     files.write('./build.lua', my_builder_text, 'utf-8')
     print("| created!")
 
@@ -96,18 +98,7 @@ def create_func(obj, args={}):
 
 Globals.createFunc = create_func
 
-
-C = MyCBuilder
-Lua = MyLuaBuilder
-Html = MyHtmlBuilder
-Code = MyCodeBuilder
-
-c = lambda *args: MyCBuilder(*args)
-lua = lambda *args: MyLuaBuilder(*args)
-html = lambda *args: MyHtmlBuilder(*args)
-code = lambda *args: MyCodeBuilder(*args)
-
-def builder_help_func():
+def _builder_help():
     print("-" + "-" * UI_LENGTH + "-")
     print("|" + "builder help".center(UI_LENGTH, " ") + "|")
     print("-" + "-" * UI_LENGTH + "-")
@@ -115,14 +106,11 @@ def builder_help_func():
     for v in builders:
         print('|', "*", v)
     print('| functions:')
-    for k in builder:
-        if k not in builders:
-            print('|', "*", k)
+    for k in builders:
+        print('|', "*", k)
     print("-" + "-" * UI_LENGTH + "-")
 
-builder['help'] = builder_help_func
-
-def builder_tasks():
+def _builder_tasks():
     print("-" + "-" * UI_LENGTH + "-")
     print("|" + "builder list".center(UI_LENGTH, " ") + "|")
     print("-" + "-" * UI_LENGTH + "-")
@@ -131,18 +119,34 @@ def builder_tasks():
         print('|', f"{i + 1}.", obj.get_name())
     print("-" + "-" * UI_LENGTH + "-")
 
-builder['tasks'] = builder_tasks
 
-def builder_find(name):
+def _builder_find(name):
     if not py.is_text(name):
         raise ValueError('Invalid task name for builder')
     for obj in tasks:
         if obj.get_name() == name:
             return obj
 
-builder['find'] = builder_find
+################################################################
 
-builder['tools'] = tools
+builder = sys.modules[__name__]
+
+C = MyCBuilder
+Lua = MyLuaBuilder
+Html = MyHtmlBuilder
+Code = MyCodeBuilder
+
+builder.c = C
+builder.lua = Lua
+builder.html = Html
+builder.code = Code
+
+builder.help = _builder_help
+builder.tasks = _builder_tasks
+builder.find = _builder_find
+builder.tools = _tools
+
+################################################################
 
 if __name__ == "__main__":
     import asyncio
