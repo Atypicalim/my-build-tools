@@ -3,7 +3,6 @@ import subprocess
 import yaml
 from pathlib import Path
 
-from constants import *
 from tools import *
 from builder_base import *
 

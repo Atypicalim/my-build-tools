@@ -3,7 +3,6 @@ import os
 import tarfile
 import zipfile
 
-from constants import *
 from tools import *
 
 class MyBuilderBase:

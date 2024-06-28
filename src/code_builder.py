@@ -2,7 +2,6 @@ import os
 import base64
 from datetime import datetime
 
-from constants import *
 from tools import *
 from builder_base import *
 

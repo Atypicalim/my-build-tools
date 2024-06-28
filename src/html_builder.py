@@ -1,7 +1,6 @@
 import re
 import base64
 
-from constants import *
 from tools import *
 from builder_base import *
 

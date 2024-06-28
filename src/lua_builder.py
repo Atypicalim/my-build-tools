@@ -1,7 +1,6 @@
 import os
 import subprocess
 
-from constants import *
 from tools import *
 from builder_base import *
 
