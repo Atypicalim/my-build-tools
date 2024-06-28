@@ -2,15 +2,24 @@
 tools
 """
 
-import http.client as http
+import http
 import os
 import subprocess
 import pathlib
 import base64
 import json
 import platform
+import urllib
+import traceback
+import shutil
 
 ######################################################
+
+def py_implode(args, separator=" "):
+    return separator.join(map(str, args))
+
+def py_explode(text, separator=" "):
+    return text.split(separator, -1)
 
 class py:
     is_boolean = lambda value: isinstance(value, bool)
@@ -20,14 +29,22 @@ class py:
     is_array = lambda value: isinstance(value, list)
     is_object = lambda value: isinstance(value, dict)
     is_function = lambda val: callable(val)
+    implode = lambda separator, *args: py_implode(args, separator)
+    explode = lambda separator, text: py_explode(text, separator)
     print = lambda *args: print(*args)
-    trace = lambda *args: (print(' '.join(args)), print(traceback.format_stack()))
-    check = lambda val, *args: (_ for _ in ()).throw(AssertionError(' '.join(args))) if not val else None
-    error = lambda *args: (_ for _ in ()).throw(Exception(' '.join(args)))
+    trace = lambda *args: (print(py_implode(args)), traceback.print_stack())
+    check = lambda val, *args: (_ for _ in ()).throw(AssertionError(py_implode(args))) if not val else None
+    error = lambda *args: (_ for _ in ()).throw(Exception(py_implode(args)))
     pass
 
-
 ######################################################
+
+def files_write(path, content, encoding=None):
+    return open(path, 'w' if encoding != None else "wb", encoding=encoding).write(content)
+
+
+def files_read(path, encoding=None):
+    return open(path, 'r' if encoding != None else "rb", encoding=encoding).read()
 
 class files:
     delete = lambda path: os.remove(path) if os.path.exists(path) else None
@@ -35,11 +52,10 @@ class files:
     is_folder = lambda path: os.path.isdir(path)
     is_file = lambda path: os.path.isfile(path)
     is_exist = lambda path: os.path.exists(path)
-    write = lambda path, content, encoding='utf-8': open(path, 'w', encoding=encoding).write(content)
-    read = lambda path, encoding='utf-8': open(path, 'r', encoding=encoding).read()
+    write = files_write 
+    read = files_read
     copy = lambda _from, _to: shutil.copyfile(_from, _to)
     size = lambda _path: os.path.getsize(_path) if os.path.exists(_path) else -1
-
 
 ######################################################
 
@@ -73,7 +89,7 @@ def tools_execute(cmd, args=[], cwd=None, encoding='gbk'):
     except subprocess.CalledProcessError as e:
         return (False, "cmd:<{}> code:({}) msg:{}".format(e.cmd, e.returncode, e.output))
     
-def tools_spawn(cmd, args, cwd=None, encoding='gbk'):
+def tools_spawn(cmd, args=[], cwd=None, encoding='gbk'):
     try:
         result = subprocess.Popen(
             [cmd] + args,
@@ -84,6 +100,10 @@ def tools_spawn(cmd, args, cwd=None, encoding='gbk'):
     except Exception as e:
         return (False, "cmd:<{}> code:({}) msg:{}".format(e.cmd, e.returncode, e.output))
 
+def tools_parse_path(_path):
+    _path = pathlib.Path(_path)
+    return (_path.parent, _path.stem, _path.suffix.lstrip('.'), _path.name)
+
 class tools:
     is_windows = lambda: platform.system() == 'Windows'
     is_mac = lambda: platform.system() == 'Darwin'
@@ -91,10 +111,8 @@ class tools:
     execute = tools_execute
     spawn = tools_spawn
     get_separator = lambda: "\\" if tools.is_windows() else "/"
-    parse_path = lambda _path: (pathlib.Path(_path).parent, pathlib.Path(_path).stem, pathlib.Path(_path).suffix.lstrip('.'), pathlib.Path(_path).name)
+    parse_path = tools_parse_path
     pass
-
-
 
 ######################################################
 
@@ -103,61 +121,46 @@ class encryption:
     base64_decode = lambda content: base64.b64decode(content).decode()
     pass
 
-
 ######################################################
 
-def httpy_curl(url, method, params=None, headers=None):
-    py['assert'](py['is_text'](url))
-    method = method.upper()
-    py['assert'](method in ['POST', 'GET'])
-    params = params or {}
-    headers = headers or {}
-    tempFile = './.py.http.log'
-    files['delete'](tempFile)
-    h = ' '.join([f"-H '{k}:{v}'" for k, v in headers.items()])
-    b = ''
-    if method == 'GET':
-        url += '?' + '&'.join([f"{k}={v}" for k, v in params.items()])
-    elif method == 'POST':
-        b = f"-d '{json.dumps(params)}'"
-    cmd = f'curl "{url}" -i --silent -X {method} -o "{tempFile}" {h} {b}'
-    isOk, output = tools['execute'](cmd)
-    content = files['read'](tempFile, 'utf8')
-    files['delete'](tempFile)
-    if not isOk:
-        return [-1, output]
-    head, body = content.split('\r\n\r\n', 1)
-    codeMatch = re.search(r'HTTP.+\s(\d{3})', head)
-    code = int(codeMatch.group(1)) if codeMatch else -1
-    return [code, body] if code >= 0 else [-1, output]
-
-def httpy_request(url, method, params=None, headers=None):
-    [code, content] = httpy_curl(url, method, params, headers)
-    return [code == 200, code, content]
-
-
-def httpy_download(url, _path, withPrint=False):
-    if not py['is_text'](url) or not py['is_text'](_path):
-        raise ValueError('Invalid URL or file path')
-    folder = os.path.dirname(_path)
-    os.makedirs(folder, exist_ok=True)
-    cmd = f'curl -L "{url}" -o "{_path}" --max-redirs 3'
+def httpy_request(url, isPost, params={}, headers={}):
+    _method = "POST" if isPost else "GET"
+    _params = urllib.parse.urlencode(params)
+    _url = url if isPost else f"{url}?{_params}"
+    _data = _params.encode() if isPost else None
+    _request = urllib.request.Request(_url, data=_data, method=_method)
     try:
-        options = {'stdio': None} if withPrint else {'stdio': subprocess.PIPE}
-        output = subprocess.check_output(cmd, shell=True, **options)
-        return [True, output.decode()]
-    except subprocess.CalledProcessError as error:
-        return [False, str(error)]
+        _response = urllib.request.urlopen(_request)
+        code = _response.status
+        isOk = code >= 200 and code < 300
+        data = _response.read()
+        return [isOk, code, data]
+    except urllib.error.HTTPError as e:
+        return [False, e.code, "url:<{}> msg:{}".format(e.filename, e.msg)]
+    except Exception as e:
+        return [False, -1, e]
+
+def httpy_download(url, _path):
+    try:
+        _response = urllib.request.urlopen(url)
+        _code = _response.getcode()
+        if _code != 200:
+            return [False, _code, _response.msg]
+        file_contents = _response.read()
+        file = open(_path, "wb")
+        file.write(file_contents)
+        return [True, _code, _response.msg]
+    except urllib.error.URLError as e:
+        return [False, e.code, "url:<{}> msg:{}".format(e.filename, e.msg)]
+    except PermissionError as e:
+        return [False, e.errno, "url:<{}> msg:{}".format(e.filename, e.strerror)]
+    except Exception as e:
+        return [False, -1, e]
 
 class httpy:
-    request = httpy_request
-    get = lambda url, params=None, headers=None: httpy_request(url, 'GET', params, headers)
-    post = lambda url, params=None, headers=None: httpy_request(url, 'POST', params, headers)
+    get = lambda url, params={}, headers={}: httpy_request(url, False, params, headers)
+    post = lambda url, params={}, headers={}: httpy_request(url, True, params, headers)
     download = httpy_download
     pass
 
 ######################################################
-
-tools_module = {'py': py, 'files': files, 'terminal': terminal, 'tools': tools, 'encryption': encryption, 'httpy': httpy}
-
-

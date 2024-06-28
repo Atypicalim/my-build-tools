@@ -1,9 +1,10 @@
 import os
 import base64
 from datetime import datetime
-from .constants import KEYS, TYPES
-from .tools import py, files, tools, encryption
-from .builder_base import MyBuilderBase
+
+from constants import *
+from tools import *
+from builder_base import *
 
 class MyCodeBuilder(MyBuilderBase):
 
@@ -58,7 +59,6 @@ class MyCodeBuilder(MyBuilderBase):
         result = f" {escapeTag}\\n ".join(lineArr)
         if minimize:
             result = " ".join(result.split())
-        py.print("\n\n\n--->", result)
         return code.format(result)
 
     def _COMMAND_LINE_REFPLACE(self, code, args):

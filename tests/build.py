@@ -1,7 +1,6 @@
 
 import sys
 sys.path.append('../')
-sys.path.append('../src/')
 
 from builder import C
 

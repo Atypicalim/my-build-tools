@@ -2,9 +2,10 @@ import os
 import subprocess
 import yaml
 from pathlib import Path
-from builder_base import MyBuilderBase
-from tools import py, files, tools
-from constants import KEYS, TYPES
+
+from constants import *
+from tools import *
+from builder_base import *
 
 MY_RC_FILE_TEMPLATE = """
 id ICON "%s"
@@ -21,8 +22,8 @@ class MyCBuilder(MyBuilderBase):
         self._targetExecutable = None
         self.MY_RES_FILE_PATH = self._buildDir + ".lcb_resource.res"
         self.MY_RC_FILE_PATH = self._buildDir + ".lcb_resource.rc"
-        files.write(self.MY_RES_FILE_PATH, "")
-        files.write(self.MY_RC_FILE_PATH, "")
+        files.write(self.MY_RES_FILE_PATH, "", 'utf-8')
+        files.write(self.MY_RC_FILE_PATH, "", 'utf-8')
 
     def _initBuilder(self):
         pass
@@ -46,7 +47,7 @@ class MyCBuilder(MyBuilderBase):
         super()._downloadByGzip(url, directory)
 
     def _getConfig(self, name):
-        with open('../src/origins.yml', 'r') as file:
+        with open(Globals.originsPath, 'r') as file:
             configs = yaml.safe_load(file)
         config = configs.get(name)
         self._assert(config is not None, f"lib [{name}] not found")
@@ -156,7 +157,7 @@ class MyCBuilder(MyBuilderBase):
             return
         iconPath = self._projDir + iconPath
         myRcInfo = MY_RC_FILE_TEMPLATE % iconPath
-        files.write(self.MY_RC_FILE_PATH, myRcInfo)
+        files.write(self.MY_RC_FILE_PATH, myRcInfo, 'utf-8')
         command = f"windres {self.MY_RC_FILE_PATH} -O coff -o {self.MY_RES_FILE_PATH}"
         isOk, err = tools.execute(command)
         self._assert(isOk, f"resource compile failed, err: {str(err)}")

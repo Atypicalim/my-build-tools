@@ -1,9 +1,12 @@
 # constant
 
+import os
+
 class Globals:
     pass
 
 Globals.createFunc = None
+Globals.originsPath = os.path.join(os.path.dirname(__file__), "origins.yml")
 
 class KEYS:
     NAME = "NAME"

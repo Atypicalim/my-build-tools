@@ -2,14 +2,20 @@
 builder
 """
 
-from src.builder_base import MyBuilderBase
-from src.c_builder import MyCBuilder
-from src.lua_builder import MyLuaBuilder
-from src.html_builder import MyHtmlBuilder
-from src.code_builder import MyCodeBuilder
+import os
+import sys
 
-from constants import Globals, KEYS, TYPES
-from src.tools import py, files, terminal, tools
+currentPath = os.path.dirname(__file__)
+sourcePath = os.path.join(currentPath, "src")
+sys.path.append(sourcePath)
+
+from constants import *
+from tools import *
+
+from c_builder import MyCBuilder
+from lua_builder import MyLuaBuilder
+from html_builder import MyHtmlBuilder
+from code_builder import MyCodeBuilder
 
 builder = {}
 UI_LENGTH = 48
@@ -49,7 +55,7 @@ async def builder_init():
     print("| please select task type:")
     task_type = await terminal.read_selection(builders)
     my_builder_text = MY_BUILDER_TEMPLATE % (task_type, task_name, task_type, task_type)
-    files.write('./build.lua', my_builder_text)
+    files.write('./build.lua', my_builder_text, 'utf-8')
     print("| created!")
 
 def builder_help(obj):
@@ -76,8 +82,7 @@ def builder_help(obj):
         print("| * " + key)
     print("-" + "-" * UI_LENGTH + "-")
 
-def create_func(obj, args=None):
-    args = args or {}
+def create_func(obj, args={}):
     for k, v in args.items():
         py.assert_(py.is_text(k), 'Invalid argument key for builder: ' + str(k))
         wrds = k.lower().split("_")

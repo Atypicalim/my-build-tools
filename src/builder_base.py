@@ -1,16 +1,10 @@
 
-import sys
 import os
-import shutil
-import subprocess
-from urllib import request
 import tarfile
 import zipfile
 
-sys.path.append('./src/')
-sys.path.append('../src/')
-from constants import Globals, KEYS, TYPES
-from tools import py, files, tools, httpy
+from constants import *
+from tools import *
 
 class MyBuilderBase:
 
@@ -37,7 +31,7 @@ class MyBuilderBase:
         self._outputFile = None
         files.mk_folder(self._buildDir)
         Globals.createFunc(self, *args)
-        print(f"\n-----------------[JS {buildType} Builder]---------------------\n")
+        print(f"\n-----------------[{buildType} Builder]---------------------\n")
         self._print("PROJ_DIR", self._projDir)
         self._print("ROOT_DIR", self._rootDir)
         self._print("WORK_DIR", self._workDir)
@@ -113,7 +107,7 @@ class MyBuilderBase:
         self._print('download succeeded.')
         return cacheFile
 
-    def _readFile(self, path, isOnlyLocal, encoding="utf-8"):
+    def _readFile(self, path, isOnlyLocal, encoding=None):
         self._print(f"read file: {path}")
         isRemote = path.startswith("http")
         self._print(f"is remote: {str(isRemote)}")
@@ -169,7 +163,7 @@ class MyBuilderBase:
         return self
 
     def _processBuild(self):
-        self._error("please implement start func ...")
+        self._error("please implement build func ...")
 
     def start(self):
         self._print('BUILD START:')

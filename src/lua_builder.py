@@ -1,48 +1,41 @@
 import os
 import subprocess
-from constants import KEYS, TYPES
-from tools import py, files, tools
-from builder_base import MyBuilderBase
+
+from constants import *
+from tools import *
+from builder_base import *
 
 class MyLuaBuilder(MyBuilderBase):
 
     def __init__(self, *args):
         super().__init__("lua", *args)
-        self._target_executable = None
+        self._targetExecutable = None
 
-    def set_output(self, path):
-        super().set_output(path)
-        self._target_executable = f"{self._output_file}.exe" if tools.is_windows() else f"{self._output_file}"
+    def setOutput(self, path):
+        super().setOutput(path)
+        self._targetExecutable = f"{self._outputFile}.exe" if tools.is_windows() else f"{self._outputFile}"
         return self
 
-    def _process_build(self):
+    def _processBuild(self):
         self._print('PROCESS PACKAGE START!')
-        self._assert(self._input_files[0] is not None, "input files are not defined!")
-        self._assert(self._output_file is not None, "output file is not defined!")
+        self._assert(self._inputFiles[0] is not None, "input files are not defined!")
+        self._assert(self._outputFile is not None, "output file is not defined!")
         # https://web.archive.org/web/20130721014948if_/http://www.soongsoft.com/lhf/lua/5.1/srlua.tgz
-        glue = os.path.join(self._root_dir, "resources/srlua/glue.exe")
-        srlua = os.path.join(self._root_dir, "resources/srlua/srlua.exe")
-        inputs = " ".join(self._input_files)
+        glue = os.path.join(self._rootDir, "resources/srlua/glue.exe")
+        srlua = os.path.join(self._rootDir, "resources/srlua/srlua.exe")
+        inputs = " ".join(self._inputFiles)
         self._print('packaging...')
-        cmd = f"{glue} {srlua} {inputs} {self._output_file}.exe"
-        if self._is_debug:
+        cmd = f"{glue} {srlua} {inputs} {self._outputFile}.exe"
+        if self._isDebug:
             self._print(f"cmd:{cmd}")
-        is_ok, output = tools.execute(cmd)
-        if not is_ok:
+        isOk, output = tools.execute(cmd)
+        if not isOk:
             self._print("package process failed!")
             self._error(f"err:{output}")
         self._print('PROCESS PACKAGE END!')
         return self
 
     def run(self, path=None):
-        path = os.path.join(self._proj_dir, path) if path else self._target_executable
+        path = os.path.join(self._projDir, path) if path else self._targetExecutable
         self._print(f"RUNNING:{path}")
         tools.spawn(path)
-
-if __name__ == "__main__":
-    builder = MyLuaBuilder()
-    builder.set_output("output_path")
-    builder._process_build()
-    builder.run()
-
-
