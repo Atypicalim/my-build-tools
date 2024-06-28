@@ -9,6 +9,8 @@ currentPath = os.path.dirname(__file__)
 sourcePath = os.path.join(currentPath, "src")
 sys.path.append(sourcePath)
 
+################################################################
+
 import tools as _tools
 from tools import *
 
@@ -16,6 +18,23 @@ from c_builder import MyCBuilder
 from lua_builder import MyLuaBuilder
 from html_builder import MyHtmlBuilder
 from code_builder import MyCodeBuilder
+
+################################################################
+
+C = MyCBuilder
+Lua = MyLuaBuilder
+Html = MyHtmlBuilder
+Code = MyCodeBuilder
+
+class builder:
+    c = MyCBuilder
+    lua = MyLuaBuilder
+    html = MyHtmlBuilder
+    code = MyCodeBuilder
+    tools = _tools
+    pass
+
+################################################################
 
 UI_LENGTH = 48
 builders = ["c", "lua", "html", "code"]
@@ -102,12 +121,15 @@ def _builder_help():
     print("-" + "-" * UI_LENGTH + "-")
     print("|" + "builder help".center(UI_LENGTH, " ") + "|")
     print("-" + "-" * UI_LENGTH + "-")
+    methods = [attr for attr in dir(builder) if callable(getattr(builder, attr)) and not attr.startswith("_")]
     print('| builders:')
-    for v in builders:
-        print('|', "*", v)
+    for k in methods:
+        if k in builders:
+            print('|', "*", k)
     print('| functions:')
-    for k in builders:
-        print('|', "*", k)
+    for k in methods:
+        if k not in builders:
+            print('|', "*", k)
     print("-" + "-" * UI_LENGTH + "-")
 
 def _builder_tasks():
@@ -116,7 +138,7 @@ def _builder_tasks():
     print("-" + "-" * UI_LENGTH + "-")
     print('| tasks:')
     for i, obj in enumerate(tasks):
-        print('|', f"{i + 1}.", obj.get_name())
+        print('|', f"{i + 1}.", obj.getName())
     print("-" + "-" * UI_LENGTH + "-")
 
 
@@ -124,27 +146,14 @@ def _builder_find(name):
     if not py.is_text(name):
         raise ValueError('Invalid task name for builder')
     for obj in tasks:
-        if obj.get_name() == name:
+        if obj.getName() == name:
             return obj
 
 ################################################################
 
-builder = sys.modules[__name__]
-
-C = MyCBuilder
-Lua = MyLuaBuilder
-Html = MyHtmlBuilder
-Code = MyCodeBuilder
-
-builder.c = C
-builder.lua = Lua
-builder.html = Html
-builder.code = Code
-
 builder.help = _builder_help
 builder.tasks = _builder_tasks
 builder.find = _builder_find
-builder.tools = _tools
 
 ################################################################
 

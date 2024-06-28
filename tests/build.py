@@ -2,7 +2,9 @@
 import sys
 sys.path.append('../')
 
-from builder import C
+from builder import builder, C
+
+builder.help()
 
 bldr = C()
 bldr.setDebug(False)
