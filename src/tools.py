@@ -142,8 +142,9 @@ class tools:
     is_linux = lambda: platform.system() == 'Linux'
     execute = tools_execute
     spawn = tools_spawn
-    get_separator = lambda: "\\" if tools.is_windows() else "/"
+    get_separator = lambda: "/" if tools.is_windows() else "\\"
     parse_path = tools_parse_path
+    validate_path = lambda path: path.replace("/", tools.get_separator()).replace("\\", tools.get_separator())
     pass
 
 ######################################################

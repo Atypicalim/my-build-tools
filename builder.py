@@ -45,7 +45,7 @@ import builder
 task = builder.{0}({{
     'name': "{1}",
     'debug': False,
-    'input':"./test.{0}",
+    'input':"./test.{2}",
     'output':"test",
 }})
 task.setLibs([])
@@ -75,7 +75,7 @@ async def builder_init():
     task_name = await terminal.read_line()
     print("| please select task type:")
     task_type = await terminal.read_selection(builders)
-    my_builder_text = MY_BUILDER_TEMPLATE.format(task_type, task_name)
+    my_builder_text = MY_BUILDER_TEMPLATE.format(task_type.upper(), task_name, task_type)
     files.write('./build.py', my_builder_text, 'utf-8')
     print("| created!")
 

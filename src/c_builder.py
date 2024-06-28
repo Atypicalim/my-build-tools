@@ -12,7 +12,7 @@ id ICON "%s"
 
 class MyCBuilder(MyBuilderBase):
 
-    def __init__(self, *args):
+    def __init__(self, args={}):
         super().__init__("C")
         self._includeDirs = []
         self._linkingDirs = []
@@ -23,7 +23,7 @@ class MyCBuilder(MyBuilderBase):
         self.MY_RC_FILE_PATH = self._buildDir + ".lcb_resource.rc"
         files.write(self.MY_RES_FILE_PATH, "", 'utf-8')
         files.write(self.MY_RC_FILE_PATH, "", 'utf-8')
-        self._parse(*args)
+        self._parse(args)
 
     def _downloadByGit(self, config):
         url = config[KEYS.URL]
@@ -152,7 +152,8 @@ class MyCBuilder(MyBuilderBase):
         if not tools.is_windows():
             self._print('SET ICON IGNORED!')
             return
-        iconPath = self._projDir + iconPath
+        iconPath = os.path.join(self._projDir, iconPath)
+        iconPath = tools.validate_path(iconPath)
         myRcInfo = MY_RC_FILE_TEMPLATE % iconPath
         files.write(self.MY_RC_FILE_PATH, myRcInfo, 'utf-8')
         command = f"windres {self.MY_RC_FILE_PATH} -O coff -o {self.MY_RES_FILE_PATH}"

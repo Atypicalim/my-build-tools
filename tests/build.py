@@ -26,5 +26,6 @@ bldr.setLibs([
     "sandbird",
 ])
 bldr.setOutput('test')
+bldr.setIcon('../resources/test.ico')
 bldr.start()
 bldr.run()

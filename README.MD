@@ -12,10 +12,11 @@
 
 ```python
 import builder
-task = builder.C(
-    input="./test.c",
-    output="test",
-)
+task = builder.C({
+    'name': "myTest",
+    'input':"./test.c",
+    'output':"test",
+})
 task.setDebug(False)
 task.setLibs([])
 task.setIcon('./test.ico')

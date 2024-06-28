@@ -7,14 +7,14 @@ from builder_base import *
 
 class MyCodeBuilder(MyBuilderBase):
 
-    def __init__(self, *args):
+    def __init__(self, args={}):
         super().__init__("code")
         self._lineArr = []
         self._macroStartTag = "[M["
         self._macroEndTag = "]M]"
         self._commentTag = "//"
         self._headFormat = '{0} {1}'
-        self._parse(*args)
+        self._parse(args)
 
     def setComment(self, commentTag, headFormat=None):
         py.check(py.is_text(commentTag), 'invalid comment tag')
