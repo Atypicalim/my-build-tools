@@ -10,6 +10,7 @@ import base64
 import json
 import platform
 import urllib
+import urllib.request
 import traceback
 import shutil
 
@@ -117,9 +118,11 @@ def tools_execute(cmd, args=[], cwd=None, encoding='gbk'):
             encoding = encoding,
             stderr = subprocess.STDOUT
         )
-        return (True, r)
+        return [True, r]
     except subprocess.CalledProcessError as e:
-        return (False, "cmd:<{}> code:({}) msg:{}".format(e.cmd, e.returncode, e.output))
+        return [False, "cmd:<{}> code:({}) msg:{}".format(e.cmd, e.returncode, e.output)]
+    except Exception as e:
+        return [False, "code:{} msg:{}".format(e.errno, e.strerror)]
     
 def tools_spawn(cmd, args=[], cwd=None, encoding='gbk'):
     try:
@@ -128,9 +131,12 @@ def tools_spawn(cmd, args=[], cwd=None, encoding='gbk'):
             encoding = encoding,
             cwd = cwd
         )
-        return (True, result)
+        return [True, result]
+    except subprocess.CalledProcessError as e:
+        return [False, "cmd:<{}> code:{} msg:{}".format(e.cmd, e.returncode, e.output)]
     except Exception as e:
-        return (False, "cmd:<{}> code:({}) msg:{}".format(e.cmd, e.returncode, e.output))
+        return [False, "code:{} msg:{}".format(e.errno, e.strerror)]
+        
 
 def tools_parse_path(_path):
     _path = pathlib.Path(_path)

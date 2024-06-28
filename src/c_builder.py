@@ -215,7 +215,7 @@ class MyCBuilder(MyBuilderBase):
         cmd = f"cmd cd {dir} ; {exe}"
         if self._isDebug:
             self._print(f"cmd:{cmd}")
-        isOk, extra = tools.spawn(exe, [], cwd=dir)
+        isOk, extra = tools.spawn(self._targetExecutable, [], cwd=dir)
         self._print(f"RUNNED:{isOk}", "" if isOk else extra)
 
 

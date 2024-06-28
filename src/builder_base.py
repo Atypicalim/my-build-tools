@@ -102,10 +102,10 @@ class MyBuilderBase:
         cacheFile = path or os.path.join(self._cacheDir, f"temp.{ext}")
         files.delete(cacheFile)
         self._print('downloading ...')
-        isOk, err = httpy.download(url, cacheFile)
+        [isOk, code, msg] = httpy.download(url, cacheFile)
         if not isOk or files.size(cacheFile) <= 0:
             files.delete(cacheFile)
-            self._error(f'download failed, err: {str(err)}')
+            self._error(f'download failed, code:{code}, err: {msg}')
         self._print('download succeeded.')
         return cacheFile
 
