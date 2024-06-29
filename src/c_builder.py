@@ -19,6 +19,7 @@ class MyCBuilder(MyBuilderBase):
         self._linkingTags = []
         self._extraFlags = []
         self._targetExecutable = None
+        self._hasIcon = False
         self.MY_RES_FILE_PATH = self._buildDir + ".lcb_resource.res"
         self.MY_RC_FILE_PATH = self._buildDir + ".lcb_resource.rc"
         files.write(self.MY_RES_FILE_PATH, "", 'utf-8')
@@ -160,6 +161,7 @@ class MyCBuilder(MyBuilderBase):
         isOk, err = tools.execute(command)
         self._assert(isOk, f"resource compile failed, err: {str(err)}")
         self._print('SET ICON END!')
+        self._hasIcon = True
         return self
 
     def setOutput(self, path):
@@ -177,17 +179,15 @@ class MyCBuilder(MyBuilderBase):
         linkingTagCmd = ' '.join([f"-l {v}" for v in self._linkingTags])
         extraFlagsCmd = ' '.join(self._extraFlags)
 
-        resCmds = self.MY_RES_FILE_PATH if tools.is_windows() else ''
+        inputFiles = ' '.join(self._inputFiles)
+        resCmds = self.MY_RES_FILE_PATH if self._hasIcon else ''
         icludeCmds = includeDirCmd
         linkCmds = f"{linkingDirCmd} {linkingTagCmd}"
 
-        inputFiles = ' '.join(self._inputFiles)
-
         cc = 'gcc' if tools.is_windows() else 'clang'
-        cmd = f"{cc} {inputFiles} -o {self._targetExecutable} {resCmds} {icludeCmds} {linkCmds} {extraFlagsCmd}"
-
-        if self._isRelease:
-            cmd += ' -O2 -mwindows'
+        cmd = f"{cc} -std=c11 "
+        cmd += "-O2 -mwindows " if self._isRelease else "-Wall -Wextra -pedantic "
+        cmd += f"{extraFlagsCmd} -o {self._targetExecutable} -s {inputFiles} {resCmds} {icludeCmds} {linkCmds}"
 
         if self._isDebug:
             self._print(f"cmd:{cmd}")

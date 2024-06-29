@@ -1,4 +1,14 @@
 
+# A type-safe dynamic array implementation for C
+vec:
+    URL: "git@github.com:rxi/vec.git"
+    BRANCH: "master"
+    DIR_I: "./src/"
+# A type-safe hash map implementation for C
+map:
+    URL: "git@github.com:rxi/map.git"
+    BRANCH: "master"
+    DIR_I: "./src/"
 # Single-file port of Lua, a powerful scripting language.
 minilua:
     URL: "git@github.com:edubart/minilua.git"

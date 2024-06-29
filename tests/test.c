@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define TEST_INCBIN
+#define TEST_STRUCTURE
+// #define TEST_INCBIN
 // #define TEST_THREAD
 // #define TEST_MD5
 // #define TEST_BASE64
@@ -19,6 +20,19 @@
 // #define TEST_BMP
 // #define TEST_NAETT
 // #define TEST_SANDBOX
+
+////////////////////////////////////////////////////////////////////////////////
+// glib
+#ifdef TEST_STRUCTURE
+#include "vec.h"
+#include "map.h"
+void run_structure() {
+    printf("\nstructure.start:\n");
+    printf("structure.vec-version:%s\n", VEC_VERSION);
+    printf("structure.map-version:%s\n", MAP_VERSION);
+    printf("structure.end!\n");
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -415,6 +429,10 @@ void run_sandbird() {
 
 int main(int argc, char **argv)
 {
+
+    #ifdef TEST_STRUCTURE
+    run_structure();
+    #endif
 
     #ifdef TEST_INCBIN
     run_incbin();
