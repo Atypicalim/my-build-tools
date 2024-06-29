@@ -185,9 +185,10 @@ class MyCBuilder(MyBuilderBase):
         linkCmds = f"{linkingDirCmd} {linkingTagCmd}"
 
         cc = 'gcc' if tools.is_windows() else 'clang'
-        cmd = f"{cc} -std=c11 "
-        cmd += "-O2 -mwindows " if self._isRelease else "-Wall -Wextra -pedantic "
-        cmd += f"{extraFlagsCmd} -o {self._targetExecutable} -s {inputFiles} {resCmds} {icludeCmds} {linkCmds}"
+        cmd = f"{cc} -o {self._targetExecutable} "
+        cmd += f"-O2 -mwindows " if self._isRelease else "-Wall -Wextra -pedantic "
+        cmd += f"{extraFlagsCmd} "
+        cmd += f"-s {inputFiles} {resCmds} {icludeCmds} {linkCmds}"
 
         if self._isDebug:
             self._print(f"cmd:{cmd}")
