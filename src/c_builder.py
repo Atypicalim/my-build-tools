@@ -186,7 +186,7 @@ class MyCBuilder(MyBuilderBase):
 
         cc = 'gcc' if tools.is_windows() else 'clang'
         cmd = f"{cc} -o {self._targetExecutable} "
-        cmd += f"-O2 -mwindows " if self._isRelease else "-Wall -Wextra -pedantic "
+        cmd += f"-O2 -mwindows " if self._isRelease else " " # -Wall -Wextra -pedantic
         cmd += f"{extraFlagsCmd} "
         cmd += f"-s {inputFiles} {resCmds} {icludeCmds} {linkCmds}"
 

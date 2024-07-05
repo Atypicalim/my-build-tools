@@ -10,7 +10,7 @@ bldr = C()
 bldr.setDebug(True)
 bldr.setInput('./test.c')
 bldr.setLibs([
-    "vec", "map",
+    # "vec", "map",
     # "incbin",
     # "thread",
     # "md5",
@@ -19,7 +19,7 @@ bldr.setLibs([
     # "minicoro",
     # "minilua", "luaauto",
     # "tigr",
-    # "raylib",
+    # "raylib", "raygui",
     # "webview",
     # "stb",
     # "bmp",

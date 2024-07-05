@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define TEST_STRUCTURE
+#define TEST_SOMETHING
+// #define TEST_STRUCTURE
 // #define TEST_INCBIN
 // #define TEST_THREAD
 // #define TEST_MD5
@@ -20,6 +21,17 @@
 // #define TEST_BMP
 // #define TEST_NAETT
 // #define TEST_SANDBOX
+
+
+////////////////////////////////////////////////////////////////////////////////
+// glib
+#ifdef TEST_SOMETHING
+void run_something() {
+    printf("\nsomething.start:\n");
+    printf("something.running...\n");
+    printf("something.end!\n");
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // glib
@@ -429,6 +441,10 @@ void run_sandbird() {
 
 int main(int argc, char **argv)
 {
+
+    #ifdef TEST_SOMETHING
+    run_something();
+    #endif
 
     #ifdef TEST_STRUCTURE
     run_structure();
