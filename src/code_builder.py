@@ -14,6 +14,8 @@ class MyCodeBuilder(MyBuilderBase):
         self._macroEndTag = "]M]"
         self._commentTag = "//"
         self._headFormat = '{0} {1}'
+        self._onMacroCallback = None
+        self._onLineCallback = None
         self._parse(args)
 
     def setComment(self, commentTag, headFormat=None):

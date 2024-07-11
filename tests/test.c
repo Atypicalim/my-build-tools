@@ -6,6 +6,7 @@
 #include <math.h>
 
 #define TEST_SOMETHING
+// #define TEST_STRING
 // #define TEST_STRUCTURE
 // #define TEST_INCBIN
 // #define TEST_THREAD
@@ -34,7 +35,22 @@ void run_something() {
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-// glib
+// string
+#ifdef TEST_STRING
+#define STDSTRING_IMPLEMENTATION
+#include "stdstring.h"
+void run_structure() {
+    printf("\nstring.start:\n");
+    char *exp = "1/3";
+    char *str = "abc";
+    printf("string.eval:%s->%f\n", exp, streval(exp));
+    printf("string.hash:%s->%i\n", str, strhash(str));
+    printf("string.end!\n");
+}
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+// structure
 #ifdef TEST_STRUCTURE
 #include "vec.h"
 #include "map.h"
@@ -444,6 +460,10 @@ int main(int argc, char **argv)
 
     #ifdef TEST_SOMETHING
     run_something();
+    #endif
+
+    #ifdef TEST_STRING
+    run_structure();
     #endif
 
     #ifdef TEST_STRUCTURE

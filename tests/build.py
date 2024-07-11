@@ -4,12 +4,13 @@ sys.path.append('../')
 
 from builder import builder, C
 
-builder.help()
+# builder.help()
 
 bldr = C()
 bldr.setDebug(True)
 bldr.setInput('./test.c')
 bldr.setLibs([
+    # "string"
     # "vec", "map",
     # "incbin",
     # "thread",

@@ -20,7 +20,7 @@ class Globals:
     pass
 
 Globals.createFunc = None
-Globals.originsPath = os.path.join(os.path.dirname(__file__), "origins.yml")
+Globals.originsPath = os.path.join(os.path.dirname(__file__), "../resources/origins.yaml")
 
 class KEYS:
     NAME = "NAME"

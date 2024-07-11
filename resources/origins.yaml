@@ -1,4 +1,9 @@
 
+# C string utils library (STB style, header-only)
+string:
+    URL: "git@github.com:r-lyeh/stdstring.h.git"
+    BRANCH: "master"
+    DIR_I: "./"
 # A type-safe dynamic array implementation for C
 vec:
     URL: "git@github.com:rxi/vec.git"
