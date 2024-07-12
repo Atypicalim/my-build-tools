@@ -143,14 +143,24 @@ def tools_parse_path(_path):
     _path = pathlib.Path(_path)
     return (_path.parent, _path.stem, _path.suffix.lstrip('.'), _path.name)
 
+def tools_append_path(_path, *args):
+    paths = list(args)
+    if isinstance(paths[0], list):
+        paths = paths[0]
+    for path in paths:
+        _path = os.path.join(_path, path)
+    _path = os.path.normpath(_path)
+    return _path
+
 class tools:
     is_windows = lambda: platform.system() == 'Windows'
     is_mac = lambda: platform.system() == 'Darwin'
     is_linux = lambda: platform.system() == 'Linux'
     execute = tools_execute
     spawn = tools_spawn
-    get_separator = lambda: "/" if tools.is_windows() else "\\"
+    get_separator = lambda: os.path.sep
     parse_path = tools_parse_path
+    append_path = tools_append_path
     validate_path = lambda path: path.replace("/", tools.get_separator()).replace("\\", tools.get_separator())
     pass
 

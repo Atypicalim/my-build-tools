@@ -51,7 +51,7 @@ class MyCodeBuilder(MyBuilderBase):
         filePath = args[0]
         escapeTag = args[1] if len(args) > 1 else ""
         minimize = len(args) > 2 and args[2].lower() == "true"
-        filePath = os.path.join(self._projDir, filePath)
+        filePath = tools.append_path(self._projDir, filePath)
         self._assert(files.is_file(filePath), f"file not found, path: {filePath}")
         with open(filePath, 'r') as f:
             fileContent = f.read()

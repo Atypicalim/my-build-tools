@@ -20,8 +20,10 @@ class MyCBuilder(MyBuilderBase):
         self._extraFlags = []
         self._targetExecutable = None
         self._hasIcon = False
-        self.MY_RES_FILE_PATH = self._buildDir + ".lcb_resource.res"
-        self.MY_RC_FILE_PATH = self._buildDir + ".lcb_resource.rc"
+        self._gccWarns = {}
+        self._gccFlags = []
+        self.MY_RES_FILE_PATH = tools.append_path(self._buildDir, ".lcb_resource.res")
+        self.MY_RC_FILE_PATH = tools.append_path(self._buildDir, ".lcb_resource.rc")
         files.write(self.MY_RES_FILE_PATH, "", 'utf-8')
         files.write(self.MY_RC_FILE_PATH, "", 'utf-8')
         self._parse(args)
@@ -29,19 +31,19 @@ class MyCBuilder(MyBuilderBase):
     def _downloadByGit(self, config):
         url = config[KEYS.URL]
         branch = config.get(KEYS.BRANCH, 'master')
-        directory = self._libsDir + config[KEYS.NAME] + self._separator
+        directory = tools.append_path(self._libsDir, config[KEYS.NAME]) + self._separator
         super()._downloadByGit(url, branch, directory)
 
     def _downloadByZip(self, config):
         name = config[KEYS.NAME]
         url = config[KEYS.URL]
-        directory = self._libsDir + name + self._separator
+        directory = tools.append_path(self._libsDir, name) + self._separator
         super()._downloadByZip(url, directory)
 
     def _downloadByGzip(self, config):
         name = config[KEYS.NAME]
         url = config[KEYS.URL]
-        directory = self._libsDir + name + self._separator
+        directory = tools.append_path(self._libsDir, name) + self._separator
         super()._downloadByGzip(url, directory)
 
     def _getConfig(self, name):
@@ -76,17 +78,17 @@ class MyCBuilder(MyBuilderBase):
 
     def _containLib(self, name):
         config = self._getConfig(name)
-        directory = self._libsDir + name + self._separator
+        directory = tools.append_path(self._libsDir, name) + self._separator
         self._assert(config is not None, f"lib [{name}] not found")
         self._assert(files.is_folder(directory), f"lib [{name}] not installed")
 
         def insertInclude(dir):
-            dir = directory + dir
+            dir = tools.append_path(directory, dir)
             self._assert(files.is_folder(dir), f"include directory [{dir}] not found")
             self._includeDirs.append(dir)
 
         def insertLinking(dir):
-            dir = directory + dir
+            dir = tools.append_path(directory, dir)
             self._assert(files.is_folder(dir), f"linking directory [{dir}] not found")
             self._linkingDirs.append(dir)
 
@@ -123,13 +125,13 @@ class MyCBuilder(MyBuilderBase):
     def _containFiles(self, name):
         config = self._getConfig(name)
         self._assert(config is not None, f"lib [{name}] not found")
-        directory = self._libsDir + name + self._separator
+        directory = tools.append_path(self._libsDir, name) + self._separator
         arr = config.get(KEYS.FILES, [])
 
         for v in arr:
             path = v
             if not files.is_file(path):
-                path = directory + config[KEYS.DIR_I] + v
+                path = tools.append_path(directory, config[KEYS.DIR_I], v)
             self._assert(files.is_file(path), f"input file not found: {v}")
             self._inputNames.append(v)
             self._inputFiles.append(path)
@@ -153,7 +155,7 @@ class MyCBuilder(MyBuilderBase):
         if not tools.is_windows():
             self._print('SET ICON IGNORED!')
             return
-        iconPath = os.path.join(self._projDir, iconPath)
+        iconPath = tools.append_path(self._projDir, iconPath)
         iconPath = tools.validate_path(iconPath)
         myRcInfo = MY_RC_FILE_TEMPLATE % iconPath
         files.write(self.MY_RC_FILE_PATH, myRcInfo, 'utf-8')
@@ -168,27 +170,60 @@ class MyCBuilder(MyBuilderBase):
         super().setOutput(path)
         self._targetExecutable = f"{str(self._outputFile)}.exe" if tools.is_windows() else str(self._outputFile)
         return self
+    
+    def addWarnings(self, isEnable, *args):
+        self._print('ADD WARNINGS!')
+        warnings = list(args)
+        if isinstance(warnings[0], list):
+            warnings = warnings[0]
+        for warn in warnings:
+            self._print(f"awrning:[{isEnable}][{warn}]")
+            self._gccWarns[warn] = isEnable
+
+
+    def addFlags(self, *args):
+        self._print('ADD FLAGS!')
+        flags = list(args)
+        if isinstance(flags[0], list):
+            flags = flags[0]
+        for flag in flags:
+            self._print(f"flags:[{flag}]")
+            self._gccFlags.append(flag)
+
 
     def _processBuild(self):
         self._print('PROCESS GCC START!')
         self._assert(self._inputFiles[0] is not None, 'input files are not defined!')
         self._assert(self._outputFile is not None, 'output file is not defined!')
-
+        #
         includeDirCmd = ' '.join([f"-I {v}" for v in self._includeDirs])
         linkingDirCmd = ' '.join([f"-L {v}" for v in self._linkingDirs])
         linkingTagCmd = ' '.join([f"-l {v}" for v in self._linkingTags])
         extraFlagsCmd = ' '.join(self._extraFlags)
+        configCmds = f"{linkingTagCmd} {extraFlagsCmd} {includeDirCmd} {linkingDirCmd}".strip()
 
+        #
+        warnEnabled = []
+        warnDisabled = []
+        for key, value in self._gccWarns.items():
+            if value == True:
+                warnEnabled.append(key)
+            elif value == False:
+                warnDisabled.append(key)
+        warnEnabled = ' '.join(["-W" + item for item in warnEnabled])
+        warnDisabled = ' '.join(["-Wno-" + item for item in warnDisabled])
+        flagsAdded = ' '.join(self._gccFlags)
+        customCmds = f"{warnEnabled} {warnDisabled} {flagsAdded}".strip()
+        #
         inputFiles = ' '.join(self._inputFiles)
         resCmds = self.MY_RES_FILE_PATH if self._hasIcon else ''
-        icludeCmds = includeDirCmd
-        linkCmds = f"{linkingDirCmd} {linkingTagCmd}"
-
+        #
         cc = 'gcc' if tools.is_windows() else 'clang'
         cmd = f"{cc} -o {self._targetExecutable} "
-        cmd += f"-O2 -mwindows " if self._isRelease else " " # -Wall -Wextra -pedantic
-        cmd += f"{extraFlagsCmd} "
-        cmd += f"-s {inputFiles} {resCmds} {icludeCmds} {linkCmds}"
+        cmd += f"-O2 -mwindows " if self._isRelease else "" # -Wall -Wextra -pedantic
+        cmd += f"-s {inputFiles} {resCmds} "
+        cmd += f"-s {customCmds} {configCmds} "
+        cmd = ' '.join(cmd.split())
 
         if self._isDebug:
             self._print(f"cmd:{cmd}")

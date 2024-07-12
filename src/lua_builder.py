@@ -21,8 +21,8 @@ class MyLuaBuilder(MyBuilderBase):
         self._assert(self._inputFiles[0] is not None, "input files are not defined!")
         self._assert(self._outputFile is not None, "output file is not defined!")
         # https://web.archive.org/web/20130721014948if_/http://www.soongsoft.com/lhf/lua/5.1/srlua.tgz
-        glue = os.path.join(self._rootDir, "resources/srlua/glue.exe")
-        srlua = os.path.join(self._rootDir, "resources/srlua/srlua.exe")
+        glue = tools.append_path(self._rootDir, "resources/srlua/glue.exe")
+        srlua = tools.append_path(self._rootDir, "resources/srlua/srlua.exe")
         inputs = " ".join(self._inputFiles)
         self._print('packaging...')
         cmd = f"{glue} {srlua} {inputs} {self._outputFile}.exe"
@@ -36,6 +36,6 @@ class MyLuaBuilder(MyBuilderBase):
         return self
 
     def run(self, path=None):
-        path = os.path.join(self._projDir, path) if path else self._targetExecutable
+        path = tools.append_path(self._projDir, path) if path else self._targetExecutable
         self._print(f"RUNNING:{path}")
         tools.spawn(path)

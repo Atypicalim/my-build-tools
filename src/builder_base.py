@@ -13,12 +13,14 @@ class MyBuilderBase:
         buildType = buildType.lower()
         self._separator = tools.get_separator()
         self._printTag = f"[build_{buildType}_tool]"
-        self._projDir = os.getcwd() + self._separator
-        self._rootDir = os.path.join(os.path.dirname(__file__), "..") + self._separator
-        self._workDir = os.path.join(self._rootDir, "build") + self._separator
-        self._buildDir = os.path.join(self._workDir, f"{buildType}_dir") + self._separator
-        self._cacheDir = os.path.join(self._workDir, "cache") + self._separator
-        self._libsDir = os.path.join(self._workDir, f"{buildType}_libs") + self._separator
+        self._projDir = os.getcwd()
+        self._rootDir = tools.append_path(os.path.dirname(__file__), "..")
+        self._workDir = tools.append_path(self._rootDir, "build")
+        self._buildDir = tools.append_path(self._workDir, f"{buildType}_dir")
+        self._cacheDir = tools.append_path(self._workDir, "cache")
+        self._libsDir = tools.append_path(self._workDir, f"{buildType}_libs")
+        #
+        print("\n\n\n\n--->", self._workDir)
         files.mk_folder(self._cacheDir)
         files.mk_folder(self._libsDir)
         self._needUpdate = False
@@ -99,7 +101,7 @@ class MyBuilderBase:
     def _downloadByUrl(self, url, path=None):
         parts = url.split(".")
         ext = parts[-1]
-        cacheFile = path or os.path.join(self._cacheDir, f"temp.{ext}")
+        cacheFile = path or tools.append_path(self._cacheDir, f"temp.{ext}")
         files.delete(cacheFile)
         self._print('downloading ...')
         [isOk, code, msg] = httpy.download(url, cacheFile)
@@ -150,7 +152,7 @@ class MyBuilderBase:
         for v in inputArr:
             path = v
             if not files.is_file(path):
-                path = os.path.join(self._projDir, v)
+                path = tools.append_path(self._projDir, v)
             self._assert(files.is_file(path) or files.is_folder(path), f"input file not found: {v}")
             self._print(f"input path: {v}")
             self._inputNames.append(v)
@@ -161,7 +163,7 @@ class MyBuilderBase:
         self._print("output file ...")
         self._assert(self._outputFile is None, "output file is already defined")
         self._print(f"output file: {path}")
-        self._outputFile = os.path.join(self._projDir, path)
+        self._outputFile = tools.append_path(self._projDir, path)
         return self
 
     def _processBuild(self):
