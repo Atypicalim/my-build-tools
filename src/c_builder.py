@@ -24,6 +24,8 @@ class MyCBuilder(MyBuilderBase):
         self._gccFlags = []
         self.MY_RES_FILE_PATH = tools.append_path(self._buildDir, ".lcb_resource.res")
         self.MY_RC_FILE_PATH = tools.append_path(self._buildDir, ".lcb_resource.rc")
+        self.MY_RES_FILE_PATH = self.MY_RES_FILE_PATH.replace('\\', tools.get_separator())
+        self.MY_RC_FILE_PATH = self.MY_RC_FILE_PATH.replace('\\', tools.get_separator())
         files.write(self.MY_RES_FILE_PATH, "", 'utf-8')
         files.write(self.MY_RC_FILE_PATH, "", 'utf-8')
         self._parse(args)
@@ -156,7 +158,7 @@ class MyCBuilder(MyBuilderBase):
             self._print('SET ICON IGNORED!')
             return
         iconPath = tools.append_path(self._projDir, iconPath)
-        iconPath = tools.validate_path(iconPath)
+        iconPath = iconPath.replace('\\', tools.get_separator())
         myRcInfo = MY_RC_FILE_TEMPLATE % iconPath
         files.write(self.MY_RC_FILE_PATH, myRcInfo, 'utf-8')
         command = f"windres {self.MY_RC_FILE_PATH} -O coff -o {self.MY_RES_FILE_PATH}"

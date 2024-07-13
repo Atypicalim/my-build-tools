@@ -11,7 +11,7 @@ class MyBuilderBase:
 
     def __init__(self, buildType):
         buildType = buildType.lower()
-        self._separator = tools.get_separator()
+        self._separator = os.path.sep
         self._printTag = f"[build_{buildType}_tool]"
         self._projDir = os.getcwd()
         self._rootDir = tools.append_path(os.path.dirname(__file__), "..")

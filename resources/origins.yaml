@@ -134,19 +134,16 @@ sandbird:
     DIR_I: "./src/"
     LIB_L: ["ws2_32"]
     FLAGS: " -pedantic -Wall -Wextra "
-    FILES: ["sandbird.c"]
 # A lightweight tar library written in ANSI C
 microtar:
     URL: "git@github.com:rxi/microtar.git"
     BRANCH: "master"
     DIR_I: "./src/"
-    FILES: ["microtar.c"]
 # Asynchronous networking for C
 dyad:
     URL: "git@github.com:rxi/dyad.git"
     BRANCH: "master"
     DIR_I: "./src/"
-    FILES: ["dyad.c"]
     WIN:
         LIB_L: ["ws2_32"]
 # A simple, commented reference implementation of the MD5 hash algorithm
@@ -154,7 +151,6 @@ md5:
     URL: "git@github.com:Zunawe/md5-c.git"
     BRANCH: "main"
     DIR_I: "./"
-    FILES: ["md5.c"]
 # stb single-file public domain libraries for C/C++
 stb:
     URL: "git@github.com:nothings/stb.git"
@@ -170,4 +166,3 @@ bmp:
     URL: "git@github.com:marc-q/libbmp.git"
     BRANCH: "master"
     DIR_I: "./"
-    FILES: ["libbmp.c"]

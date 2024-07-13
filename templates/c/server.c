@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "dyad.h"
+#include "dyad.c"
 
 static void onData(dyad_Event *e) {
   printf("onData: %s\n", e->msg);

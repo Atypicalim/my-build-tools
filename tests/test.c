@@ -21,7 +21,7 @@
 // #define TEST_STB
 // #define TEST_BMP
 // #define TEST_NAETT
-// #define TEST_SANDBOX
+// #define TEST_SANDBIRD
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,6 +104,7 @@ void run_thread() {
 // md5
 #ifdef TEST_MD5
 #include "md5.h"
+#include "md5.c"
 void _md5_print(uint8_t *p){
 	for(unsigned int i = 0; i < 16; ++i){
 		printf("%02x", p[i]);
@@ -150,6 +151,7 @@ void run_base64()
 // tar
 #ifdef TEST_TAR
 #include "microtar.h"
+#include "microtar.c"
 void run_tar() {
     printf("\ntar.start:\n");
     mtar_t tar;
@@ -372,6 +374,7 @@ void run_stb() {
 // bmp
 #ifdef TEST_BMP
 #include "libbmp.h"
+#include "libbmp.c"
 void run_bmp() {
     printf("\nbmp.start:\n");
     char *path = "../resources/test.bmp";
@@ -428,8 +431,9 @@ void run_naett() {
 ////////////////////////////////////////////////////////////////////////////////
 
 // sandbird
-#ifdef TEST_SANDBOX
+#ifdef TEST_SANDBIRD
 #include "sandbird.h"
+#include "sandbird.c"
 static int sandbird_handler(sb_Event *e) {
     if (e->type == SB_EV_REQUEST) {
         printf("request:addr:[%s],method:[%s],path:[%s]\n", e->address, e->method, e->path);
@@ -522,7 +526,7 @@ int main(int argc, char **argv)
     run_naett();
     #endif
 
-    #ifdef TEST_SANDBOX
+    #ifdef TEST_SANDBIRD
     run_sandbird();
     #endif
 
