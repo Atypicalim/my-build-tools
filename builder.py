@@ -48,8 +48,6 @@ task = builder.{0}({{
     'input':"./test.{2}",
     'output':"test",
 }})
-task.setLibs([])
-task.setIcon('../../resources/test.ico')
 task.start()
 task.run()
 """

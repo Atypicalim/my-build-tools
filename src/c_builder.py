@@ -14,10 +14,7 @@ class MyCBuilder(MyBuilderBase):
 
     def __init__(self, args={}):
         super().__init__("C")
-        self._includeDirs = []
-        self._linkingDirs = []
-        self._linkingTags = []
-        self._extraFlags = []
+        self._resetLibs()
         self._targetExecutable = None
         self._hasIcon = False
         self._gccWarns = {}
@@ -29,6 +26,13 @@ class MyCBuilder(MyBuilderBase):
         files.write(self.MY_RES_FILE_PATH, "", 'utf-8')
         files.write(self.MY_RC_FILE_PATH, "", 'utf-8')
         self._parse(args)
+
+    def _resetLibs(self):
+        self._print(f"RESET LIBS:")
+        self._includeDirs = []
+        self._linkingDirs = []
+        self._linkingTags = []
+        self._extraFlags = []
 
     def _downloadByGit(self, config):
         url = config[KEYS.URL]
@@ -124,32 +128,30 @@ class MyCBuilder(MyBuilderBase):
             for v in flagContent:
                 self._extraFlags.append(v)
 
-    def _containFiles(self, name):
-        config = self._getConfig(name)
-        self._assert(config is not None, f"lib [{name}] not found")
-        directory = tools.append_path(self._libsDir, name) + self._separator
-        arr = config.get(KEYS.FILES, [])
-
-        for v in arr:
-            path = v
-            if not files.is_file(path):
-                path = tools.append_path(directory, config[KEYS.DIR_I], v)
-            self._assert(files.is_file(path), f"input file not found: {v}")
-            self._inputNames.append(v)
-            self._inputFiles.append(path)
-
     def setLibs(self, *args):
-        self._print('CONTAIN LIB START!')
+        self._print(f"SET LIBS:")
         libs = list(args)
         if isinstance(libs[0], list):
             libs = libs[0]
         for lib in libs:
-            self._print(f"contain:[{lib}]")
-            self._installLib(lib)
-            self._containLib(lib)
-            self._containFiles(lib)
-        self._print('CONTAIN LIB END!')
+            self.addLib(lib)
         return self
+    
+    def addLibs(self, *args):
+        self._print(f"ADD LIBS:")
+        libs = list(args)
+        if isinstance(libs[0], list):
+            libs = libs[0]
+        for lib in libs:
+            self.addLib(lib)
+        return self
+    
+    def addLib(self, name):
+        self._print(f"ADD LIB:[{name}]")
+        self._installLib(name)
+        self._containLib(name)
+        path = tools.append_path(self._libsDir, name)
+        return path
 
     def setIcon(self, iconPath):
         self._print('SET ICON START!')

@@ -32,7 +32,6 @@ class KEYS:
     DIR_L = "DIR_L"  # -L
     LIB_L = "LIB_L"  # -l
     FLAGS = "FLAGS"  # flags
-    FILES = "FILES"  # include source files in lib
     WIN = "WIN"
     LNX = "LNX"
     MAC = "MAC"
