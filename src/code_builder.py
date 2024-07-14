@@ -33,6 +33,15 @@ class MyCodeBuilder(MyBuilderBase):
         self._onLineCallback = lineCallback
         return self
 
+    def _COMMAND_IGNORE(self, code, args):
+        return None
+
+    def _COMMAND_COMMENT(self, code, args):
+        return self._commentTag + " " + code
+
+    def _COMMAND_REPLACE(self, code, args):
+        return args[0]
+
     def _COMMAND_FILE_BASE64(self, code, args):
         filePath = args[0]
         self._assert(files.is_file(filePath), f"file not found, path: {filePath}")
@@ -62,9 +71,6 @@ class MyCodeBuilder(MyBuilderBase):
         if minimize:
             result = " ".join(result.split())
         return code.format(result)
-
-    def _COMMAND_LINE_REFPLACE(self, code, args):
-        return args[0]
 
     def _parseLine(self, index, line):
         commentPosition = line.find(self._commentTag)

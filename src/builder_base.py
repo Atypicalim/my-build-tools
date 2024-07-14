@@ -148,7 +148,7 @@ class MyBuilderBase:
     def setInput(self, *args):
         self._print("input files ...")
         self._assert(len(self._inputFiles) == 0, "input files are already defined")
-        inputArr = list(args)
+        inputArr = tools.as_list(args)
         for v in inputArr:
             path = v
             if not files.is_file(path):

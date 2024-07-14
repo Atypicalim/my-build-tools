@@ -130,18 +130,14 @@ class MyCBuilder(MyBuilderBase):
 
     def setLibs(self, *args):
         self._print(f"SET LIBS:")
-        libs = list(args)
-        if isinstance(libs[0], list):
-            libs = libs[0]
+        libs = tools.as_list(args)
         for lib in libs:
             self.addLib(lib)
         return self
     
     def addLibs(self, *args):
         self._print(f"ADD LIBS:")
-        libs = list(args)
-        if isinstance(libs[0], list):
-            libs = libs[0]
+        libs = tools.as_list(args)
         for lib in libs:
             self.addLib(lib)
         return self
@@ -177,9 +173,7 @@ class MyCBuilder(MyBuilderBase):
     
     def addWarnings(self, isEnable, *args):
         self._print('ADD WARNINGS!')
-        warnings = list(args)
-        if isinstance(warnings[0], list):
-            warnings = warnings[0]
+        warnings = tools.as_list(args)
         for warn in warnings:
             self._print(f"awrning:[{isEnable}][{warn}]")
             self._gccWarns[warn] = isEnable
@@ -187,9 +181,7 @@ class MyCBuilder(MyBuilderBase):
 
     def addFlags(self, *args):
         self._print('ADD FLAGS!')
-        flags = list(args)
-        if isinstance(flags[0], list):
-            flags = flags[0]
+        flags = tools.as_list(args)
         for flag in flags:
             self._print(f"flags:[{flag}]")
             self._gccFlags.append(flag)

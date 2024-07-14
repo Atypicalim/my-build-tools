@@ -138,14 +138,19 @@ def tools_spawn(cmd, args=[], cwd=None, encoding='gbk'):
         return [False, e]
         
 
+def tools_as_list(args):
+    if not args:
+        return []
+    if not isinstance(args, tuple):
+        return []
+    return args[0] if isinstance(args[0], list) else list(args)
+
 def tools_parse_path(_path):
     _path = pathlib.Path(_path)
     return (_path.parent, _path.stem, _path.suffix.lstrip('.'), _path.name)
 
 def tools_append_path(_path, *args):
-    paths = list(args)
-    if isinstance(paths[0], list):
-        paths = paths[0]
+    paths = tools_as_list(args)
     for path in paths:
         _path = os.path.join(_path, path)
     _path = os.path.normpath(_path)
@@ -157,6 +162,7 @@ class tools:
     is_linux = lambda: platform.system() == 'Linux'
     execute = tools_execute
     spawn = tools_spawn
+    as_list = tools_as_list
     parse_path = tools_parse_path
     append_path = tools_append_path
     get_separator = lambda: "/" if tools.is_windows() else "\\"
