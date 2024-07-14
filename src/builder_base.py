@@ -20,7 +20,6 @@ class MyBuilderBase:
         self._cacheDir = tools.append_path(self._workDir, "cache")
         self._libsDir = tools.append_path(self._workDir, f"{buildType}_libs")
         #
-        print("\n\n\n\n--->", self._workDir)
         files.mk_folder(self._cacheDir)
         files.mk_folder(self._libsDir)
         self._needUpdate = False
