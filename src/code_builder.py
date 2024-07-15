@@ -62,7 +62,7 @@ class MyCodeBuilder(MyBuilderBase):
         minimize = len(args) > 2 and args[2].lower() == "true"
         filePath = tools.append_path(self._projDir, filePath)
         self._assert(files.is_file(filePath), f"file not found, path: {filePath}")
-        with open(filePath, 'r') as f:
+        with open(filePath, 'r', encoding='utf-8') as f:
             fileContent = f.read()
         lineArr = fileContent.split("\n")
         for i in range(len(lineArr)):
@@ -104,7 +104,7 @@ class MyCodeBuilder(MyBuilderBase):
         self._print("reading files ...")
         for i, path in enumerate(self._inputFiles):
             self._assert(files.is_file(path), f"file not found: {path}")
-            with open(path, 'r') as f:
+            with open(path, 'r', encoding='utf-8') as f:
                 content = f.read()
             self._assert(len(content) > 0, "input files are empty")
             lineArr = content.split("\n")
@@ -125,7 +125,7 @@ class MyCodeBuilder(MyBuilderBase):
         self._print("creating target ...")
         html = "\n".join(self._lineArr)
         self._assert(self._outputFile is not None, "output path not found")
-        with open(self._outputFile, 'w') as f:
+        with open(self._outputFile, 'w', encoding='utf-8') as f:
             f.write(html)
         self._print("writing target succeeded!")
         return self

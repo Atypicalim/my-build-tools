@@ -53,7 +53,7 @@ class MyCBuilder(MyBuilderBase):
         super()._downloadByGzip(url, directory)
 
     def _getConfig(self, name):
-        with open(Globals.originsPath, 'r') as file:
+        with open(Globals.originsPath, 'r', encoding='utf-8') as file:
             configs = yaml.safe_load(file)
         config = configs.get(name)
         self._assert(config is not None, f"lib [{name}] not found")
