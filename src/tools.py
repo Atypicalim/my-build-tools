@@ -108,7 +108,7 @@ class terminal:
 
 ######################################################
 
-def tools_execute(cmd, args=[], cwd=None, encoding='gbk'):
+def tools_execute(cmd, args=[], cwd=None, encoding='utf-8'):
     try:
         p = subprocess.check_output(
             cmd,
@@ -123,7 +123,7 @@ def tools_execute(cmd, args=[], cwd=None, encoding='gbk'):
     except Exception as e:
         return [False, e]
     
-def tools_spawn(cmd, args=[], cwd=None, encoding='gbk'):
+def tools_spawn(cmd, args=[], cwd=None, encoding='utf-8'):
     try:
         p = subprocess.Popen(
             [cmd] + args,
