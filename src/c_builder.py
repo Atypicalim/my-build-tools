@@ -25,6 +25,11 @@ class MyCBuilder(MyBuilderBase):
         self.MY_RC_FILE_PATH = self.MY_RC_FILE_PATH.replace('\\', tools.get_separator())
         files.write(self.MY_RES_FILE_PATH, "", 'utf-8')
         files.write(self.MY_RC_FILE_PATH, "", 'utf-8')
+        #
+        self._configs = None
+        with open(Globals.originsPath, 'r', encoding='utf-8') as file:
+            self._configs = yaml.safe_load(file)
+        # 
         self._parse(args)
 
     def _resetLibs(self):
@@ -53,9 +58,7 @@ class MyCBuilder(MyBuilderBase):
         super()._downloadByGzip(url, directory)
 
     def _getConfig(self, name):
-        with open(Globals.originsPath, 'r', encoding='utf-8') as file:
-            configs = yaml.safe_load(file)
-        config = configs.get(name)
+        config = self._configs.get(name)
         self._assert(config is not None, f"lib [{name}] not found")
         if tools.is_windows():
             config.update(config.get(KEYS.WIN, {}))
@@ -142,8 +145,10 @@ class MyCBuilder(MyBuilderBase):
             self.addLib(lib)
         return self
     
-    def addLib(self, name):
+    def addLib(self, name, config = None):
         self._print(f"ADD LIB:[{name}]")
+        if config is not None:
+            self._configs[name] = config
         self._installLib(name)
         self._containLib(name)
         path = tools.append_path(self._libsDir, name)
