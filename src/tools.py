@@ -69,6 +69,14 @@ class py:
 
 ######################################################
 
+def files_delete(path):
+    if os.path.exists(path):
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        else:
+            os.remove(path)
+
+
 def files_write(path, content, encoding=None):
     return open(path, 'w' if encoding != None else "wb", encoding=encoding).write(content)
 
@@ -77,7 +85,7 @@ def files_read(path, encoding=None):
     return open(path, 'r' if encoding != None else "rb", encoding=encoding).read()
 
 class files:
-    delete = lambda path: os.remove(path) if os.path.exists(path) else None
+    delete = files_delete
     mk_folder = lambda path: os.makedirs(path, exist_ok=True)
     is_folder = lambda path: os.path.isdir(path)
     is_file = lambda path: os.path.isfile(path)
