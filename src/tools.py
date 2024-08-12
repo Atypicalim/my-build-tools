@@ -165,7 +165,7 @@ def tools_append_path(_path, *args):
     return _path
 
 class tools:
-    is_windows = lambda: platform.system() == 'Windows'
+    is_windows = lambda: platform.system() == 'Windows' or platform.system().startswith('MSYS_NT')
     is_mac = lambda: platform.system() == 'Darwin'
     is_linux = lambda: platform.system() == 'Linux'
     execute = tools_execute
