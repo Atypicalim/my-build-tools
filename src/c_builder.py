@@ -215,13 +215,13 @@ class MyCBuilder(MyBuilderBase):
         warnDisabled = ' '.join(["-Wno-" + item for item in warnDisabled])
         flagsAdded = ' '.join(self._gccFlags)
         customCmds = f"{warnEnabled} {warnDisabled} {flagsAdded}".strip()
+        debugCmds = "" if self._isDebug else " -mwindows " # -Wall -Wextra -pedantic
         #
         inputFiles = ' '.join(self._inputFiles)
         resCmds = self.MY_RES_FILE_PATH if self._hasIcon else ''
         #
         cc = 'gcc' if tools.is_windows() else 'clang'
-        cmd = f"{cc} -o {self._targetExecutable} "
-        cmd += f"-O2 -mwindows " if self._isRelease else "" # -Wall -Wextra -pedantic
+        cmd = f"{cc} -o {self._targetExecutable} {debugCmds} "
         cmd += f"-s {inputFiles} {resCmds} "
         cmd += f"-s {customCmds} {configCmds} "
         cmd = ' '.join(cmd.split())

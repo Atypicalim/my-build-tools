@@ -25,7 +25,6 @@ class MyBuilderBase:
         self._needUpdate = False
         self._name = "UNKNOWN"
         self._isDebug = False
-        self._isRelease = False
         self._inputNames = []
         self._inputFiles = []
         self._outputFile = None
@@ -137,12 +136,11 @@ class MyBuilderBase:
         return self._name
 
     def setDebug(self, value):
-        py.check(isinstance(value, bool), 'invalid task name for builder')
+        py.check(isinstance(value, bool), 'invalid debug state for builder')
         self._isDebug = value
 
-    def setRelease(self, value):
-        py.check(isinstance(value, bool), 'invalid task name for builder')
-        self._isRelease = value
+    def isDebug(self):
+        return self._isDebug
 
     def setInput(self, *args):
         self._print("input files ...")
