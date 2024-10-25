@@ -1,4 +1,9 @@
 
+# mplementation of C++ standard libraries in C
+std:
+    URL: "git@github.com:KaisenAmin/c_std.git"
+    BRANCH: "main"
+    DIR_I: "./"
 # C string utils library (STB style, header-only)
 string:
     URL: "git@github.com:r-lyeh/stdstring.h.git"

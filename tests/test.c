@@ -6,6 +6,7 @@
 #include <math.h>
 
 #define TEST_SOMETHING
+// #define TEST_STD
 // #define TEST_STRING
 // #define TEST_STRUCTURE
 // #define TEST_INCBIN
@@ -35,11 +36,26 @@ void run_something() {
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
+// std
+#ifdef TEST_STD
+#define STD_IMPLEMENTATION
+#include "string/std_string.c"
+void run_std() {
+    printf("\nstd.start:\n");
+    String* myString = string_create("");
+    string_append(myString, "test");
+    string_append(myString, "!");
+    printf("std.str:%s\n", myString->dataStr);
+    printf("std.end!\n");
+}
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
 // string
 #ifdef TEST_STRING
 #define STDSTRING_IMPLEMENTATION
 #include "stdstring.h"
-void run_structure() {
+void run_string() {
     printf("\nstring.start:\n");
     char *exp = "1/3";
     char *str = "abc";
@@ -466,8 +482,12 @@ int main(int argc, char **argv)
     run_something();
     #endif
 
+    #ifdef TEST_STD
+    run_std();
+    #endif
+
     #ifdef TEST_STRING
-    run_structure();
+    run_string();
     #endif
 
     #ifdef TEST_STRUCTURE

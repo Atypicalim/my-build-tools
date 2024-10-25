@@ -10,7 +10,8 @@ bldr = C()
 bldr.setDebug(True)
 bldr.setInput('./test.c')
 bldr.setLibs([
-    # "string"
+    # "std",
+    # "string",
     # "vec", "map",
     # "incbin",
     # "thread",
