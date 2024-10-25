@@ -20,6 +20,7 @@ bldr.setLibs([
     # "microtar",
     # "minicoro",
     # "minilua", "luaauto",
+    # "olive",
     # "tigr",
     # "raylib", "raygui",
     # "webview",

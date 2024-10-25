@@ -40,6 +40,12 @@ miniaudio:
     BRANCH: "master"
     DIR_I: "./"
 # the TIny GRaphics library for Windows, macOS, Linux, iOS and Android.
+olive:
+    URL: "git@github.com:tsoding/olive.c.git"
+    BRANCH: "master"
+    DIR_I: "./"
+    LIB_L: ["opengl32", "gdi32"]
+# the TIny GRaphics library for Windows, macOS, Linux, iOS and Android.
 tigr:
     URL: "git@github.com:erkkah/tigr.git"
     BRANCH: "master"

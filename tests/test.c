@@ -16,6 +16,7 @@
 // #define TEST_TAR
 // #define TEST_CORO
 // #define TEST_LUA
+// #define TEST_OLIVE
 // #define TEST_TIGR
 // #define TEST_RAYLIB
 // #define TEST_WEBVIEW
@@ -258,6 +259,29 @@ void run_lua() {
     luaA_close(L);
     lua_close(L);
     printf("lua.end!\n");
+}
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+
+// olive
+#ifdef TEST_OLIVE
+#define OLIVEC_IMPLEMENTATION
+#include "olive.c"
+#define WIDTH 200
+#define HEIGHT 200
+uint32_t pixels[WIDTH*HEIGHT];
+void run_olive() {
+    printf("\nolive.start:\n");
+    Olivec_Canvas oc = olivec_canvas(pixels, WIDTH, HEIGHT, WIDTH);
+    olivec_fill(oc, 0xff333333);
+    int x = WIDTH / 2;
+    int y = HEIGHT / 2;
+    int s = WIDTH / 4;
+    olivec_circle(oc, x, y, s, 0xff007733);
+    int center = WIDTH * (HEIGHT / 2) + WIDTH / 2;
+    printf("olive.pixel:%x\n", pixels[center]);
+    printf("olive.end!\n");
 }
 #endif
 
@@ -520,6 +544,10 @@ int main(int argc, char **argv)
 
     #ifdef TEST_LUA
     run_lua();
+    #endif
+
+    #ifdef TEST_OLIVE
+    run_olive();
     #endif
 
     #ifdef TEST_TIGR
