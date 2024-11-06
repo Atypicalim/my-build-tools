@@ -17,6 +17,7 @@
 // #define TEST_CORO
 // #define TEST_LUA
 // #define TEST_OLIVE
+// #define TEST_RSGL
 // #define TEST_TIGR
 // #define TEST_RAYLIB
 // #define TEST_WEBVIEW
@@ -287,6 +288,42 @@ void run_olive() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// RSGL
+#ifdef TEST_RSGL
+#define RSGL_IMPLEMENTATION
+#include "RSGL.h"
+void run_rsgl() {
+    printf("\nrsgl.start:\n");
+
+    RGFW_window* win = RGFW_createWindow("name", (RSGL_rect){500, 500, 500, 500}, RGFW_CENTER);
+
+	RSGL_init(RSGL_AREA(win->r.w, win->r.h), RGFW_getProcAddress);
+    RSGL_setFont(RSGL_loadFont("../resources/ukij.ttf"));
+	u32 fps;
+
+    while (!RGFW_window_shouldClose(win)) {
+        RSGL_checkEvent(win);
+        if (win->event.type == RGFW_quit)
+            break;
+
+        RSGL_drawText("Text...", RSGL_CIRCLE(10, 10, 24), RSGL_RGB(255, 0, 0));
+        RSGL_drawPolygon(RSGL_RECT(100, 100, 300, 300), 8, RSGL_RGB(100, 100, 200));
+        printf("rsgl.fps:%d\n", fps);
+    
+		RSGL_clear(RSGL_RGB(50, 50, 50));
+		RGFW_window_swapBuffers(win);
+		fps = RGFW_window_checkFPS(win, 0);
+	}
+	
+	RSGL_free();
+	RGFW_window_close(win);
+
+    printf("rsgl.end!\n");
+}
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+
 // tigr
 #ifdef TEST_TIGR
 #include "tigr.c"
@@ -548,6 +585,10 @@ int main(int argc, char **argv)
 
     #ifdef TEST_OLIVE
     run_olive();
+    #endif
+
+    #ifdef TEST_RSGL
+    run_rsgl();
     #endif
 
     #ifdef TEST_TIGR

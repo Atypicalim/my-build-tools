@@ -45,6 +45,12 @@ olive:
     BRANCH: "master"
     DIR_I: "./"
     LIB_L: ["opengl32", "gdi32"]
+# A simple-to-use modular, cross-platform graphics library
+RSGL:
+    URL: "git@github.com:ColleagueRiley/RSGL.git"
+    BRANCH: "main"
+    DIR_I: "./"
+    LIB_L: ["opengl32", "shell32", "gdi32", "winmm"]
 # the TIny GRaphics library for Windows, macOS, Linux, iOS and Android.
 tigr:
     URL: "git@github.com:erkkah/tigr.git"
