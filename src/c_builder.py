@@ -120,16 +120,21 @@ class MyCBuilder(MyBuilderBase):
                 insertLinking(v)
 
         if py.is_string(libContent):
-            self._linkingTags.append(libContent)
+            self._appendLib(libContent)
         elif py.is_array(libContent):
             for v in libContent:
-                self._linkingTags.append(v)
+                self._appendLib(v)
 
         if py.is_string(flagContent):
             self._extraFlags.append(flagContent)
         elif py.is_array(flagContent):
             for v in flagContent:
                 self._extraFlags.append(v)
+
+    def _appendLib(self, libName):
+        if libName not in self._linkingTags:
+            self._linkingTags.append(libName)
+        pass
 
     def setLibs(self, *args):
         self._print(f"SET LIBS:")
