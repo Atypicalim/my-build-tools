@@ -44,7 +44,6 @@ olive:
     URL: "git@github.com:tsoding/olive.c.git"
     BRANCH: "master"
     DIR_I: "./"
-    LIB_L: ["opengl32", "gdi32"]
 # A simple-to-use modular, cross-platform graphics library
 RSGL:
     URL: "git@github.com:ColleagueRiley/RSGL.git"
