@@ -69,10 +69,6 @@ raylib:
         DIR_I: "raylib-4.0.0_macos/include/"
         DIR_L: "raylib-4.0.0_macos/lib/"
         FLAGS: " -lraylib -framework OpenGL -framework Cocoa -framework IOKit -framework CoreAudio -framework CoreVideo "
-# A simple and easy-to-use immediate-mode gui library
-raygui:
-    URL: "https://github.com/raysan5/raygui/archive/refs/tags/3.1.zip"
-    DIR_I: "./raygui-3.1/"
 # A tiny cross-platform webview C library to build modern cross-platform GUIs
 webview:
     URL: "git@github.com:javalikescript/webview-c.git"

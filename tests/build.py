@@ -23,7 +23,7 @@ bldr.setLibs([
     # "olive",
     # "RSGL",
     # "tigr",
-    # "raylib", "raygui",
+    # "raylib",
     # "webview",
     # "stb",
     # "bmp",
