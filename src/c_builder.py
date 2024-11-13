@@ -101,11 +101,16 @@ class MyCBuilder(MyBuilderBase):
             self._assert(files.is_folder(dir), f"linking directory [{dir}] not found")
             self._linkingDirs.append(dir)
 
+        def insertCompile(file):
+            file = tools.append_path(directory, file)
+            self._assert(files.is_file(file), f"compiling file [{file}] not found")
+            self._appendFile(file)
 
         dirIncContent = config.get(KEYS.DIR_I)
         dirLibContent = config.get(KEYS.DIR_L)
         libContent = config.get(KEYS.LIB_L)
-        flagContent = config.get(KEYS.FLAGS)
+        flagsContent = config.get(KEYS.FLAGS)
+        filesContent = config.get(KEYS.FILES)
 
         if py.is_string(dirIncContent):
             insertInclude(dirIncContent)
@@ -120,21 +125,34 @@ class MyCBuilder(MyBuilderBase):
                 insertLinking(v)
 
         if py.is_string(libContent):
-            self._appendLib(libContent)
+            self._appendLink(libContent)
         elif py.is_array(libContent):
             for v in libContent:
-                self._appendLib(v)
+                self._appendLink(v)
 
-        if py.is_string(flagContent):
-            self._extraFlags.append(flagContent)
-        elif py.is_array(flagContent):
-            for v in flagContent:
-                self._extraFlags.append(v)
+        if py.is_string(flagsContent):
+                self._appendFlag(flagsContent)
+        elif py.is_array(flagsContent):
+            for v in flagsContent:
+                self._appendFlag(v)
 
-    def _appendLib(self, libName):
+        if py.is_string(filesContent):
+            insertCompile(filesContent)
+        elif py.is_array(filesContent):
+            for v in filesContent:
+                insertCompile(v)
+
+    def _appendLink(self, libName):
         if libName not in self._linkingTags:
             self._linkingTags.append(libName)
-        pass
+
+    def _appendFlag(self, flagText):
+        if flagText not in self._extraFlags:
+            self._extraFlags.append(flagText)
+
+    def _appendFile(self, filePath):
+        if filePath not in self._inputFiles:
+            self._inputFiles.append(filePath)
 
     def setLibs(self, *args):
         self._print(f"SET LIBS:")
@@ -183,19 +201,32 @@ class MyCBuilder(MyBuilderBase):
     
     def addWarnings(self, isEnable, *args):
         self._print('ADD WARNINGS!')
-        warnings = tools.as_list(args)
-        for warn in warnings:
+        _warnings = tools.as_list(args)
+        for warn in _warnings:
             self._print(f"awrning:[{isEnable}][{warn}]")
             self._gccWarns[warn] = isEnable
+
+    def addLinks(self, *args):
+        self._print('ADD FLAGS!')
+        _links = tools.as_list(args)
+        for link in _links:
+            self._appendLink(link)
 
 
     def addFlags(self, *args):
         self._print('ADD FLAGS!')
-        flags = tools.as_list(args)
-        for flag in flags:
-            self._print(f"flags:[{flag}]")
-            self._gccFlags.append(flag)
+        _flags = tools.as_list(args)
+        for flag in _flags:
+            self._print(f"flag:[{flag}]")
+            self._appendFlag(flag)
 
+    def addFiles(self, *args):
+        self._print('ADD FILES!')
+        _files = tools.as_list(args)
+        for file in _files:
+            self._print(f"file:[{file}]")
+            self._assert(files.is_file(file), f"adding file [{file}] not found")
+            self._appendFile(file)
 
     def _processBuild(self):
         self._print('PROCESS GCC START!')

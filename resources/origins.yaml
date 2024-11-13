@@ -107,6 +107,7 @@ tinyfiledialogs:
     BRANCH: "master"
     LIB_L: ["comdlg32", "ole32"]
     DIR_I: "./"
+    FILES: "./tinyfiledialogs.c"
 # (Keep It) Simple Stupid Database
 kissdb:
     URL: "git@github.com:adamierymenko/kissdb.git"
