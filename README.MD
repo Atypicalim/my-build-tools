@@ -43,4 +43,4 @@ task.run()
 
 ### 3. More
 
-> for more information please visit [github](https://github.com/kompasim/my-build-tools).
+> for more information please visit [github](https://github.com/atypicalim/my-build-tools).
