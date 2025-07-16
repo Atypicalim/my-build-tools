@@ -13,6 +13,7 @@ class MyHtmxBuilder(MyBuilderBase):
     def __init__(self, args={}):
         super().__init__("htmx")
         self._title = "Unknown..."
+        self._icon = None
         self._width = 500
         self._height = 500
         self._resizable = False
@@ -20,6 +21,9 @@ class MyHtmxBuilder(MyBuilderBase):
 
     def setTitle(self, title):
         self._title = title
+
+    def setIcon(self, icon):
+        self._icon = icon
 
     def setSize(self, width = None, height = None):
         if width != None:
@@ -51,6 +55,8 @@ class MyHtmxBuilder(MyBuilderBase):
         bldr.setName(self._name)
         bldr.setInput(self._rootDir + '/resources/browser.c')
         bldr.setOutput(self._outputFile)
+        if self._icon != None:
+            bldr.setIcon(self._icon)
         bldr.setLibs([
             "std",
             "incbin",
