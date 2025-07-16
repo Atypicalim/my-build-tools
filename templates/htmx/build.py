@@ -14,7 +14,7 @@ bldr.setIcon('../../resources/test.ico')
 bldr.setSize(300, 600)
 bldr.setResizable(True)
 bldr.setOutput('test')
-bldr.setRelease(False)
+bldr.setRelease(True)
 bldr.start()
 
 tools.spawn("test")

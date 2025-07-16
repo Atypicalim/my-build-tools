@@ -29,9 +29,25 @@
 #define WEBVIEW_IMPLEMENTATION
 #include "webview.h"
 static void webview_callback(struct webview *w, const char *arg) {
-    // js: window.external.invoke('Hi')
-    printf("Callback called with '%s'\n", arg);
+    printf("%s\n", arg);
 }
+
+char *jsCode = " \
+function _cPrint() { \
+    var content = ''; \
+    for (var i = 0; i < arguments.length; i++) { \
+        content += arguments[i]; \
+        if (i < arguments.length - 1) { \
+            content += ' '; \
+        } \
+    } \
+    var date = new Date().toTimeString().substring(0, 17); \
+    window.external.invoke(date + ' log: ' + content); \
+} \
+console.log = _cPrint; \
+console.print = _cPrint; \
+";
+
 void run_webview() {
     //
     INCBIN(Html, "temporary.html");
@@ -48,6 +64,7 @@ void run_webview() {
     webview.debug = true;
     webview.external_invoke_cb = &webview_callback;
     int r = webview_init(&webview);
+    webview_eval(&webview, jsCode);
     do {
         r = webview_loop(&webview, 1);
     } while (r == 0);

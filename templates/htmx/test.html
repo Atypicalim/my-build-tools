@@ -1,11 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
-    hello...
+    <p>hello...</p>
+    <img src="https://www.runoob.com/wp-content/themes/runoob/assets/img/runoob-logo.png" alt="">
+    <br>
+    <button onclick="alert('hello...')">test</button>
+    <br>
+    <br>
+    <textarea name="" id="text" style="height: 250px;"></textarea>
+    <br>
+    <br>
+    <div class="rotate"></div>
+    <br>
 </body>
+
+<script>
+    var text = "";
+    text += navigator.platform + "\n";
+    text += navigator.userAgent + "\n";
+    text += navigator.appVersion + "\n";
+    text += navigator.language + "\n";
+    document.getElementById("text").value = text;
+</script>
+
+<style>
+    .rotate {
+        width: 100px;
+        height: 100px;
+        background-image: linear-gradient(to right, #4CAF50, #8922ff);
+        transition: transform 3s linear;
+        transform: rotate(360deg);
+    }
+</style>
+
 </html>
