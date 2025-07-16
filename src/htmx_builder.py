@@ -48,7 +48,8 @@ class MyHtmxBuilder(MyBuilderBase):
         self._assert(self._outputFile is not None, "output path not found")
         self._print("building target ...")
         # 
-        # tools.disable_print()
+        if not self._isDebug:
+            tools.disable_print()
         bldr = MyCBuilder()
         bldr.setDebug(self._isDebug)
         bldr.setRelease(self._isRelease)
