@@ -30,6 +30,7 @@ task.run()
 * lua
 * code
 * html
+* htmx
 
 ### 4. Libs
 
