@@ -4,6 +4,7 @@ tools
 
 import http
 import os
+import sys
 import subprocess
 import pathlib
 import base64
@@ -43,6 +44,8 @@ class TYPES:
     ZIP = "ZIP"
     GZ = "GZ"
     pass
+
+_python_stdout = None
 
 ######################################################
 
@@ -146,6 +149,17 @@ def tools_spawn(cmd, args=[], cwd=None, encoding='utf-8'):
     except Exception as e:
         return [False, e]
         
+def tools_disable_print():
+    global _python_stdout
+    _python_stdout = sys.stdout
+    sys.stdout = open(os.devnull, "w")
+    pass
+
+def tools_enable_print():
+    global _python_stdout
+    if _python_stdout != None:
+        sys.stdout = _python_stdout
+    pass
 
 def tools_as_list(args):
     if not args:
@@ -171,6 +185,8 @@ class tools:
     is_linux = lambda: platform.system() == 'Linux'
     execute = tools_execute
     spawn = tools_spawn
+    disable_print = tools_disable_print
+    enable_print = tools_enable_print
     as_list = tools_as_list
     parse_path = tools_parse_path
     append_path = tools_append_path

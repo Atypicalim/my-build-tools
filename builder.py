@@ -17,6 +17,7 @@ from tools import *
 from c_builder import MyCBuilder
 from lua_builder import MyLuaBuilder
 from html_builder import MyHtmlBuilder
+from htmx_builder import MyHtmxBuilder
 from code_builder import MyCodeBuilder
 
 ################################################################
@@ -24,12 +25,14 @@ from code_builder import MyCodeBuilder
 C = MyCBuilder
 Lua = MyLuaBuilder
 Html = MyHtmlBuilder
+Htmx = MyHtmxBuilder
 Code = MyCodeBuilder
 
 class builder:
     c = MyCBuilder
     lua = MyLuaBuilder
     html = MyHtmlBuilder
+    htmx = MyHtmxBuilder
     code = MyCodeBuilder
     tools = _tools
     pass
@@ -37,7 +40,7 @@ class builder:
 ################################################################
 
 UI_LENGTH = 48
-builders = ["c", "lua", "html", "code"]
+builders = ["c", "lua", "html", "htmx", "code"]
 tasks = []
 
 MY_BUILDER_TEMPLATE = """
