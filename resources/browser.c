@@ -33,6 +33,10 @@ static void webview_callback(struct webview *w, const char *arg) {
 }
 
 char *jsCode = " \
+window.onerror = function(message, source, lineno, colno, error) { \
+    var date = new Date().toTimeString().substring(0, 17); \
+    window.external.invoke(date + ' err: ' + error.stack); \
+}; \
 function _cPrint() { \
     var content = ''; \
     for (var i = 0; i < arguments.length; i++) { \
@@ -51,7 +55,7 @@ console.print = _cPrint; \
 void run_webview() {
     //
     INCBIN(Html, "temporary.html");
-    char* content = malloc(1024 * 10);
+    char* content = malloc(1024 * 1000);
     sprintf(content, "data:text/html,%s", gHtmlData);
     // 
     struct webview webview;
