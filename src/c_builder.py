@@ -278,16 +278,18 @@ class MyCBuilder(MyBuilderBase):
         self._print('PROCESS GCC END!')
 
         return self
-
-    def run(self, path=None):
+    
+    def getRunnable(self, path=None):
         path = self._projDir + path if path else self._targetExecutable
         dir, name, _, nameWithExt = tools.parse_path(path)
-        self._print(f"RUNNING:{path}")
         nam = nameWithExt if tools.is_windows() else name
-        exe = f".{self._separator}{nam}"
-        cmd = f"cmd cd {dir} ; {exe}"
+        name = f".{self._separator}{nam}"
+        runnable = f"{dir}{self._separator}{nam}"
+        return dir, name, runnable
+
+    def run(self, path=None):
         if self._isDebug:
-            self._print(f"cmd:{cmd}")
+            self._print(f"spawn:{self._targetExecutable}")
         isOk, extra = tools.spawn(self._targetExecutable, [], cwd=dir)
         self._print(f"RUNNED:{isOk}", "" if isOk else extra)
 
