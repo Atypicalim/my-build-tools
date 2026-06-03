@@ -97,7 +97,7 @@ void run_incbin() {
 
 // thread
 #ifdef TEST_THREAD
-#include "tinycthread.c"
+#include "tinycthread.h"
 int _thread_body(void *aArg)
 {
     printf("thread.working:%d\n", *(int*)aArg);

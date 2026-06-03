@@ -102,7 +102,7 @@ uuid4:
     BRANCH: "master"
     DIR_I: "./src/"
 # tiny file dialogs
-tinyfiledialogs:
+dialogs:
     URL: "git@github.com:native-toolkit/tinyfiledialogs.git"
     BRANCH: "master"
     LIB_L: ["comdlg32", "ole32"]
@@ -121,7 +121,7 @@ parson:
 # single header utf8 string functions for C and C++
 utf8:
     URL: "git@github.com:sheredom/utf8.h.git"
-    BRANCH: "master"
+    BRANCH: "main"
     DIR_I: "./"
 # Tiny cross-platform HTTP / HTTPS client library in C.
 naett:
@@ -140,6 +140,7 @@ thread:
     URL: "git@github.com:tinycthread/tinycthread.git"
     BRANCH: "master"
     DIR_I: "./source/"
+    FILES: "./source/tinycthread.c"
 # A tiny embeddable HTTP server written in C89
 sandbird:
     URL: "git@github.com:rxi/sandbird.git"
